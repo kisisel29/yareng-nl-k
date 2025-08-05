@@ -36,7 +36,7 @@ export const WhereSection: React.FC<WhereSectionProps> = ({
         <div className="lg:w-1/2">
           <div className="relative rounded-lg overflow-hidden shadow-lg">
             <img
-              src="/src/ghane.webp"
+              src="/ghane.webp"
               alt="Güzel bir gün"
               className="w-full h-64 lg:h-80 object-cover"
             />
