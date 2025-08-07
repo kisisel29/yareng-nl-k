@@ -51,49 +51,49 @@ export const WhereSection: React.FC<WhereSectionProps> = ({
         {/* Sağ taraf - Form içeriği */}
         <div className="lg:w-1/2 space-y-4">
           <div>
-            <h3 className="text-lg font-medium text-blue-700 mb-3 flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              Gezdiğim yerler:
-            </h3>
-            <div className="space-y-2">
-              {places.map((place, index) => (
-                <div key={index} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={place}
-                    onChange={(e) => updatePlace(index, e.target.value)}
-                    placeholder="Bir yer yazın..."
-                    className="flex-1 bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-400 transition-all duration-300"
-                  />
-                  <button
-                    onClick={() => removePlace(index)}
-                    className="text-red-500 hover:text-red-700 px-2 transition-colors duration-200"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={addPlace}
-                className="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 px-4 rounded-lg transition-all duration-300 border-2 border-dashed border-blue-300"
-              >
-                + Yer Ekle
-              </button>
-            </div>
+                      <h3 className="text-lg font-medium text-pink-700 mb-3 flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Gezdiğim yerler:
+          </h3>
+          <div className="space-y-2">
+            {places.map((place, index) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  type="text"
+                  value={place}
+                  onChange={(e) => updatePlace(index, e.target.value)}
+                  placeholder="Bir yer yazın..."
+                  className="flex-1 bg-pink-50 border-2 border-pink-200 rounded-lg px-4 py-2 focus:outline-none focus:border-pink-400 transition-all duration-300"
+                />
+                <button
+                  onClick={() => removePlace(index)}
+                  className="text-red-500 hover:text-red-700 px-2 transition-colors duration-200"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={addPlace}
+              className="w-full bg-pink-100 hover:bg-pink-200 text-pink-700 py-2 px-4 rounded-lg transition-all duration-300 border-2 border-dashed border-pink-300"
+            >
+              + Yer Ekle
+            </button>
+          </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-medium text-blue-700 mb-3 flex items-center gap-2">
-              <Heart className="w-5 h-5" />
-              Bu yerle ilgili hislerim:
-            </h3>
-            <textarea
-              value={feelings}
-              onChange={(e) => onFeelingsChange(e.target.value)}
-              placeholder="Hislerimi burada paylaşabilirim..."
-              className="w-full bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-400 transition-all duration-300 resize-none"
-              rows={4}
-            />
+                      <h3 className="text-lg font-medium text-pink-700 mb-3 flex items-center gap-2">
+            <Heart className="w-5 h-5" />
+            Bu yerle ilgili hislerim:
+          </h3>
+          <textarea
+            value={feelings}
+            onChange={(e) => onFeelingsChange(e.target.value)}
+            placeholder="Hislerimi burada paylaşabilirim..."
+            className="w-full bg-pink-50 border-2 border-pink-200 rounded-lg px-4 py-3 focus:outline-none focus:border-pink-400 transition-all duration-300 resize-none"
+            rows={4}
+          />
           </div>
         </div>
       </div>

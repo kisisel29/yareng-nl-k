@@ -30,7 +30,7 @@ export const MoodSection: React.FC<MoodSectionProps> = ({
     <DiarySection title="🌟 Ruh Hâlim Nasıldı?" icon={Heart}>
       <div className="space-y-4">
         <div>
-          <label className="block text-blue-700 font-medium mb-3">
+          <label className="block text-pink-700 font-medium mb-3">
             Bugünkü ruh hâlim:
           </label>
           <div className="grid grid-cols-4 gap-3">
@@ -40,12 +40,12 @@ export const MoodSection: React.FC<MoodSectionProps> = ({
                 onClick={() => onMoodChange(option.emoji)}
                 className={`p-3 rounded-xl border-2 transition-all duration-300 ${
                   mood === option.emoji
-                    ? 'border-blue-400 bg-blue-100 scale-105'
-                    : 'border-blue-200 bg-blue-50 hover:border-blue-300 hover:bg-blue-100'
+                    ? 'border-pink-400 bg-pink-100 scale-105'
+                    : 'border-pink-200 bg-pink-50 hover:border-pink-300 hover:bg-pink-100'
                 }`}
               >
                 <div className="text-2xl mb-1">{option.emoji}</div>
-                <div className="text-xs text-blue-700 font-medium">
+                <div className="text-xs text-pink-700 font-medium">
                   {option.label}
                 </div>
               </button>
@@ -54,14 +54,14 @@ export const MoodSection: React.FC<MoodSectionProps> = ({
         </div>
 
         <div>
-          <label className="block text-blue-700 font-medium mb-2">
+          <label className="block text-pink-700 font-medium mb-2">
             Kısa açıklama:
           </label>
           <textarea
             value={moodDescription}
             onChange={(e) => onMoodDescriptionChange(e.target.value)}
             placeholder="Bugün kendimi nasıl hissettim, neler yaşadım..."
-            className="w-full bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-400 transition-all duration-300 resize-none"
+            className="w-full bg-pink-50 border-2 border-pink-200 rounded-lg px-4 py-3 focus:outline-none focus:border-pink-400 transition-all duration-300 resize-none"
             rows={4}
           />
         </div>

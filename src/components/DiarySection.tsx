@@ -16,10 +16,10 @@ export const DiarySection: React.FC<DiarySectionProps> = ({
 }) => {
   return (
     <div className={`bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
-      <div className="bg-gradient-to-r from-blue-200 to-blue-300 rounded-xl p-4 mb-6 border-l-4 border-blue-400">
-        <div className="flex items-center gap-3">
-          <Icon className="text-blue-700 w-6 h-6" />
-          <h2 className="text-xl font-semibold text-blue-800 font-poppins">
+          <div className="bg-gradient-to-r from-pink-200 to-pink-300 rounded-xl p-4 mb-6 border-l-4 border-pink-400">
+      <div className="flex items-center gap-3">
+        <Icon className="text-pink-700 w-6 h-6" />
+        <h2 className="text-xl font-semibold text-pink-800 font-poppins">
             {title}
           </h2>
         </div>

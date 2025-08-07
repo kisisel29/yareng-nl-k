@@ -23,10 +23,10 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white font-poppins">
       {/* Decorative butterflies */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <Butterfly className="absolute top-20 left-10 text-blue-300 w-8 h-8 opacity-30 animate-bounce" />
-        <Butterfly className="absolute top-40 right-20 text-blue-400 w-6 h-6 opacity-40 animate-pulse" />
-        <Butterfly className="absolute bottom-32 left-1/4 text-blue-300 w-7 h-7 opacity-35 animate-bounce" />
-        <Butterfly className="absolute bottom-20 right-10 text-blue-400 w-5 h-5 opacity-30 animate-pulse" />
+        <Butterfly className="absolute top-20 left-10 text-pink-300 w-8 h-8 opacity-30 animate-bounce" />
+        <Butterfly className="absolute top-40 right-20 text-pink-400 w-6 h-6 opacity-40 animate-pulse" />
+        <Butterfly className="absolute bottom-32 left-1/4 text-pink-300 w-7 h-7 opacity-35 animate-bounce" />
+        <Butterfly className="absolute bottom-20 right-10 text-pink-400 w-5 h-5 opacity-30 animate-pulse" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
@@ -93,10 +93,10 @@ function App() {
         </div>
 
         <div className="text-center mt-12 p-6 bg-white/50 rounded-2xl backdrop-blur-sm">
-          <p className="text-blue-600 font-medium">
+          <p className="text-pink-600 font-medium">
             Günlüğün otomatik olarak kaydediliyor 💾 
           </p>
-          <p className="text-blue-500 text-sm mt-1">
+          <p className="text-pink-500 text-sm mt-1">
             Her gün yeni anılar biriktirmeye devam et! ✨
           </p>
         </div>

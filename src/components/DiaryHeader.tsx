@@ -20,24 +20,24 @@ export const DiaryHeader: React.FC<DiaryHeaderProps> = ({ selectedDate, onDateCh
   return (
     <div className="text-center mb-8 animate-fade-in">
       <div className="flex items-center justify-center gap-3 mb-4">
-        <Sparkles className="text-blue-400 w-8 h-8" />
-        <h1 className="text-4xl font-bold text-blue-800 font-poppins">
+        <Sparkles className="text-pink-400 w-8 h-8" />
+        <h1 className="text-4xl font-bold text-pink-800 font-poppins">
           Yaren'in Günlük Programı
         </h1>
-        <Sparkles className="text-blue-400 w-8 h-8" />
+        <Sparkles className="text-pink-400 w-8 h-8" />
       </div>
       
       <div className="flex items-center justify-center gap-3 mb-6">
-        <Calendar className="text-blue-500 w-5 h-5" />
+        <Calendar className="text-pink-500 w-5 h-5" />
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => onDateChange(e.target.value)}
-          className="bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-2 text-blue-800 font-medium focus:outline-none focus:border-blue-400 transition-all duration-300"
+          className="bg-pink-50 border-2 border-pink-200 rounded-lg px-4 py-2 text-pink-800 font-medium focus:outline-none focus:border-pink-400 transition-all duration-300"
         />
       </div>
       
-      <p className="text-xl text-blue-700 font-medium">
+      <p className="text-xl text-pink-700 font-medium">
         {formatDisplayDate(selectedDate)}
       </p>
     </div>
