@@ -26,7 +26,15 @@ export function PersonFormPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchCategories().then(setCategories).catch(() => setCategories([]));
+    fetchCategories()
+      .then(setCategories)
+      .catch(() => {
+        setCategories([]);
+        notify(
+          'Kategoriler yüklenemedi. Supabase SQL Editor’de 001_initial_schema.sql dosyasını çalıştırmanız gerekiyor.',
+          'error'
+        );
+      });
     fetchSiteSettings()
       .then((settings) =>
         setDefaults({

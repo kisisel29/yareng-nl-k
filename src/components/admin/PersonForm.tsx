@@ -191,7 +191,11 @@ export function PersonForm({ person, categories, defaultSource, saving, onSubmit
               onChange={(e) => update('display_name', e.target.value)}
             />
           </Field>
-          <Field label="Slug" error={errors.slug}>
+          <Field
+            label="Sayfa adresi"
+            error={errors.slug}
+            hint="Ad ve soyaddan otomatik oluşur. Sitede /simalar/ismail-hayal gibi görünür."
+          >
             <input
               className={inputClass}
               value={values.slug}
@@ -214,7 +218,14 @@ export function PersonForm({ person, categories, defaultSource, saving, onSubmit
               ))}
             </select>
           </Field>
-          <Field label="Kategori">
+          <Field
+            label="Kategori"
+            hint={
+              categories.length === 0
+                ? 'Liste boş. Önce Supabase SQL şemasını çalıştırın veya Kategoriler menüsünden ekleyin.'
+                : undefined
+            }
+          >
             <select
               className={inputClass}
               value={values.category_id}
@@ -401,10 +412,12 @@ export function PersonForm({ person, categories, defaultSource, saving, onSubmit
 function Field({
   label,
   error,
+  hint,
   children,
 }: {
   label: string;
   error?: string;
+  hint?: string;
   children: ReactNode;
 }) {
   return (
@@ -412,6 +425,7 @@ function Field({
       <span className={labelClass}>{label}</span>
       {children}
       {error ? <span className="mt-1 block text-xs text-red-800">{error}</span> : null}
+      {!error && hint ? <span className="mt-1 block text-xs text-ink-500">{hint}</span> : null}
     </label>
   );
 }

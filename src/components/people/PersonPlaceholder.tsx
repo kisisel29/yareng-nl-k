@@ -6,11 +6,8 @@ export function PersonPlaceholder({ person, className = '' }: { person?: Person;
     : 'GS';
 
   return (
-    <div
-      className={`flex items-center justify-center bg-cream-200 text-burgundy-800 ${className}`}
-      aria-hidden
-    >
-      <span className="font-serif text-3xl font-semibold tracking-wide">{initials}</span>
+    <div className={`flex items-center justify-center bg-cream-100 text-ink-500 ${className}`} aria-hidden>
+      <span className="font-serif text-4xl">{initials}</span>
     </div>
   );
 }

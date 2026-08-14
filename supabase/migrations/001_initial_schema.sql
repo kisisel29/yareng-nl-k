@@ -331,19 +331,25 @@ using (bucket_id = 'people-images');
 -- ---------------------------------------------------------------------------
 
 insert into public.categories (name, slug, description, sort_order) values
-  ('Eğitim', 'egitim', 'Öğretmenler, eğitimciler ve akademisyenler', 1),
-  ('Bilim', 'bilim', 'Bilim insanları ve araştırmacılar', 2),
-  ('Sanat', 'sanat', 'Sanatçılar ve yaratıcı üreticiler', 3),
-  ('Edebiyat', 'edebiyat', 'Yazarlar, şairler ve edebiyatçılar', 4),
-  ('Siyaset', 'siyaset', 'Siyaset ve kamu hayatı', 5),
-  ('Bürokrasi', 'burokrasi', 'Kamu yönetimi ve bürokrasi', 6),
-  ('İş Dünyası', 'is-dunyasi', 'Ticaret ve iş dünyası', 7),
-  ('Spor', 'spor', 'Sporcular ve spor insanları', 8),
-  ('Din', 'din', 'Dinî hayat ve ilim', 9),
-  ('Askerî', 'askeri', 'Askerî görev ve hizmet', 10),
-  ('Kültür', 'kultur', 'Kültür ve toplumsal hayat', 11),
-  ('Yerel Değerler', 'yerel-degerler', 'Yerel kimlik ve değerler', 12),
-  ('Diğer', 'diger', 'Diğer alanlar', 13)
+  ('Akademisyenler', 'akademisyenler', 'Akademisyenler', 1),
+  ('Allah Dostları', 'allah-dostlari', 'Allah Dostları', 2),
+  ('Asker ve Emniyetçiler', 'asker-ve-emniyetciler', 'Asker ve Emniyetçiler', 3),
+  ('Belediye Başkanları', 'belediye-baskanlari', 'Belediye Başkanları', 4),
+  ('Bürokratlar', 'burokratlar', 'Bürokratlar', 5),
+  ('Doktorlar', 'doktorlar', 'Doktorlar', 6),
+  ('Gazeteciler', 'gazeteciler', 'Gazeteciler', 7),
+  ('Gönül Erleri', 'gonul-erleri', 'Gönül Erleri', 8),
+  ('Hukukçular', 'hukukcular', 'Hukukçular', 9),
+  ('İş İnsanları', 'is-insanlari', 'İş İnsanları', 10),
+  ('Renkli ve Tarihi Simalar', 'renkli-ve-tarihi-simalar', 'Renkli ve Tarihi Simalar', 11),
+  ('Sanatçılar', 'sanatcilar', 'Sanatçılar', 12),
+  ('Siyasetçiler', 'siyasetciler', 'Siyasetçiler', 13),
+  ('Sporcular', 'sporcular', 'Sporcular', 14),
+  ('STK ve Dernek Başkanları', 'stk-ve-dernek-baskanlari', 'STK ve Dernek Başkanları', 15),
+  ('Şair, Yazar ve Aşıklar', 'sair-yazar-ve-asiklar', 'Şair, Yazar ve Aşıklar', 16),
+  ('Şehitlerimiz', 'sehitlerimiz', 'Şehitlerimiz', 17),
+  ('Unutulmaz Eğitimciler', 'unutulmaz-egitimciler', 'Unutulmaz Eğitimciler', 18),
+  ('Gümüşhane''de İz Bırakanlar', 'gumushane-de-iz-birakanlar', 'Gümüşhane''de İz Bırakanlar', 19)
 on conflict (slug) do nothing;
 
 insert into public.site_settings (key, value) values
@@ -353,7 +359,7 @@ insert into public.site_settings (key, value) values
   ),
   (
     'about_book',
-    'Bu arşiv, İsmail Hayal''in Gümüşhaneli Simalar adlı eserinde yer alan kişileri dijital ortamda tanıtmak amacıyla hazırlanmıştır. Kitap ve yazar hakkında daha ayrıntılı metin buradan yönetilebilir.'
+    'Bu arşiv, İsmail Hayal''in Gümüşhaneli Simalar adlı eserinde yer alan kişileri dijital ortamda tanıtmak amacıyla hazırlanmıştır. Bölümler kitabın tasnifine göredir.'
   ),
   ('default_source_author', 'İsmail Hayal'),
   ('default_source_book', 'Gümüşhaneli Simalar'),
@@ -378,7 +384,7 @@ select
   'published',
   c.id
 from public.categories c
-where c.slug = 'kultur'
+where c.slug = 'renkli-ve-tarihi-simalar'
   and not exists (select 1 from public.people p where p.slug = 'ornek-sima-1')
 limit 1;
 
@@ -398,7 +404,7 @@ select
   'published',
   c.id
 from public.categories c
-where c.slug = 'egitim'
+where c.slug = 'unutulmaz-egitimciler'
   and not exists (select 1 from public.people p where p.slug = 'ornek-sima-2')
 limit 1;
 

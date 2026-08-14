@@ -99,67 +99,85 @@ export function PersonDetailPage() {
         jsonLd={person.status === 'published' ? jsonLd : undefined}
         noindex={person.status !== 'published'}
       />
-      <article className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <article className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <p className="text-sm text-ink-500">
           <Link to="/simalar" className="hover:text-ink-800">
             Simalar
           </Link>
+          {person.category?.slug ? (
+            <>
+              <span className="mx-2">/</span>
+              <Link to={`/simalar?kategori=${person.category.slug}`} className="hover:text-ink-800">
+                {person.category.name}
+              </Link>
+            </>
+          ) : null}
           <span className="mx-2">/</span>
           <span>{name}</span>
         </p>
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-cream-200 bg-cream-100">
-          {activeImage ? (
-            <img src={activeImage} alt={name} className="max-h-[28rem] w-full object-cover object-center" />
-          ) : (
-            <PersonPlaceholder person={person} className="h-72 w-full sm:h-96" />
-          )}
-        </div>
-
-        {gallery.length > 0 ? (
-          <div className="mt-3 flex gap-2 overflow-x-auto">
-            {person.profile_image_url ? (
-              <button type="button" onClick={() => setActiveImage(person.profile_image_url)} className="h-16 w-16 shrink-0 overflow-hidden rounded border border-cream-300">
-                <img src={person.profile_image_url} alt="" className="h-full w-full object-cover" />
-              </button>
-            ) : null}
-            {gallery.map((image) => (
-              <button
-                key={image.id}
-                type="button"
-                onClick={() => setActiveImage(image.image_url)}
-                className="h-16 w-16 shrink-0 overflow-hidden rounded border border-cream-300"
-              >
-                <img src={image.image_url} alt="" className="h-full w-full object-cover" />
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="mt-10 grid items-start gap-10 lg:grid-cols-[16rem_1fr]">
           <div>
-            <h1 className="font-serif text-4xl text-ink-900">{name}</h1>
-            {years ? <p className="mt-2 text-ink-500">{years}</p> : null}
-            {person.status !== 'published' ? (
-              <p className="mt-2 text-sm text-burgundy-700">Bu kayıt henüz yayında değil (taslak).</p>
+            <div className="bg-cream-100">
+              {activeImage ? (
+                <img src={activeImage} alt={name} className="aspect-[4/5] w-full object-cover" />
+              ) : (
+                <PersonPlaceholder person={person} className="aspect-[4/5] w-full" />
+              )}
+            </div>
+            {gallery.length > 0 ? (
+              <div className="mt-3 flex gap-2 overflow-x-auto">
+                {person.profile_image_url ? (
+                  <button type="button" onClick={() => setActiveImage(person.profile_image_url)} className="h-16 w-16 shrink-0 overflow-hidden border border-cream-300">
+                    <img src={person.profile_image_url} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ) : null}
+                {gallery.map((image) => (
+                  <button
+                    key={image.id}
+                    type="button"
+                    onClick={() => setActiveImage(image.image_url)}
+                    className="h-16 w-16 shrink-0 overflow-hidden border border-cream-300"
+                  >
+                    <img src={image.image_url} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
             ) : null}
           </div>
-          <ShareMenu title={name} url={pageUrl} />
-        </div>
 
-        {facts.length > 0 ? (
-          <dl className="mt-8 grid gap-4 sm:grid-cols-2">
-            {facts.map((fact) => (
-              <div key={fact.label} className="border-t border-cream-200 pt-3">
-                <dt className="text-xs uppercase tracking-wider text-ink-500">{fact.label}</dt>
-                <dd className="mt-1 text-ink-800">{fact.value}</dd>
+          <div>
+            {person.category?.name ? (
+              <p className="text-xs uppercase tracking-[0.14em] text-ink-500">
+                {person.category.name}
+              </p>
+            ) : null}
+            <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h1 className="font-serif text-4xl text-ink-900 sm:text-5xl">{name}</h1>
+                {years ? <p className="mt-2 text-lg text-ink-500">{years}</p> : null}
+                {person.status !== 'published' ? (
+                  <p className="mt-2 text-sm text-burgundy-700">Bu kayıt henüz yayında değil (taslak).</p>
+                ) : null}
               </div>
-            ))}
-          </dl>
-        ) : null}
+              <ShareMenu title={name} url={pageUrl} />
+            </div>
+
+            {facts.length > 0 ? (
+              <dl className="mt-8 grid gap-4 sm:grid-cols-2">
+                {facts.map((fact) => (
+                  <div key={fact.label} className="border-t border-cream-200 pt-3">
+                    <dt className="text-xs uppercase tracking-wider text-ink-500">{fact.label}</dt>
+                    <dd className="mt-1 text-ink-800">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+          </div>
+        </div>
 
         {hasText(person.biography) ? (
-          <section className="mt-12">
+          <section className="mt-12 max-w-3xl">
             <h2 className="font-serif text-3xl text-ink-900">Hayatı</h2>
             <div
               className="prose-archive mt-6"
@@ -167,21 +185,21 @@ export function PersonDetailPage() {
             />
           </section>
         ) : person.short_bio ? (
-          <section className="mt-12">
+          <section className="mt-12 max-w-3xl">
             <h2 className="font-serif text-3xl text-ink-900">Hayatı</h2>
             <p className="mt-6 leading-relaxed text-ink-700">{person.short_bio}</p>
           </section>
         ) : null}
 
         {extraSections.map((section) => (
-          <section key={section.title} className="mt-10">
+          <section key={section.title} className="mt-10 max-w-3xl">
             <h2 className="font-serif text-2xl text-ink-900">{section.title}</h2>
             <p className="mt-3 whitespace-pre-line leading-relaxed text-ink-700">{section.body}</p>
           </section>
         ))}
 
         {sources.length > 0 ? (
-          <section className="mt-14 border-t border-cream-200 pt-8">
+          <section className="mt-14 max-w-3xl border-t border-cream-200 pt-8">
             <h2 className="font-serif text-2xl text-ink-900">Kaynaklar</h2>
             <ul className="mt-4 space-y-3 text-sm text-ink-600">
               {sources.map((source) => (

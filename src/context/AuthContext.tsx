@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { toAuthEmail } from '../lib/constants';
 
 interface AuthContextValue {
   user: User | null;
   session: Session | null;
   loading: boolean;
   configured: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (identifier: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -47,8 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       loading,
       configured: isSupabaseConfigured,
-      signIn: async (email, password) => {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+      signIn: async (identifier, password) => {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: toAuthEmail(identifier),
+          password,
+        });
         if (error) throw error;
       },
       signOut: async () => {

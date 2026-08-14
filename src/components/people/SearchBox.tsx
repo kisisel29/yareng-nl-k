@@ -12,7 +12,7 @@ interface SearchBoxProps {
 export function SearchBox({
   value,
   onChange,
-  placeholder = 'Bir isim ara...',
+  placeholder = 'Bir isim, meslek veya yer ara',
   large = false,
   onSubmit,
 }: SearchBoxProps) {
@@ -30,7 +30,7 @@ export function SearchBox({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className={cn(inputClass, 'pl-12', large && 'py-4 text-lg')}
+        className={cn(inputClass, 'pl-12', large && 'py-3.5 text-base')}
         autoComplete="off"
       />
     </form>

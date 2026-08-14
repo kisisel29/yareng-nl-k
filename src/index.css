@@ -7,29 +7,15 @@ html {
 }
 
 body {
-  @apply bg-cream-50 font-sans text-ink-800 antialiased;
+  @apply bg-white font-sans text-ink-800 antialiased;
 }
 
 ::selection {
-  background: #6b2d3c22;
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f4efe6;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d4c5b0;
-  border-radius: 999px;
+  background: #163a5f22;
 }
 
 .prose-archive {
-  @apply text-[1.075rem] leading-[1.85] text-ink-700;
+  @apply text-[1.125rem] leading-[1.8] text-ink-700;
 }
 
 .prose-archive p + p {
@@ -66,7 +52,7 @@ body {
 }
 
 .tiptap p.is-editor-empty:first-child::before {
-  color: #6b6560;
+  color: #6f6f6a;
   content: attr(data-placeholder);
   float: left;
   height: 0;

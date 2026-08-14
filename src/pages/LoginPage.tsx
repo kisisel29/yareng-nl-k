@@ -10,7 +10,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from || '/admin';
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -28,10 +28,10 @@ export function LoginPage() {
     }
     setSubmitting(true);
     try {
-      await signIn(email.trim(), password);
+      await signIn(username.trim(), password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? 'E-posta veya şifre hatalı.' : 'Giriş yapılamadı.');
+      setError(err instanceof Error ? 'Kullanıcı adı veya şifre hatalı.' : 'Giriş yapılamadı.');
     } finally {
       setSubmitting(false);
     }
@@ -40,20 +40,20 @@ export function LoginPage() {
   return (
     <>
       <Seo title="Yönetici Girişi" path="/login" noindex />
-      <div className="flex min-h-screen items-center justify-center bg-cream-50 px-4">
-        <div className="w-full max-w-md rounded-lg border border-cream-200 bg-white p-8 shadow-card">
-          <p className="text-center font-serif text-sm tracking-wide text-burgundy-700">{SITE_NAME}</p>
+      <div className="flex min-h-screen items-center justify-center bg-white px-4">
+        <div className="w-full max-w-md border border-cream-200 p-8">
+          <p className="text-center text-sm text-ink-500">{SITE_NAME}</p>
           <h1 className="mt-2 text-center font-serif text-3xl text-ink-900">Yönetici Girişi</h1>
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
             <label className="block">
-              <span className={labelClass}>E-posta</span>
+              <span className={labelClass}>Kullanıcı adı veya e-posta</span>
               <input
-                type="email"
+                type="text"
                 className={inputClass}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                autoComplete="email"
+                autoComplete="username"
               />
             </label>
             <label className="block">

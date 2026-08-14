@@ -23,13 +23,13 @@ export function ShareMenu({ title, url }: { title: string; url: string }) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex items-center gap-2 rounded-md border border-cream-300 px-3 py-1.5 text-sm text-ink-600 hover:bg-cream-100"
+        className="inline-flex items-center gap-2 border border-cream-300 px-3 py-1.5 text-sm text-ink-600 hover:bg-cream-100"
       >
         <Share2 className="h-4 w-4" />
         Paylaş
       </button>
       {open ? (
-        <div className="absolute right-0 z-20 mt-2 w-48 rounded-md border border-cream-200 bg-white p-2 shadow-card">
+        <div className="absolute right-0 z-20 mt-2 w-48 border border-cream-200 bg-white p-2">
           <a
             href={`https://wa.me/?text=${encodedText}%20${encodedUrl}`}
             target="_blank"

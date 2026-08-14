@@ -53,8 +53,8 @@ export function Pagination({ page, pageSize, total, onPageChange }: PaginationPr
 
 function pageBtn(active: boolean) {
   return cn(
-    'rounded-md border px-3 py-2 text-sm disabled:opacity-40',
-    active ? 'border-burgundy-700 bg-burgundy-700 text-cream-50' : 'border-cream-300 bg-white text-ink-700'
+    'px-3 py-2 text-sm disabled:opacity-40',
+    active ? 'bg-ink-900 text-white' : 'text-ink-700 hover:bg-cream-100'
   );
 }
 

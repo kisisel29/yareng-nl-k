@@ -64,22 +64,28 @@ export function PeoplePage() {
     setParams(next);
   }
 
+  const activeCategory = categories.find((item) => item.slug === categorySlug);
+
   return (
     <>
       <Seo
-        title="Simalar"
+        title={activeCategory ? activeCategory.name : 'Simalar'}
         description="Gümüşhane tarihinde, kültüründe ve toplumsal hayatında yer edinmiş isimleri arayın ve keşfedin."
         path="/simalar"
       />
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <h1 className="font-serif text-4xl text-ink-900">Simalar</h1>
+        <h1 className="font-serif text-4xl text-ink-900">
+          {activeCategory ? activeCategory.name : 'Simalar'}
+        </h1>
         <p className="mt-3 max-w-2xl text-ink-600">
-          Ad, soyad, meslek, doğum yeri veya kategoriye göre arşivde arama yapabilirsiniz.
+          {activeCategory
+            ? `İsmail Hayal'in Gümüşhaneli Simalar eserindeki ${activeCategory.name} bölümü.`
+            : 'Ad, soyad, meslek, doğum yeri veya kitap bölümüne göre arayın.'}
         </p>
         <div className="mt-8 max-w-xl">
           <SearchBox value={query} onChange={(value) => updateParam('q', value)} />
         </div>
-        <div className="mt-5">
+        <div className="mt-6 border-y border-cream-200 py-4">
           <FilterBar
             categories={categories}
             categorySlug={categorySlug}
@@ -88,6 +94,7 @@ export function PeoplePage() {
             onSortChange={(alpha) => updateParam('siralama', alpha ? 'az' : '')}
           />
         </div>
+        <p className="mt-6 text-sm text-ink-500">{total} kayıt</p>
         <div className="mt-8">
           {!loading && people.length === 0 ? (
             <EmptyState title="Aradığınız kriterlere uygun bir sima bulunamadı." />
