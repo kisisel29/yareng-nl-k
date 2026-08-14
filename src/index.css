@@ -4,10 +4,18 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   @apply bg-white font-sans text-ink-800 antialiased;
+  max-width: 100%;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
 }
 
 ::selection {

@@ -1,25 +1,65 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
+import { AUTHOR_NAME, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
+import { fetchCategories } from '../../lib/api';
+import { SocialLinks } from './SocialLinks';
+import type { Category } from '../../types';
 
 export function Footer() {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetchCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]));
+  }, []);
+
   return (
-    <footer className="mt-auto border-t border-cream-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 text-sm text-ink-600 sm:flex-row sm:items-start sm:justify-between sm:px-6">
-        <div>
-          <p className="font-serif text-lg text-ink-900">{SITE_NAME}</p>
-          <p className="mt-1">{SITE_TAGLINE}</p>
-        </div>
-        <div>
-          <p>İsmail Hayal</p>
-          <p>Gümüşhaneli Simalar</p>
-        </div>
-        <div className="flex gap-6">
-          <Link to="/simalar" className="hover:text-ink-900">
-            Simalar
-          </Link>
-          <Link to="/hakkinda" className="hover:text-ink-900">
-            Hakkında
-          </Link>
+    <footer className="mt-auto border-t border-cream-200 bg-white pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <p className="font-serif text-lg text-ink-900">{SITE_NAME}</p>
+            <p className="mt-1">{SITE_TAGLINE}</p>
+            <p className="mt-3 max-w-xs text-sm text-ink-600">
+              {AUTHOR_NAME}'in resmi sitesi. Gümüşhaneli Simalar dijital biyografi arşivi.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-ink-900">{AUTHOR_NAME}</p>
+            <p className="mt-1 text-sm text-ink-600">Eğitimci, şair ve yazar</p>
+            <SocialLinks className="mt-4 gap-5 text-sm" />
+          </div>
+          <div className="flex flex-col gap-3 text-sm">
+            <Link to="/simalar" className="hover:text-ink-900">
+              Simalar
+            </Link>
+            <Link to="/hakkinda" className="hover:text-ink-900">
+              Hakkında
+            </Link>
+            <Link to="/biyografi-gonder" className="hover:text-ink-900">
+              Biyografi gönder
+            </Link>
+          </div>
+          <div className="text-sm">
+            <p className="font-medium text-ink-900">Bölümler</p>
+            <ul className="mt-3 grid grid-cols-1 gap-2">
+              {categories.slice(0, 8).map((category) => (
+                <li key={category.id}>
+                  <Link to={`/simalar?kategori=${category.slug}`} className="text-ink-600 hover:text-ink-900">
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
+              {categories.length > 8 ? (
+                <li>
+                  <Link to="/simalar" className="text-burgundy-700 hover:underline">
+                    Tüm bölümler
+                  </Link>
+                </li>
+              ) : null}
+            </ul>
+          </div>
         </div>
       </div>
     </footer>

@@ -22,11 +22,13 @@ export function PersonCard({ person }: { person: Person }) {
             <PersonPlaceholder person={person} className="h-full w-full" />
           )}
         </div>
-        <div className="pt-3">
+        <div className="min-w-0 pt-3">
           {person.category?.name ? (
-            <p className="text-xs uppercase tracking-[0.12em] text-ink-500">{person.category.name}</p>
+            <p className="truncate text-[11px] uppercase tracking-[0.12em] text-ink-500 sm:text-xs">
+              {person.category.name}
+            </p>
           ) : null}
-          <h3 className="mt-1 font-serif text-xl leading-snug text-ink-900 group-hover:underline">
+          <h3 className="mt-1 break-words font-serif text-base leading-snug text-ink-900 group-hover:underline sm:text-xl">
             {name}
           </h3>
           {years ? <p className="mt-1 text-sm text-ink-500">{years}</p> : null}

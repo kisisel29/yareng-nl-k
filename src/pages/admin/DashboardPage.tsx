@@ -10,6 +10,7 @@ interface Stats {
   draftPeople: number;
   totalCategories: number;
   noPhotoPeople: number;
+  pendingSubmissions: number;
 }
 
 export function DashboardPage() {
@@ -29,6 +30,7 @@ export function DashboardPage() {
         { label: 'Yayındaki kişi', value: stats.publishedPeople },
         { label: 'Taslak kişi', value: stats.draftPeople },
         { label: 'Fotoğrafı olmayan kişi', value: stats.noPhotoPeople },
+        { label: 'Bekleyen başvuru', value: stats.pendingSubmissions },
       ]
     : [];
 
@@ -45,7 +47,7 @@ export function DashboardPage() {
         </Link>
       </div>
       {error ? <p className="mt-6 text-sm text-red-800">{error}</p> : null}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {stats
           ? cards.map((card) => (
               <div key={card.label} className="rounded-lg border border-cream-200 bg-white p-5">
@@ -53,10 +55,17 @@ export function DashboardPage() {
                 <p className="mt-2 font-serif text-4xl text-ink-900">{card.value}</p>
               </div>
             ))
-          : Array.from({ length: 5 }).map((_, index) => (
+          : Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="h-28 animate-pulse rounded-lg bg-cream-100" />
             ))}
       </div>
+      {stats && stats.pendingSubmissions > 0 ? (
+        <p className="mt-6 text-sm">
+          <Link to="/admin/basvurular" className="text-burgundy-700 hover:underline">
+            {stats.pendingSubmissions} bekleyen biyografi başvurusunu incele
+          </Link>
+        </p>
+      ) : null}
     </>
   );
 }

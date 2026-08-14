@@ -4,8 +4,20 @@ export const SEARCH_DEBOUNCE_MS = 350;
 
 export const SITE_NAME = 'Gümüşhaneli Simalar';
 export const SITE_TAGLINE = "Gümüşhane'nin İnsan Hafızası";
+export const AUTHOR_NAME = 'İsmail Hayal';
 export const DEFAULT_DESCRIPTION =
-  "Geçmişten bugüne Gümüşhane'nin kültürüne, düşünce dünyasına ve toplumsal hayatına katkı sunmuş isimlerden oluşan dijital biyografi arşivi.";
+  "İsmail Hayal'in resmi sitesi. Gümüşhaneli Simalar eserinden yola çıkan dijital biyografi arşivi.";
+
+export const SOCIAL_LINKS = [
+  {
+    label: 'YouTube',
+    href: 'https://www.youtube.com/@ismailhayal',
+  },
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/ismhayal29/',
+  },
+] as const;
 
 export const GENDER_OPTIONS = [
   { value: '', label: 'Belirtilmedi' },
@@ -35,6 +47,12 @@ export const BOOK_SECTIONS: { name: string; slug: string }[] = [
   { name: 'Unutulmaz Eğitimciler', slug: 'unutulmaz-egitimciler' },
   { name: "Gümüşhane'de İz Bırakanlar", slug: 'gumushane-de-iz-birakanlar' },
 ];
+
+export const TURKISH_ALPHABET = [
+  'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ',
+  'J', 'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T',
+  'U', 'Ü', 'V', 'Y', 'Z',
+] as const;
 
 /** Supabase e-posta beklediği için kullanıcı adı bu adrese çevrilir. */
 export const AUTH_EMAIL_DOMAIN = 'simalar.com';

@@ -1,7 +1,15 @@
 import { supabase } from './supabase';
-import { sanitizeSearchTerm } from './slug';
+import { letterFilterVariants, sanitizeSearchTerm } from './slug';
 import { PAGE_SIZE } from './constants';
-import type { Category, Person, PersonSearchParams, SiteSettingsMap, Source } from '../types';
+import type {
+  BiographySubmission,
+  Category,
+  Person,
+  PersonSearchParams,
+  SiteSettingsMap,
+  Source,
+  SubmissionStatus,
+} from '../types';
 
 const PERSON_SELECT = `
   *,
@@ -95,7 +103,12 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
     );
   }
 
-  if (params.sortAlpha) {
+  if (params.letter) {
+    const variants = letterFilterVariants(params.letter);
+    request = request.or(variants.map((item) => `last_name.ilike.${item}%`).join(','));
+  }
+
+  if (params.sortAlpha || params.letter) {
     request = request.order('last_name', { ascending: true }).order('first_name', { ascending: true });
   } else {
     request = request.order('featured', { ascending: false }).order('last_name', { ascending: true });
@@ -104,6 +117,120 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
   const { data, error, count } = await request.range(from, to);
   if (error) throw error;
   return { items: (data as Person[]) ?? [], total: count ?? 0 };
+}
+
+export async function fetchLatestPeople(limit = 8): Promise<Person[]> {
+  const { data, error } = await supabase
+    .from('people')
+    .select(PERSON_SELECT)
+    .eq('status', 'published')
+    .order('updated_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return (data as Person[]) ?? [];
+}
+
+export async function fetchMostViewedPeople(limit = 8): Promise<Person[]> {
+  const { data, error } = await supabase
+    .from('people')
+    .select(PERSON_SELECT)
+    .eq('status', 'published')
+    .order('view_count', { ascending: false })
+    .order('updated_at', { ascending: false })
+    .limit(limit);
+
+  if (error) return fetchLatestPeople(limit);
+  return (data as Person[]) ?? [];
+}
+
+export async function fetchRandomPeople(limit = 8): Promise<Person[]> {
+  const { data: ids, error } = await supabase.rpc('random_published_person_ids', { p_limit: limit });
+  if (error || !ids?.length) {
+    const latest = await fetchLatestPeople(limit);
+    return latest.slice().sort(() => Math.random() - 0.5);
+  }
+
+  const { data, error: peopleError } = await supabase
+    .from('people')
+    .select(PERSON_SELECT)
+    .in(
+      'id',
+      ids.map((row: { id: string }) => row.id)
+    );
+
+  if (peopleError) throw peopleError;
+  return (data as Person[]) ?? [];
+}
+
+export async function fetchRelatedPeople(
+  categoryId: string | null | undefined,
+  excludeId: string,
+  limit = 4
+): Promise<Person[]> {
+  if (!categoryId) return [];
+  const { data, error } = await supabase
+    .from('people')
+    .select(PERSON_SELECT)
+    .eq('status', 'published')
+    .eq('category_id', categoryId)
+    .neq('id', excludeId)
+    .order('last_name', { ascending: true })
+    .limit(limit);
+
+  if (error) throw error;
+  return (data as Person[]) ?? [];
+}
+
+export async function incrementPersonViews(slug: string): Promise<void> {
+  await supabase.rpc('increment_person_views', { p_slug: slug });
+}
+
+export async function createBiographySubmission(input: {
+  full_name: string;
+  email?: string;
+  category_id?: string;
+  profession?: string;
+  birth_place?: string;
+  biography: string;
+  notes?: string;
+}): Promise<void> {
+  const { error } = await supabase.from('biography_submissions').insert({
+    full_name: input.full_name.trim(),
+    email: input.email?.trim() || null,
+    category_id: input.category_id || null,
+    profession: input.profession?.trim() || null,
+    birth_place: input.birth_place?.trim() || null,
+    biography: input.biography.trim(),
+    notes: input.notes?.trim() || null,
+    status: 'pending',
+  });
+  if (error) throw error;
+}
+
+export async function fetchSubmissions(status?: SubmissionStatus | 'all'): Promise<BiographySubmission[]> {
+  let request = supabase
+    .from('biography_submissions')
+    .select('*, category:categories(*)')
+    .order('created_at', { ascending: false });
+
+  if (status && status !== 'all') {
+    request = request.eq('status', status);
+  }
+
+  const { data, error } = await request;
+  if (error) throw error;
+  return (data as BiographySubmission[]) ?? [];
+}
+
+export async function updateSubmissionStatus(id: string, status: SubmissionStatus): Promise<void> {
+  const { error } = await supabase.from('biography_submissions').update({ status }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteSubmission(id: string): Promise<void> {
+  const { error } = await supabase.from('biography_submissions').delete().eq('id', id);
+  if (error) throw error;
 }
 
 export async function fetchPersonBySlug(slug: string): Promise<Person | null> {
@@ -191,7 +318,7 @@ export async function fetchPersonById(id: string): Promise<Person | null> {
 }
 
 export async function fetchAdminStats() {
-  const [total, published, draft, categories, noPhoto] = await Promise.all([
+  const [total, published, draft, categories, noPhoto, pending] = await Promise.all([
     supabase.from('people').select('id', { count: 'exact', head: true }),
     supabase.from('people').select('id', { count: 'exact', head: true }).eq('status', 'published'),
     supabase.from('people').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
@@ -200,10 +327,13 @@ export async function fetchAdminStats() {
       .from('people')
       .select('id', { count: 'exact', head: true })
       .or('profile_image_url.is.null,profile_image_url.eq.'),
+    supabase
+      .from('biography_submissions')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'pending'),
   ]);
 
-  const firstError =
-    total.error || published.error || draft.error || categories.error || noPhoto.error;
+  const firstError = total.error || published.error || draft.error || categories.error || noPhoto.error;
   if (firstError) throw firstError;
 
   return {
@@ -212,6 +342,7 @@ export async function fetchAdminStats() {
     draftPeople: draft.count ?? 0,
     totalCategories: categories.count ?? 0,
     noPhotoPeople: noPhoto.count ?? 0,
+    pendingSubmissions: pending.error ? 0 : pending.count ?? 0,
   };
 }
 

@@ -4,6 +4,8 @@ import { Menu, Search, X } from 'lucide-react';
 import { SITE_NAME } from '../../lib/constants';
 import { cn } from '../../lib/cn';
 import { useAuth } from '../../context/AuthContext';
+import { SocialLinks } from './SocialLinks';
+import { SearchBox } from '../people/SearchBox';
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -15,6 +17,7 @@ export function Header() {
     { to: '/', label: 'Ana Sayfa' },
     { to: '/simalar', label: 'Simalar' },
     { to: '/hakkinda', label: 'Hakkında' },
+    { to: '/biyografi-gonder', label: 'Biyografi gönder' },
     { to: user ? '/admin' : '/login', label: user ? 'Yönetim' : 'Giriş' },
   ];
 
@@ -22,21 +25,22 @@ export function Header() {
     setOpen(false);
   }, [location.pathname]);
 
-  function submitSearch(event: FormEvent) {
-    event.preventDefault();
+  function submitSearch(event?: FormEvent) {
+    event?.preventDefault();
     const value = query.trim();
     navigate(value ? `/simalar?q=${encodeURIComponent(value)}` : '/simalar');
     setQuery('');
+    setOpen(false);
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-cream-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3 sm:px-6">
-        <Link to="/" className="shrink-0 font-serif text-xl text-ink-900 sm:text-2xl">
-          {SITE_NAME}
+    <header className="sticky top-0 z-40 border-b border-cream-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
+        <Link to="/" className="min-w-0 shrink font-serif text-lg text-ink-900 sm:text-2xl">
+          <span className="block truncate">{SITE_NAME}</span>
         </Link>
 
-        <nav className="hidden items-center gap-5 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -54,7 +58,9 @@ export function Header() {
           ))}
         </nav>
 
-        <form onSubmit={submitSearch} className="ml-auto hidden min-w-0 max-w-xs flex-1 items-center lg:flex">
+        <SocialLinks variant="icons" className="ml-auto hidden md:flex" />
+
+        <form onSubmit={submitSearch} className="hidden min-w-0 max-w-xs flex-1 items-center xl:flex">
           <label className="relative w-full">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-500" />
             <input
@@ -69,7 +75,7 @@ export function Header() {
 
         <button
           type="button"
-          className="ml-auto p-2 text-ink-800 md:hidden"
+          className="ml-auto flex h-11 w-11 items-center justify-center text-ink-800 lg:hidden"
           onClick={() => setOpen((value) => !value)}
           aria-label={open ? 'Menüyü kapat' : 'Menüyü aç'}
         >
@@ -78,20 +84,22 @@ export function Header() {
       </div>
 
       {open ? (
-        <nav className="border-t border-cream-200 px-4 py-3 md:hidden">
-          <div className="flex flex-col gap-1">
+        <nav className="border-t border-cream-200 px-4 py-3 lg:hidden">
+          <SearchBox value={query} onChange={setQuery} onSubmit={() => submitSearch()} />
+          <div className="mt-3 flex flex-col">
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  cn('px-2 py-3 text-base', isActive ? 'text-ink-900' : 'text-ink-600')
+                  cn('min-h-11 px-2 py-3 text-base', isActive ? 'text-ink-900' : 'text-ink-600')
                 }
               >
                 {item.label}
               </NavLink>
             ))}
+            <SocialLinks className="px-2 py-3" />
           </div>
         </nav>
       ) : null}

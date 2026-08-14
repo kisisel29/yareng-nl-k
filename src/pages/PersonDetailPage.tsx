@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
+import { PersonGrid } from '../components/people/PersonGrid';
 import { ShareMenu } from '../components/people/ShareMenu';
 import { DetailSkeleton } from '../components/ui/Skeleton';
-import { fetchPersonBySlug } from '../lib/api';
+import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
 import { formatDateTr, formatLifeYears, hasText, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { sanitizeHtml } from '../lib/sanitize';
 import type { Person } from '../types';
@@ -13,6 +14,7 @@ import { NotFoundPage } from './NotFoundPage';
 export function PersonDetailPage() {
   const { slug } = useParams();
   const [person, setPerson] = useState<Person | null>(null);
+  const [related, setRelated] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [missing, setMissing] = useState(false);
   const [activeImage, setActiveImage] = useState<string | null>(null);
@@ -28,6 +30,28 @@ export function PersonDetailPage() {
         setPerson(result);
         setMissing(!result);
         setActiveImage(result?.profile_image_url ?? result?.images?.[0]?.image_url ?? null);
+        if (result?.category_id) {
+          fetchRelatedPeople(result.category_id, result.id)
+            .then((items) => {
+              if (active) setRelated(items);
+            })
+            .catch(() => {
+              if (active) setRelated([]);
+            });
+        } else {
+          setRelated([]);
+        }
+        if (result?.status === 'published') {
+          const key = `viewed:${result.slug}`;
+          try {
+            if (!sessionStorage.getItem(key)) {
+              sessionStorage.setItem(key, '1');
+              void incrementPersonViews(result.slug);
+            }
+          } catch {
+            void incrementPersonViews(result.slug);
+          }
+        }
       })
       .catch(() => {
         if (!active) return;
@@ -154,8 +178,11 @@ export function PersonDetailPage() {
             ) : null}
             <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h1 className="font-serif text-4xl text-ink-900 sm:text-5xl">{name}</h1>
+                <h1 className="font-serif text-3xl text-ink-900 sm:text-5xl">{name}</h1>
                 {years ? <p className="mt-2 text-lg text-ink-500">{years}</p> : null}
+                {typeof person.view_count === 'number' ? (
+                  <p className="mt-1 text-sm text-ink-500">{person.view_count} okunma</p>
+                ) : null}
                 {person.status !== 'published' ? (
                   <p className="mt-2 text-sm text-burgundy-700">Bu kayıt henüz yayında değil (taslak).</p>
                 ) : null}
@@ -212,6 +239,14 @@ export function PersonDetailPage() {
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+        {related.length > 0 ? (
+          <section className="mt-16 border-t border-cream-200 pt-10">
+            <h2 className="font-serif text-2xl text-ink-900">Aynı bölümdeki simalar</h2>
+            <div className="mt-6">
+              <PersonGrid people={related} />
+            </div>
           </section>
         ) : null}
       </article>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PersonForm, type PersonFormExtras } from '../../components/admin/PersonForm';
 import { Seo } from '../../components/seo/Seo';
 import { useToast } from '../../context/ToastContext';
@@ -18,6 +18,8 @@ export function PersonFormPage() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
+  const location = useLocation();
+  const draft = (location.state as { draft?: Partial<PersonFormValues> } | null)?.draft;
   const { notify } = useToast();
   const [person, setPerson] = useState<Person | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -110,6 +112,7 @@ export function PersonFormPage() {
       </h1>
       <PersonForm
         person={person}
+        draft={draft}
         categories={categories}
         defaultSource={defaults}
         saving={saving}

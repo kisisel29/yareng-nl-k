@@ -57,11 +57,28 @@ export interface Person {
   profile_image_path: string | null;
   featured: boolean;
   status: PersonStatus;
+  view_count?: number;
   created_at: string;
   updated_at: string;
   category?: Category | null;
   sources?: Source[];
   images?: PersonImage[];
+}
+
+export type SubmissionStatus = 'pending' | 'approved' | 'rejected';
+
+export interface BiographySubmission {
+  id: string;
+  full_name: string;
+  email: string | null;
+  category_id: string | null;
+  profession: string | null;
+  birth_place: string | null;
+  biography: string;
+  notes: string | null;
+  status: SubmissionStatus;
+  created_at: string;
+  category?: Category | null;
 }
 
 export interface SiteSettingsMap {
@@ -107,6 +124,7 @@ export interface PersonFormValues {
 export interface PersonSearchParams {
   query?: string;
   categorySlug?: string;
+  letter?: string;
   sortAlpha?: boolean;
   page?: number;
   pageSize?: number;

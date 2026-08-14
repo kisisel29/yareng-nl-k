@@ -3,12 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SearchBox } from '../components/people/SearchBox';
 import { PersonGrid } from '../components/people/PersonGrid';
 import { ChapterIndex } from '../components/people/ChapterIndex';
+import { AlphabetIndex } from '../components/people/AlphabetIndex';
+import { PersonRail } from '../components/people/PersonRail';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Seo } from '../components/seo/Seo';
 import { SectionTitle } from '../components/brand/SectionTitle';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
-import { fetchCategories, fetchFeaturedPeople, fetchPublishedCount, searchPeople } from '../lib/api';
-import { BOOK_SECTIONS, DEFAULT_DESCRIPTION, PAGE_SIZE, SEARCH_DEBOUNCE_MS, SITE_NAME } from '../lib/constants';
+import { fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
+import {
+  AUTHOR_NAME,
+  BOOK_SECTIONS,
+  DEFAULT_DESCRIPTION,
+  PAGE_SIZE,
+  SEARCH_DEBOUNCE_MS,
+  SITE_NAME,
+  SOCIAL_LINKS,
+} from '../lib/constants';
 import { formatLifeYears, personName, siteUrl } from '../lib/format';
 import { useDebounce } from '../hooks/useDebounce';
 import type { Category, Person } from '../types';
@@ -20,6 +30,9 @@ export function HomePage() {
   const [suggestions, setSuggestions] = useState<Person[]>([]);
   const [featured, setFeatured] = useState<Person[]>([]);
   const [people, setPeople] = useState<Person[]>([]);
+  const [latest, setLatest] = useState<Person[]>([]);
+  const [popular, setPopular] = useState<Person[]>([]);
+  const [random, setRandom] = useState<Person[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -32,13 +45,19 @@ export function HomePage() {
       searchPeople({ page: 1, pageSize: PAGE_SIZE }),
       fetchPublishedCount(),
       fetchCategories(),
+      fetchLatestPeople(8),
+      fetchMostViewedPeople(8),
+      fetchRandomPeople(8),
     ])
-      .then(([featuredPeople, listed, total, cats]) => {
+      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople]) => {
         if (!active) return;
         setFeatured(featuredPeople);
         setPeople(listed.items);
         setCount(total);
         setCategories(cats);
+        setLatest(latestPeople);
+        setPopular(popularPeople);
+        setRandom(randomPeople);
       })
       .catch(() => {
         if (!active) return;
@@ -46,6 +65,9 @@ export function HomePage() {
         setPeople([]);
         setCount(0);
         setCategories([]);
+        setLatest([]);
+        setPopular([]);
+        setRandom([]);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -93,23 +115,33 @@ export function HomePage() {
   const restFeatured = featured.slice(1);
 
   const jsonLd = useMemo(
-    () => ({
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: SITE_NAME,
-      description: DEFAULT_DESCRIPTION,
-      url: siteUrl() + '/',
-      isPartOf: {
+    () => [
+      {
+        '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: SITE_NAME,
         url: siteUrl(),
+        description: DEFAULT_DESCRIPTION,
+        author: {
+          '@type': 'Person',
+          name: AUTHOR_NAME,
+          url: siteUrl(),
+        },
         potentialAction: {
           '@type': 'SearchAction',
           target: `${siteUrl()}/simalar?q={search_term_string}`,
           'query-input': 'required name=search_term_string',
         },
       },
-    }),
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: AUTHOR_NAME,
+        url: siteUrl(),
+        jobTitle: 'Eğitimci, şair ve yazar',
+        sameAs: SOCIAL_LINKS.map((link) => link.href),
+      },
+    ],
     []
   );
 
@@ -119,12 +151,12 @@ export function HomePage() {
 
       <section className="border-b border-cream-200">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 sm:py-20">
-          <p className="text-sm text-ink-500">Dijital biyografi arşivi · {count} isim</p>
-          <h1 className="mt-4 font-serif text-4xl leading-tight text-ink-900 sm:text-5xl">
+          <p className="text-sm text-ink-500">İsmail Hayal'in resmi sitesi · {count} isim</p>
+          <h1 className="mt-4 font-serif text-3xl leading-tight text-ink-900 sm:text-5xl">
             Gümüşhane'nin iz bırakan insanlarını tanıyın
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-600">
-            İsmail Hayal'in Gümüşhaneli Simalar eserinden yola çıkan kültürel hafıza arşivi.
+            Eğitimci ve yazar İsmail Hayal'in Gümüşhaneli Simalar eserinden yola çıkan dijital biyografi arşivi.
           </p>
           <div className="relative mx-auto mt-8 max-w-xl text-left">
             <SearchBox
@@ -150,6 +182,16 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <section className="border-b border-cream-200">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <AlphabetIndex />
+        </div>
+      </section>
+
+      <PersonRail eyebrow="Güncel" title="Son eklenen / güncellenen" people={latest} actionHref="/simalar" />
+      <PersonRail eyebrow="Keşif" title="En çok okunan" people={popular} showViews actionHref="/simalar" />
+      <PersonRail eyebrow="Keşif" title="Rastgele simalar" people={random} />
 
       {hero ? (
         <section className="border-b border-cream-200">

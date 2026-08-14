@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { FilterBar } from '../components/people/FilterBar';
 import { PersonGrid } from '../components/people/PersonGrid';
 import { SearchBox } from '../components/people/SearchBox';
+import { AlphabetIndex } from '../components/people/AlphabetIndex';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Pagination } from '../components/ui/Pagination';
 import { Seo } from '../components/seo/Seo';
@@ -15,6 +16,7 @@ export function PeoplePage() {
   const [params, setParams] = useSearchParams();
   const query = params.get('q') ?? '';
   const categorySlug = params.get('kategori') ?? '';
+  const letter = params.get('harf') ?? '';
   const sortAlpha = params.get('siralama') === 'az';
   const page = Math.max(1, Number(params.get('sayfa') || '1') || 1);
   const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS);
@@ -34,6 +36,7 @@ export function PeoplePage() {
     searchPeople({
       query: debouncedQuery,
       categorySlug: categorySlug || undefined,
+      letter: letter || undefined,
       sortAlpha,
       page,
       pageSize: PAGE_SIZE,
@@ -54,7 +57,7 @@ export function PeoplePage() {
     return () => {
       active = false;
     };
-  }, [debouncedQuery, categorySlug, sortAlpha, page]);
+  }, [debouncedQuery, categorySlug, letter, sortAlpha, page]);
 
   function updateParam(key: string, value: string) {
     const next = new URLSearchParams(params);
@@ -74,16 +77,21 @@ export function PeoplePage() {
         path="/simalar"
       />
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <h1 className="font-serif text-4xl text-ink-900">
-          {activeCategory ? activeCategory.name : 'Simalar'}
+        <h1 className="font-serif text-3xl text-ink-900 sm:text-4xl">
+          {activeCategory ? activeCategory.name : letter ? `${letter} harfi` : 'Simalar'}
         </h1>
         <p className="mt-3 max-w-2xl text-ink-600">
           {activeCategory
             ? `İsmail Hayal'in Gümüşhaneli Simalar eserindeki ${activeCategory.name} bölümü.`
-            : 'Ad, soyad, meslek, doğum yeri veya kitap bölümüne göre arayın.'}
+            : letter
+              ? `Soyadı ${letter} harfi ile başlayan simalar.`
+              : 'Ad, soyad, meslek, doğum yeri veya kitap bölümüne göre arayın.'}
         </p>
         <div className="mt-8 max-w-xl">
           <SearchBox value={query} onChange={(value) => updateParam('q', value)} />
+        </div>
+        <div className="mt-6">
+          <AlphabetIndex activeLetter={letter} onSelect={(value) => updateParam('harf', value)} />
         </div>
         <div className="mt-6 border-y border-cream-200 py-4">
           <FilterBar

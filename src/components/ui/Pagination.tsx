@@ -53,7 +53,7 @@ export function Pagination({ page, pageSize, total, onPageChange }: PaginationPr
 
 function pageBtn(active: boolean) {
   return cn(
-    'px-3 py-2 text-sm disabled:opacity-40',
+    'min-h-11 min-w-11 px-3 py-2 text-sm disabled:opacity-40',
     active ? 'bg-ink-900 text-white' : 'text-ink-700 hover:bg-cream-100'
   );
 }

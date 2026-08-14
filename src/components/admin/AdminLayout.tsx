@@ -4,6 +4,7 @@ import {
   BookOpen,
   FolderOpen,
   Home,
+  Inbox,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -22,6 +23,7 @@ const LINKS = [
   { to: '/admin/simalar/yeni', label: 'Yeni Kişi Ekle', icon: Plus, end: false },
   { to: '/admin/kategoriler', label: 'Kategoriler', icon: FolderOpen, end: false },
   { to: '/admin/kaynaklar', label: 'Kaynaklar', icon: BookOpen, end: false },
+  { to: '/admin/basvurular', label: 'Başvurular', icon: Inbox, end: false },
   { to: '/admin/ayarlar', label: 'Ayarlar', icon: Settings, end: false },
 ];
 
@@ -44,6 +46,7 @@ export function AdminLayout() {
             open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
           )}
         >
+          <div className="flex h-full flex-col overflow-y-auto pb-16">
           <div className="flex items-center justify-between px-5 py-5">
             <div>
               <p className="font-serif text-lg text-cream-50">{SITE_NAME}</p>
@@ -91,7 +94,16 @@ export function AdminLayout() {
           <p className="absolute bottom-4 left-5 right-5 truncate text-xs text-cream-400">
             {user?.email}
           </p>
+          </div>
         </aside>
+        {open ? (
+          <button
+            type="button"
+            className="fixed inset-0 z-30 bg-ink-900/40 md:hidden"
+            aria-label="Menüyü kapat"
+            onClick={() => setOpen(false)}
+          />
+        ) : null}
 
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-3 border-b border-cream-200 bg-white px-4 py-3 md:hidden">
@@ -103,7 +115,7 @@ export function AdminLayout() {
               Ana sayfa
             </Link>
           </div>
-          <div className="flex-1 p-4 sm:p-8">
+          <div className="flex-1 overflow-x-auto p-4 sm:p-8">
             <Outlet />
           </div>
         </div>

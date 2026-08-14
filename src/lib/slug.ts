@@ -32,3 +32,20 @@ export function slugify(value: string): string {
 export function sanitizeSearchTerm(value: string): string {
   return value.replace(/[%_,()]/g, ' ').replace(/\s+/g, ' ').trim();
 }
+
+export function letterFilterVariants(letter: string): string[] {
+  const upper = letter.trim().charAt(0).toLocaleUpperCase('tr-TR');
+  if (upper === 'I') return ['I', 'ı'];
+  if (upper === 'İ') return ['İ', 'i'];
+  return [upper, upper.toLocaleLowerCase('tr-TR')];
+}
+
+export function splitFullName(fullName: string): { first_name: string; last_name: string } {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { first_name: '', last_name: '' };
+  if (parts.length === 1) return { first_name: parts[0], last_name: parts[0] };
+  return {
+    first_name: parts.slice(0, -1).join(' '),
+    last_name: parts[parts.length - 1],
+  };
+}
