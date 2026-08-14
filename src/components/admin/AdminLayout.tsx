@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   FolderOpen,
+  Home,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -53,6 +54,14 @@ export function AdminLayout() {
             </button>
           </div>
           <nav className="flex flex-col gap-1 px-3">
+            <Link
+              to="/"
+              onClick={() => setOpen(false)}
+              className="mb-2 flex items-center gap-3 rounded-md border border-cream-700/40 px-3 py-2.5 text-sm text-cream-100 hover:bg-ink-800"
+            >
+              <Home className="h-4 w-4" />
+              Ana sayfa
+            </Link>
             {LINKS.map((link) => (
               <NavLink
                 key={link.to}
@@ -90,6 +99,9 @@ export function AdminLayout() {
               <Menu className="h-6 w-6" />
             </button>
             <span className="font-serif text-lg">Yönetim</span>
+            <Link to="/" className="ml-auto text-sm text-ink-600 hover:text-ink-900">
+              Ana sayfa
+            </Link>
           </div>
           <div className="flex-1 p-4 sm:p-8">
             <Outlet />
