@@ -1,73 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: 'Poppins', sans-serif;
+html {
+  scroll-behavior: smooth;
 }
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.8s ease-out;
-  }
-  
-  .animate-fade-in-up {
-    animation: fadeInUp 1s ease-out;
-  }
+body {
+  @apply bg-cream-50 font-sans text-ink-800 antialiased;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+::selection {
+  background: #6b2d3c22;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #e0f2fe;
-  border-radius: 4px;
+  background: #f4efe6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7dd3fc;
-  border-radius: 4px;
+  background: #d4c5b0;
+  border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #38bdf8;
+.prose-archive {
+  @apply text-[1.075rem] leading-[1.85] text-ink-700;
 }
 
-/* Smooth transitions for all interactive elements */
-button, input, textarea {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.prose-archive p + p {
+  @apply mt-5;
 }
 
-/* Enhanced focus styles */
-input:focus, textarea:focus {
-  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.3);
+.prose-archive h2 {
+  @apply mb-3 mt-10 font-serif text-2xl text-ink-900;
 }
 
-/* Custom placeholder styles */
-::placeholder {
-  color: #93c5fd;
-  opacity: 0.8;
+.prose-archive h3 {
+  @apply mb-2 mt-8 font-serif text-xl text-ink-900;
+}
+
+.prose-archive ul,
+.prose-archive ol {
+  @apply my-4 pl-6;
+}
+
+.prose-archive ul {
+  list-style: disc;
+}
+
+.prose-archive ol {
+  list-style: decimal;
+}
+
+.prose-archive li + li {
+  @apply mt-1;
+}
+
+.prose-archive a {
+  @apply text-burgundy-700 underline underline-offset-2;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #6b6560;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.prose-editor h2 {
+  @apply mb-2 mt-4 font-serif text-2xl;
+}
+
+.prose-editor ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.prose-editor ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
 }
