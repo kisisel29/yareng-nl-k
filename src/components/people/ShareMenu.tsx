@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Check, Copy, Share2 } from 'lucide-react';
 import { SITE_NAME } from '../../lib/constants';
+import { cn } from '../../lib/cn';
 
-export function ShareMenu({ title, url }: { title: string; url: string }) {
+export function ShareMenu({ title, url, className }: { title: string; url: string; className?: string }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const encodedUrl = encodeURIComponent(url);
@@ -23,7 +24,10 @@ export function ShareMenu({ title, url }: { title: string; url: string }) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex items-center gap-2 border border-cream-300 px-3 py-1.5 text-sm text-ink-600 hover:bg-cream-100"
+        className={cn(
+          'inline-flex items-center gap-2 border border-cream-300 px-3 py-1.5 text-sm text-ink-600 hover:bg-cream-100',
+          className
+        )}
       >
         <Share2 className="h-4 w-4" />
         Paylaş

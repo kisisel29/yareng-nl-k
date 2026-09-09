@@ -1,5 +1,5 @@
--- İsmail Hayal özgeçmişi ve kitapları
--- Supabase SQL Editor'de bu dosyanın tamamını çalıştırın.
+-- Eski şema. Uygulama artık özgeçmiş ve kitapları site_settings içinde tutar;
+-- bu dosyayı çalıştırmanız gerekmez.
 
 create table if not exists public.author_profile (
   id integer primary key default 1 check (id = 1),

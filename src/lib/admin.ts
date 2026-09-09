@@ -1,6 +1,7 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { optimizeImage } from './image';
 import { slugify } from './slug';
+import { fetchAuthorBooks, fetchAuthorProfile } from './api';
 import type { AuthorBook, AuthorBookFormValues, AuthorProfile, Category, Person, PersonFormValues, PersonStatus, Source } from '../types';
 
 function emptyToNull(value: string): string | null {
@@ -251,101 +252,109 @@ async function removeStoragePath(path?: string | null) {
   await supabase.storage.from(PEOPLE_IMAGES_BUCKET).remove([path]);
 }
 
+async function currentAuthorProfile(): Promise<AuthorProfile> {
+  return (
+    (await fetchAuthorProfile()) ?? {
+      id: 1,
+      full_name: 'İsmail Hayal',
+      title: null,
+      short_bio: null,
+      biography: null,
+      birth_date: null,
+      birth_place: null,
+      photo_url: null,
+      photo_path: null,
+    }
+  );
+}
+
+async function writeAuthorProfile(profile: AuthorProfile): Promise<AuthorProfile> {
+  const next = { ...profile, id: 1, updated_at: new Date().toISOString() };
+  await upsertSiteSettings({ author_profile: JSON.stringify(next) });
+  return next;
+}
+
+async function writeAuthorBooks(books: AuthorBook[]): Promise<void> {
+  await upsertSiteSettings({ author_books: JSON.stringify(books) });
+}
+
 export async function upsertAuthorProfile(
   input: Pick<AuthorProfile, 'full_name' | 'title' | 'short_bio' | 'biography' | 'birth_date' | 'birth_place'>
 ): Promise<AuthorProfile> {
-  const payload = {
-    id: 1,
+  const current = await currentAuthorProfile();
+  return writeAuthorProfile({
+    ...current,
     full_name: input.full_name.trim() || 'İsmail Hayal',
     title: emptyToNull(input.title ?? ''),
     short_bio: emptyToNull(input.short_bio ?? ''),
     biography: emptyToNull(input.biography ?? ''),
     birth_date: emptyToNull(input.birth_date ?? ''),
     birth_place: emptyToNull(input.birth_place ?? ''),
-  };
-  const { data, error } = await supabase
-    .from('author_profile')
-    .upsert(payload, { onConflict: 'id' })
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data as AuthorProfile;
+  });
 }
 
 export async function setAuthorPhoto(file: File, previousPath?: string | null): Promise<AuthorProfile> {
   const uploaded = await uploadAuthorFile(file, 'profile');
   if (previousPath) await removeStoragePath(previousPath);
-  const { data, error } = await supabase
-    .from('author_profile')
-    .upsert(
-      {
-        id: 1,
-        photo_url: uploaded.publicUrl,
-        photo_path: uploaded.storagePath,
-      },
-      { onConflict: 'id' }
-    )
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data as AuthorProfile;
+  const current = await currentAuthorProfile();
+  return writeAuthorProfile({
+    ...current,
+    photo_url: uploaded.publicUrl,
+    photo_path: uploaded.storagePath,
+  });
 }
 
 export async function clearAuthorPhoto(previousPath?: string | null): Promise<void> {
   await removeStoragePath(previousPath);
-  const { error } = await supabase
-    .from('author_profile')
-    .update({ photo_url: null, photo_path: null })
-    .eq('id', 1);
-  if (error) throw error;
-}
-
-export async function authorBookSlugExists(slug: string, excludeId?: string): Promise<boolean> {
-  let request = supabase.from('author_books').select('id').eq('slug', slug);
-  if (excludeId) request = request.neq('id', excludeId);
-  const { data, error } = await request.maybeSingle();
-  if (error && error.code !== 'PGRST116') throw error;
-  return Boolean(data);
+  const current = await currentAuthorProfile();
+  await writeAuthorProfile({
+    ...current,
+    photo_url: null,
+    photo_path: null,
+  });
 }
 
 export async function uniqueAuthorBookSlug(title: string, excludeId?: string): Promise<string> {
+  const books = await fetchAuthorBooks({ includeUnpublished: true });
   const base = slugify(title) || 'kitap';
   let slug = base;
   let n = 2;
-  while (await authorBookSlugExists(slug, excludeId)) {
+  while (books.some((book) => book.slug === slug && book.id !== excludeId)) {
     slug = `${base}-${n}`;
     n += 1;
   }
   return slug;
 }
 
-function bookPayloadFromForm(values: AuthorBookFormValues, slug: string, sortOrder: number) {
+function bookFromForm(
+  values: AuthorBookFormValues,
+  slug: string,
+  sortOrder: number,
+  existing?: AuthorBook
+): AuthorBook {
+  const now = new Date().toISOString();
   return {
+    id: existing?.id ?? crypto.randomUUID(),
     title: values.title.trim(),
     slug,
     year: yearToNumber(values.year),
     publisher: emptyToNull(values.publisher),
     description: emptyToNull(values.description),
-    published: values.published,
+    cover_url: existing?.cover_url ?? null,
+    cover_path: existing?.cover_path ?? null,
     sort_order: sortOrder,
+    published: values.published,
+    created_at: existing?.created_at ?? now,
+    updated_at: now,
   };
 }
 
 export async function createAuthorBook(values: AuthorBookFormValues, slug: string): Promise<AuthorBook> {
-  const { data: last } = await supabase
-    .from('author_books')
-    .select('sort_order')
-    .order('sort_order', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { data, error } = await supabase
-    .from('author_books')
-    .insert(bookPayloadFromForm(values, slug, (last?.sort_order ?? 0) + 1))
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data as AuthorBook;
+  const books = await fetchAuthorBooks({ includeUnpublished: true });
+  const sortOrder = books.reduce((max, book) => Math.max(max, book.sort_order), 0) + 1;
+  const created = bookFromForm(values, slug, sortOrder);
+  await writeAuthorBooks([...books, created]);
+  return created;
 }
 
 export async function updateAuthorBook(
@@ -354,14 +363,12 @@ export async function updateAuthorBook(
   slug: string,
   sortOrder: number
 ): Promise<AuthorBook> {
-  const { data, error } = await supabase
-    .from('author_books')
-    .update(bookPayloadFromForm(values, slug, sortOrder))
-    .eq('id', id)
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data as AuthorBook;
+  const books = await fetchAuthorBooks({ includeUnpublished: true });
+  const existing = books.find((book) => book.id === id);
+  if (!existing) throw new Error('Kitap bulunamadı.');
+  const updated = bookFromForm(values, slug, sortOrder, existing);
+  await writeAuthorBooks(books.map((book) => (book.id === id ? updated : book)));
+  return updated;
 }
 
 export async function setAuthorBookCover(
@@ -371,27 +378,33 @@ export async function setAuthorBookCover(
 ): Promise<AuthorBook> {
   const uploaded = await uploadAuthorFile(file, 'book');
   if (previousPath) await removeStoragePath(previousPath);
-  const { data, error } = await supabase
-    .from('author_books')
-    .update({ cover_url: uploaded.publicUrl, cover_path: uploaded.storagePath })
-    .eq('id', bookId)
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data as AuthorBook;
+  const books = await fetchAuthorBooks({ includeUnpublished: true });
+  const existing = books.find((book) => book.id === bookId);
+  if (!existing) throw new Error('Kitap bulunamadı.');
+  const updated = {
+    ...existing,
+    cover_url: uploaded.publicUrl,
+    cover_path: uploaded.storagePath,
+    updated_at: new Date().toISOString(),
+  };
+  await writeAuthorBooks(books.map((book) => (book.id === bookId ? updated : book)));
+  return updated;
 }
 
 export async function clearAuthorBookCover(bookId: string, previousPath?: string | null): Promise<void> {
   await removeStoragePath(previousPath);
-  const { error } = await supabase
-    .from('author_books')
-    .update({ cover_url: null, cover_path: null })
-    .eq('id', bookId);
-  if (error) throw error;
+  const books = await fetchAuthorBooks({ includeUnpublished: true });
+  await writeAuthorBooks(
+    books.map((book) =>
+      book.id === bookId
+        ? { ...book, cover_url: null, cover_path: null, updated_at: new Date().toISOString() }
+        : book
+    )
+  );
 }
 
 export async function deleteAuthorBook(book: AuthorBook): Promise<void> {
   await removeStoragePath(book.cover_path);
-  const { error } = await supabase.from('author_books').delete().eq('id', book.id);
-  if (error) throw error;
+  const books = await fetchAuthorBooks({ includeUnpublished: true });
+  await writeAuthorBooks(books.filter((item) => item.id !== book.id));
 }

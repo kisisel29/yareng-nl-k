@@ -42,6 +42,8 @@ export default {
       },
       boxShadow: {
         card: 'none',
+        'book-rest': '6px 10px 22px rgba(17, 17, 16, 0.22)',
+        book: '10px 18px 32px rgba(17, 17, 16, 0.32)',
       },
     },
   },

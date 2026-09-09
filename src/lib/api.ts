@@ -370,41 +370,45 @@ export async function fetchAllPeopleForExport(): Promise<Person[]> {
   return (data as Person[]) ?? [];
 }
 
-export function isMissingRelation(error: { code?: string; message?: string } | null | undefined): boolean {
-  if (!error) return false;
-  const message = error.message ?? '';
-  return (
-    error.code === '42P01' ||
-    error.code === 'PGRST205' ||
-    /author_profile|author_books|schema cache/i.test(message)
-  );
+function parseJson<T>(value: string | undefined, fallback: T): T {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function sortAuthorBooks(books: AuthorBook[]): AuthorBook[] {
+  return [...books].sort((a, b) => {
+    if ((b.year ?? 0) !== (a.year ?? 0)) return (b.year ?? 0) - (a.year ?? 0);
+    if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+    return a.title.localeCompare(b.title, 'tr');
+  });
 }
 
 export async function fetchAuthorProfile(): Promise<AuthorProfile | null> {
-  const { data, error } = await supabase.from('author_profile').select('*').eq('id', 1).maybeSingle();
-  if (error) {
-    if (isMissingRelation(error)) return null;
-    throw error;
-  }
-  return (data as AuthorProfile) ?? null;
+  const settings = await fetchSiteSettings();
+  const parsed = parseJson<Partial<AuthorProfile> | null>(settings.author_profile, null);
+  if (!parsed) return null;
+  return {
+    id: 1,
+    full_name: parsed.full_name || 'İsmail Hayal',
+    title: parsed.title ?? null,
+    short_bio: parsed.short_bio ?? null,
+    biography: parsed.biography ?? null,
+    birth_date: parsed.birth_date ?? null,
+    birth_place: parsed.birth_place ?? null,
+    photo_url: parsed.photo_url ?? null,
+    photo_path: parsed.photo_path ?? null,
+    updated_at: parsed.updated_at,
+  };
 }
 
 export async function fetchAuthorBooks(options?: { includeUnpublished?: boolean }): Promise<AuthorBook[]> {
-  let request = supabase
-    .from('author_books')
-    .select('*')
-    .order('year', { ascending: false, nullsFirst: false })
-    .order('sort_order', { ascending: true })
-    .order('title', { ascending: true });
-
-  if (!options?.includeUnpublished) {
-    request = request.eq('published', true);
-  }
-
-  const { data, error } = await request;
-  if (error) {
-    if (isMissingRelation(error)) return [];
-    throw error;
-  }
-  return (data as AuthorBook[]) ?? [];
+  const settings = await fetchSiteSettings();
+  const books = parseJson<AuthorBook[]>(settings.author_books, []);
+  const list = Array.isArray(books) ? books : [];
+  const visible = options?.includeUnpublished ? list : list.filter((book) => book.published);
+  return sortAuthorBooks(visible);
 }

@@ -11,9 +11,10 @@ import { SiteBanner, SITE_BANNER_SRC } from '../components/brand/SiteBanner';
 import { SiteLogo } from '../components/brand/SiteLogo';
 import { SectionTitle } from '../components/brand/SectionTitle';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
-import { fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
+import { fetchAuthorBooks, fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
 import {
   AUTHOR_NAME,
+  AUTHOR_PAGE_PATH,
   BOOK_SECTIONS,
   DEFAULT_DESCRIPTION,
   PAGE_SIZE,
@@ -23,7 +24,8 @@ import {
 } from '../lib/constants';
 import { formatLifeYears, personName, siteUrl } from '../lib/format';
 import { useDebounce } from '../hooks/useDebounce';
-import type { Category, Person } from '../types';
+import { BookCard } from '../components/author/BookCard';
+import type { AuthorBook, Category, Person } from '../types';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ export function HomePage() {
   const [latest, setLatest] = useState<Person[]>([]);
   const [popular, setPopular] = useState<Person[]>([]);
   const [random, setRandom] = useState<Person[]>([]);
+  const [books, setBooks] = useState<AuthorBook[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -50,8 +53,9 @@ export function HomePage() {
       fetchLatestPeople(8),
       fetchMostViewedPeople(8),
       fetchRandomPeople(8),
+      fetchAuthorBooks(),
     ])
-      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople]) => {
+      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople, authorBooks]) => {
         if (!active) return;
         setFeatured(featuredPeople);
         setPeople(listed.items);
@@ -60,6 +64,7 @@ export function HomePage() {
         setLatest(latestPeople);
         setPopular(popularPeople);
         setRandom(randomPeople);
+        setBooks(authorBooks);
       })
       .catch(() => {
         if (!active) return;
@@ -70,6 +75,7 @@ export function HomePage() {
         setLatest([]);
         setPopular([]);
         setRandom([]);
+        setBooks([]);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -187,6 +193,37 @@ export function HomePage() {
               </ul>
             ) : null}
           </div>
+        </div>
+      </section>
+
+      <section className="bg-ink-900 text-cream-50">
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-cream-300">İsmail Hayal</p>
+              <h2 className="mt-2 font-serif text-4xl sm:text-5xl">Kitaplarım</h2>
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-cream-200 sm:text-base">
+                Gümüşhane'nin insan hafızasını kayıt altına alan eserler.
+              </p>
+            </div>
+            <Link
+              to={AUTHOR_PAGE_PATH}
+              className="inline-flex items-center justify-center bg-white px-5 py-3 text-sm font-semibold text-ink-900 hover:bg-cream-100"
+            >
+              Tüm kitapları gör
+            </Link>
+          </div>
+          {books.length > 0 ? (
+            <ul className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {books.slice(0, 4).map((book) => (
+                <li key={book.id}>
+                  <BookCard book={book} variant="dark" />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-10 text-cream-200">Kitap kapakları ve yeni eserler yakında burada yer alacak.</p>
+          )}
         </div>
       </section>
 

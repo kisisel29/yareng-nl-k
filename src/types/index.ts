@@ -89,6 +89,8 @@ export interface SiteSettingsMap {
   default_source_year: string;
   site_name: string;
   site_tagline: string;
+  author_profile: string;
+  author_books: string;
 }
 
 export interface AuthorProfile {

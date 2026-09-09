@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     const urls = [
       { loc: `${siteUrl}/`, changefreq: 'weekly', priority: '1.0' },
       { loc: `${siteUrl}/simalar`, changefreq: 'weekly', priority: '0.9' },
-      { loc: `${siteUrl}/ismail-hayal`, changefreq: 'monthly', priority: '0.8' },
+      { loc: `${siteUrl}/kitaplarim`, changefreq: 'monthly', priority: '0.9' },
       { loc: `${siteUrl}/hakkinda`, changefreq: 'monthly', priority: '0.5' },
       ...people.map((person) => ({
         loc: `${siteUrl}/simalar/${person.slug}`,

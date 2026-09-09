@@ -7,7 +7,7 @@ import { ImageField } from '../../components/admin/ImageField';
 import { BookCover } from '../../components/author/BookCover';
 import { RichTextEditor } from '../../components/ui/RichTextEditor';
 import { useToast } from '../../context/ToastContext';
-import { fetchAuthorBooks, fetchAuthorProfile, isMissingRelation } from '../../lib/api';
+import { fetchAuthorBooks, fetchAuthorProfile } from '../../lib/api';
 import {
   clearAuthorBookCover,
   clearAuthorPhoto,
@@ -33,7 +33,6 @@ const emptyBookForm = (): AuthorBookFormValues => ({
 
 export function AuthorAdminPage() {
   const { notify } = useToast();
-  const [setupNeeded, setSetupNeeded] = useState(false);
   const [profile, setProfile] = useState<AuthorProfile | null>(null);
   const [fullName, setFullName] = useState(AUTHOR_NAME);
   const [title, setTitle] = useState(DEFAULT_AUTHOR_TITLE);
@@ -63,7 +62,6 @@ export function AuthorAdminPage() {
         fetchAuthorProfile(),
         fetchAuthorBooks({ includeUnpublished: true }),
       ]);
-      setSetupNeeded(false);
       if (nextProfile) {
         setProfile(nextProfile);
         setFullName(nextProfile.full_name || AUTHOR_NAME);
@@ -74,10 +72,8 @@ export function AuthorAdminPage() {
         setBirthPlace(nextProfile.birth_place || '');
       }
       setBooks(nextBooks);
-    } catch (error) {
-      const missing = isMissingRelation(error as { code?: string; message?: string });
-      setSetupNeeded(missing);
-      if (!missing) notify('İsmail Hayal bilgileri yüklenemedi.', 'error');
+    } catch {
+      notify('İsmail Hayal bilgileri yüklenemedi.', 'error');
     }
   }
 
@@ -107,15 +103,8 @@ export function AuthorAdminPage() {
       setClearPhoto(false);
       await reload();
       notify('Özgeçmiş kaydedildi.', 'success');
-    } catch (error) {
-      const missing = isMissingRelation(error as { code?: string; message?: string });
-      setSetupNeeded(missing);
-      notify(
-        missing
-          ? 'Önce supabase/migrations/004_author_profile.sql dosyasını Supabase SQL Editor’de çalıştırın.'
-          : 'Özgeçmiş kaydedilemedi.',
-        'error'
-      );
+    } catch {
+      notify('Özgeçmiş kaydedilemedi.', 'error');
     } finally {
       setSavingProfile(false);
     }
@@ -169,14 +158,8 @@ export function AuthorAdminPage() {
       setCoverPreview(null);
       await reload();
       notify(editingBook ? 'Kitap güncellendi.' : 'Kitap eklendi.', 'success');
-    } catch (error) {
-      const missing = isMissingRelation(error as { code?: string; message?: string });
-      notify(
-        missing
-          ? 'Önce supabase/migrations/004_author_profile.sql dosyasını Supabase SQL Editor’de çalıştırın.'
-          : 'Kitap kaydedilemedi.',
-        'error'
-      );
+    } catch {
+      notify('Kitap kaydedilemedi.', 'error');
     } finally {
       setSavingBook(false);
     }
@@ -202,26 +185,22 @@ export function AuthorAdminPage() {
 
   return (
     <>
-      <Seo title="İsmail Hayal" noindex />
+      <Seo title="Kitaplarım" noindex />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-serif text-3xl text-ink-900">İsmail Hayal</h1>
-          <p className="mt-1 text-sm text-ink-500">Özgeçmişi ve kitapları buradan güncelleyin.</p>
+          <h1 className="font-serif text-3xl text-ink-900">Kitaplarım</h1>
+          <p className="mt-1 text-sm text-ink-500">
+            Kitapları buradan ekleyin. Özgeçmiş Hakkında sayfasında görünür.
+          </p>
         </div>
         <Link to={AUTHOR_PAGE_PATH} className="text-sm text-burgundy-700 hover:underline">
           Sayfayı gör
         </Link>
       </div>
 
-      {setupNeeded ? (
-        <p className="mt-6 border border-cream-200 bg-cream-50 p-4 text-sm text-ink-700">
-          Bu bölüm için önce <code>supabase/migrations/004_author_profile.sql</code> dosyasını Supabase SQL
-          Editor’de çalıştırın.
-        </p>
-      ) : null}
-
       <section className="mt-8 rounded-lg border border-cream-200 bg-white p-5 sm:p-6">
-        <h2 className="font-serif text-2xl text-ink-900">Özgeçmiş</h2>
+        <h2 className="font-serif text-2xl text-ink-900">Hakkında / özgeçmiş</h2>
+        <p className="mt-1 text-sm text-ink-500">Bu bölüm sitede Hakkında sayfasında gösterilir.</p>
         <form
           className="mt-5 space-y-4"
           onSubmit={(event) => {

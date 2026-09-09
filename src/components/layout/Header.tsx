@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Search, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
+import { AUTHOR_PAGE_PATH } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { SocialLinks } from './SocialLinks';
 import { SearchBox } from '../people/SearchBox';
@@ -15,8 +16,8 @@ export function Header() {
   const { user } = useAuth();
   const NAV = [
     { to: '/', label: 'Ana Sayfa' },
+    { to: AUTHOR_PAGE_PATH, label: 'Kitaplarım', featured: true },
     { to: '/simalar', label: 'Simalar' },
-    { to: '/ismail-hayal', label: 'İsmail Hayal' },
     { to: '/hakkinda', label: 'Hakkında' },
     { to: '/biyografi-gonder', label: 'Biyografi gönder' },
     { to: user ? '/admin' : '/login', label: user ? 'Yönetim' : 'Giriş' },
@@ -46,10 +47,17 @@ export function Header() {
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                cn(
-                  'border-b-2 pb-0.5 text-sm',
-                  isActive ? 'border-ink-900 text-ink-900' : 'border-transparent text-ink-600 hover:text-ink-900'
-                )
+                item.featured
+                  ? cn(
+                      'rounded-sm px-3 py-1.5 text-sm font-semibold tracking-wide',
+                      isActive
+                        ? 'bg-burgundy-700 text-white'
+                        : 'bg-burgundy-700 text-white hover:bg-burgundy-800'
+                    )
+                  : cn(
+                      'border-b-2 pb-0.5 text-sm',
+                      isActive ? 'border-ink-900 text-ink-900' : 'border-transparent text-ink-600 hover:text-ink-900'
+                    )
               }
             >
               {item.label}
@@ -92,7 +100,12 @@ export function Header() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  cn('min-h-11 px-2 py-3 text-base', isActive ? 'text-ink-900' : 'text-ink-600')
+                  item.featured
+                    ? cn(
+                        'my-1 min-h-11 rounded-sm px-3 py-3 text-base font-semibold',
+                        isActive ? 'bg-burgundy-700 text-white' : 'bg-burgundy-700 text-white'
+                      )
+                    : cn('min-h-11 px-2 py-3 text-base', isActive ? 'text-ink-900' : 'text-ink-600')
                 }
               >
                 {item.label}

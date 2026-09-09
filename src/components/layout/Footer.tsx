@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AUTHOR_NAME, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
+import { AUTHOR_NAME, AUTHOR_PAGE_PATH, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
 import { fetchCategories } from '../../lib/api';
 import { SocialLinks } from './SocialLinks';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -32,7 +32,7 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <Link to="/ismail-hayal" className="text-sm font-medium text-ink-900 hover:text-ink-700">
+            <Link to="/hakkinda" className="text-sm font-medium text-ink-900 hover:text-ink-700">
               {AUTHOR_NAME}
             </Link>
             <p className="mt-1 text-sm text-ink-600">Eğitimci, şair ve yazar</p>
@@ -42,8 +42,8 @@ export function Footer() {
             <Link to="/simalar" className="hover:text-ink-900">
               Simalar
             </Link>
-            <Link to="/ismail-hayal" className="hover:text-ink-900">
-              İsmail Hayal
+            <Link to={AUTHOR_PAGE_PATH} className="font-semibold text-burgundy-700 hover:text-burgundy-800">
+              Kitaplarım
             </Link>
             <Link to="/hakkinda" className="hover:text-ink-900">
               Hakkında
