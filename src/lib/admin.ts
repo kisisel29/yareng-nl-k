@@ -1,5 +1,6 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { optimizeImage } from './image';
+import { slugify } from './slug';
 import type { AuthorBook, AuthorBookFormValues, AuthorProfile, Category, Person, PersonFormValues, PersonStatus, Source } from '../types';
 
 function emptyToNull(value: string): string | null {
@@ -305,6 +306,17 @@ export async function authorBookSlugExists(slug: string, excludeId?: string): Pr
   const { data, error } = await request.maybeSingle();
   if (error && error.code !== 'PGRST116') throw error;
   return Boolean(data);
+}
+
+export async function uniqueAuthorBookSlug(title: string, excludeId?: string): Promise<string> {
+  const base = slugify(title) || 'kitap';
+  let slug = base;
+  let n = 2;
+  while (await authorBookSlugExists(slug, excludeId)) {
+    slug = `${base}-${n}`;
+    n += 1;
+  }
+  return slug;
 }
 
 function bookPayloadFromForm(values: AuthorBookFormValues, slug: string, sortOrder: number) {

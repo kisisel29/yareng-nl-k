@@ -11,6 +11,7 @@ import {
   Plus,
   Settings,
   Users,
+  User,
   X,
 } from 'lucide-react';
 import { SITE_NAME } from '../../lib/constants';
@@ -20,7 +21,8 @@ import { SiteLogo } from '../brand/SiteLogo';
 
 const LINKS = [
   { to: '/admin', label: 'Genel Bakış', icon: LayoutDashboard, end: true },
-    { to: '/admin/simalar', label: 'Simalar', icon: Users, end: true },
+  { to: '/admin/ismail-hayal', label: 'İsmail Hayal', icon: User, end: false },
+  { to: '/admin/simalar', label: 'Simalar', icon: Users, end: true },
   { to: '/admin/simalar/yeni', label: 'Yeni Kişi Ekle', icon: Plus, end: false },
   { to: '/admin/kategoriler', label: 'Kategoriler', icon: FolderOpen, end: false },
   { to: '/admin/kaynaklar', label: 'Kaynaklar', icon: BookOpen, end: false },

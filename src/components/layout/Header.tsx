@@ -16,6 +16,7 @@ export function Header() {
   const NAV = [
     { to: '/', label: 'Ana Sayfa' },
     { to: '/simalar', label: 'Simalar' },
+    { to: '/ismail-hayal', label: 'İsmail Hayal' },
     { to: '/hakkinda', label: 'Hakkında' },
     { to: '/biyografi-gonder', label: 'Biyografi gönder' },
     { to: user ? '/admin' : '/login', label: user ? 'Yönetim' : 'Giriş' },

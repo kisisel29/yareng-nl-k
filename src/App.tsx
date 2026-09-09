@@ -21,6 +21,12 @@ const LoginPage = lazy(() =>
 const SubmitBiographyPage = lazy(() =>
   import('./pages/SubmitBiographyPage').then((module) => ({ default: module.SubmitBiographyPage }))
 );
+const AuthorPage = lazy(() =>
+  import('./pages/AuthorPage').then((module) => ({ default: module.AuthorPage }))
+);
+const AuthorAdminPage = lazy(() =>
+  import('./pages/admin/AuthorAdminPage').then((module) => ({ default: module.AuthorAdminPage }))
+);
 const DashboardPage = lazy(() =>
   import('./pages/admin/DashboardPage').then((module) => ({ default: module.DashboardPage }))
 );
@@ -79,6 +85,7 @@ export default function App() {
               <Route path="/admin/kategoriler" element={<CategoriesPage />} />
               <Route path="/admin/kaynaklar" element={<SourcesPage />} />
               <Route path="/admin/basvurular" element={<SubmissionsPage />} />
+              <Route path="/admin/ismail-hayal" element={<AuthorAdminPage />} />
               <Route path="/admin/ayarlar" element={<SettingsPage />} />
               <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
             </Route>
@@ -87,6 +94,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/simalar" element={<PeoplePage />} />
             <Route path="/simalar/:slug" element={<PersonDetailPage />} />
+            <Route path="/ismail-hayal" element={<AuthorPage />} />
             <Route path="/hakkinda" element={<AboutPage />} />
             <Route path="/biyografi-gonder" element={<SubmitBiographyPage />} />
             <Route path="*" element={<NotFoundPage />} />

@@ -32,13 +32,18 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-ink-900">{AUTHOR_NAME}</p>
+            <Link to="/ismail-hayal" className="text-sm font-medium text-ink-900 hover:text-ink-700">
+              {AUTHOR_NAME}
+            </Link>
             <p className="mt-1 text-sm text-ink-600">Eğitimci, şair ve yazar</p>
             <SocialLinks className="mt-4 gap-5 text-sm" />
           </div>
           <div className="flex flex-col gap-3 text-sm">
             <Link to="/simalar" className="hover:text-ink-900">
               Simalar
+            </Link>
+            <Link to="/ismail-hayal" className="hover:text-ink-900">
+              İsmail Hayal
             </Link>
             <Link to="/hakkinda" className="hover:text-ink-900">
               Hakkında
