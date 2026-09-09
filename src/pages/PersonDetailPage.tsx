@@ -6,7 +6,7 @@ import { PersonGrid } from '../components/people/PersonGrid';
 import { ShareMenu } from '../components/people/ShareMenu';
 import { DetailSkeleton } from '../components/ui/Skeleton';
 import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
-import { formatDateTr, formatLifeYears, hasText, personName, plainTextExcerpt, siteUrl } from '../lib/format';
+import { formatDateTr, formatLifeYears, hasText, personExtraNotes, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { sanitizeHtml } from '../lib/sanitize';
 import type { Person } from '../types';
 import { NotFoundPage } from './NotFoundPage';
@@ -105,13 +105,7 @@ export function PersonDetailPage() {
     { label: 'Kategori', value: person.category?.name },
   ].filter((item) => hasText(item.value));
 
-  const extraSections = [
-    { title: 'Eğitim hayatı', body: person.education },
-    { title: 'Görevleri', body: person.positions },
-    { title: 'Eserleri', body: person.works },
-    { title: 'Önemli çalışmaları', body: person.notable_works },
-    { title: "Gümüşhane'ye katkıları", body: person.contributions },
-  ].filter((item) => hasText(item.body));
+  const extraNotes = personExtraNotes(person);
 
   return (
     <>
@@ -210,20 +204,25 @@ export function PersonDetailPage() {
               className="prose-archive mt-6"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(person.biography) }}
             />
+            {extraNotes ? (
+              <p className="mt-6 whitespace-pre-line text-justify text-[1.125rem] leading-[1.8] text-ink-700">
+                {extraNotes}
+              </p>
+            ) : null}
           </section>
-        ) : person.short_bio ? (
+        ) : person.short_bio || extraNotes ? (
           <section className="mt-12 max-w-3xl">
             <h2 className="font-serif text-3xl text-ink-900">Hayatı</h2>
-            <p className="mt-6 leading-relaxed text-ink-700">{person.short_bio}</p>
+            {person.short_bio ? (
+              <p className="mt-6 text-justify text-[1.125rem] leading-[1.8] text-ink-700">{person.short_bio}</p>
+            ) : null}
+            {extraNotes ? (
+              <p className="mt-6 whitespace-pre-line text-justify text-[1.125rem] leading-[1.8] text-ink-700">
+                {extraNotes}
+              </p>
+            ) : null}
           </section>
         ) : null}
-
-        {extraSections.map((section) => (
-          <section key={section.title} className="mt-10 max-w-3xl">
-            <h2 className="font-serif text-2xl text-ink-900">{section.title}</h2>
-            <p className="mt-3 whitespace-pre-line leading-relaxed text-ink-700">{section.body}</p>
-          </section>
-        ))}
 
         {sources.length > 0 ? (
           <section className="mt-14 max-w-3xl border-t border-cream-200 pt-8">

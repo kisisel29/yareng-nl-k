@@ -4,6 +4,7 @@ import { Seo } from '../components/seo/Seo';
 import { useAuth } from '../context/AuthContext';
 import { btnPrimary, inputClass, labelClass } from '../lib/cn';
 import { SITE_NAME } from '../lib/constants';
+import { SiteLogo } from '../components/brand/SiteLogo';
 
 export function LoginPage() {
   const { user, loading, configured, signIn } = useAuth();
@@ -42,6 +43,9 @@ export function LoginPage() {
       <Seo title="Yönetici Girişi" path="/login" noindex />
       <div className="flex min-h-screen items-center justify-center bg-white px-4">
         <div className="w-full max-w-md border border-cream-200 p-8">
+          <Link to="/" aria-label={SITE_NAME} className="mx-auto mb-4 block w-24">
+            <SiteLogo className="h-24 w-24" decorative />
+          </Link>
           <p className="text-center text-sm text-ink-500">{SITE_NAME}</p>
           <h1 className="mt-2 text-center font-serif text-3xl text-ink-900">Yönetici Girişi</h1>
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>

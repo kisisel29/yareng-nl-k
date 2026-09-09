@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { SITE_BANNER_SRC } from '../brand/SiteBanner';
 import { DEFAULT_DESCRIPTION, SITE_NAME } from '../../lib/constants';
 import { siteUrl } from '../../lib/format';
 
@@ -21,7 +22,7 @@ export function Seo({
 }: SeoProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Gümüşhane'nin İnsan Hafızası`;
   const canonical = `${siteUrl()}${path}`;
-  const ogImage = image || `${siteUrl()}/favicon.svg`;
+  const ogImage = image || `${siteUrl()}${SITE_BANNER_SRC}`;
 
   return (
     <Helmet>

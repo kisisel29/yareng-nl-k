@@ -16,6 +16,7 @@ import {
 import { SITE_NAME } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
+import { SiteLogo } from '../brand/SiteLogo';
 
 const LINKS = [
   { to: '/admin', label: 'Genel Bakış', icon: LayoutDashboard, end: true },
@@ -47,11 +48,16 @@ export function AdminLayout() {
           )}
         >
           <div className="flex h-full flex-col overflow-y-auto pb-16">
-          <div className="flex items-center justify-between px-5 py-5">
-            <div>
-              <p className="font-serif text-lg text-cream-50">{SITE_NAME}</p>
-              <p className="text-xs text-cream-300">Yönetim</p>
-            </div>
+          <div className="flex items-center justify-between gap-3 px-5 py-5">
+            <Link to="/" className="flex min-w-0 items-center gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cream-50">
+                <SiteLogo className="h-11 w-11" decorative />
+              </span>
+              <span>
+                <span className="block font-serif text-lg text-cream-50">{SITE_NAME}</span>
+                <span className="block text-xs text-cream-300">Yönetim</span>
+              </span>
+            </Link>
             <button type="button" className="md:hidden" onClick={() => setOpen(false)}>
               <X className="h-5 w-5" />
             </button>

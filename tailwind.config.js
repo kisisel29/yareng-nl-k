@@ -36,8 +36,9 @@ export default {
         },
       },
       fontFamily: {
-        serif: ['Newsreader', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
+        sans: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
+        calibri: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
       },
       boxShadow: {
         card: 'none',

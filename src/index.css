@@ -23,7 +23,7 @@ svg {
 }
 
 .prose-archive {
-  @apply text-[1.125rem] leading-[1.8] text-ink-700;
+  @apply text-justify text-[1.125rem] leading-[1.8] text-ink-700;
 }
 
 .prose-archive p + p {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { SocialLinks } from '../components/layout/SocialLinks';
+import { SiteLogo } from '../components/brand/SiteLogo';
 import { fetchSiteSettings } from '../lib/api';
 import { AUTHOR_NAME, BOOK_SECTIONS, DEFAULT_DESCRIPTION, SOCIAL_LINKS } from '../lib/constants';
 import { siteUrl } from '../lib/format';
@@ -35,7 +36,8 @@ export function AboutPage() {
         }}
       />
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <h1 className="font-serif text-4xl text-ink-900">Hakkında</h1>
+        <SiteLogo className="mx-auto mb-8 h-36 w-36 sm:h-44 sm:w-44" />
+        <h1 className="text-center font-serif text-4xl text-ink-900">Hakkında</h1>
         <p className="mt-6 text-lg leading-relaxed text-ink-700">{intro || DEFAULT_DESCRIPTION}</p>
 
         <section className="mt-14 border-t border-cream-200 pt-10">

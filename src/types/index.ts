@@ -91,6 +91,42 @@ export interface SiteSettingsMap {
   site_tagline: string;
 }
 
+export interface AuthorProfile {
+  id: number;
+  full_name: string;
+  title: string | null;
+  short_bio: string | null;
+  biography: string | null;
+  birth_date: string | null;
+  birth_place: string | null;
+  photo_url: string | null;
+  photo_path: string | null;
+  updated_at?: string;
+}
+
+export interface AuthorBook {
+  id: string;
+  title: string;
+  slug: string;
+  year: number | null;
+  publisher: string | null;
+  description: string | null;
+  cover_url: string | null;
+  cover_path: string | null;
+  sort_order: number;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AuthorBookFormValues {
+  title: string;
+  year: string;
+  publisher: string;
+  description: string;
+  published: boolean;
+}
+
 export interface PersonFormValues {
   first_name: string;
   last_name: string;

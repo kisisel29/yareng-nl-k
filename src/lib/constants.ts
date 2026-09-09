@@ -5,6 +5,12 @@ export const SEARCH_DEBOUNCE_MS = 350;
 export const SITE_NAME = 'Gümüşhaneli Simalar';
 export const SITE_TAGLINE = "Gümüşhane'nin İnsan Hafızası";
 export const AUTHOR_NAME = 'İsmail Hayal';
+export const AUTHOR_PAGE_PATH = '/ismail-hayal';
+export const DEFAULT_AUTHOR_TITLE = 'Eğitimci, şair ve yazar';
+export const DEFAULT_AUTHOR_SHORT_BIO =
+  "Gümüşhane doğumlu eğitimci, şair ve araştırmacı yazar. Gümüşhane'nin insan hafızasını kayıt altına alan kitapları ve Gümüşhaneli Simalar arşiviyle tanınır.";
+export const DEFAULT_AUTHOR_BIOGRAPHY =
+  "<p>İsmail Hayal, 23 Mayıs 1969'da Gümüşhane'de doğdu. İlk, orta ve lise öğrenimini Trabzon'da, yükseköğrenimini Ankara Gazi Üniversitesi Eğitim Fakültesi'nde tamamladı.</p><p>Öğretmenlik ve idarecilik görevlerini Kars Kağızman, Gümüşhane Kürtün ve Gümüşhane'de sürdürdü. Gümüşhane Rehberlik Araştırma Merkezi müdürlüğü, Gümüşhane Ticaret Meslek Lisesi müdür başyardımcılığı ve 2012–2014 yıllarında Gümüşhane Milli Eğitim Şube Müdürlüğü görevlerinde bulundu.</p><p>Ulusal ve yerel basında şiir, makale, desen ve karikatürleri yayımlandı. Hayal Dükkanı başlığıyla uzun yıllar kültür ve sanat yazıları yazdı.</p><p>Gümüşhane'nin eğitim, kültür ve insan hafızasına dair çok sayıda kitabı bulunmaktadır. Gümüşhaneli Simalar dijital arşivi, bu birikimin çevrimiçi devamıdır.</p>";
 export const DEFAULT_DESCRIPTION =
   "İsmail Hayal'in resmi sitesi. Gümüşhaneli Simalar eserinden yola çıkan dijital biyografi arşivi.";
 

@@ -3,6 +3,7 @@ import type { Category, Person, PersonFormValues, PersonImage, PersonStatus } fr
 import { GENDER_OPTIONS } from '../../lib/constants';
 import { slugify } from '../../lib/slug';
 import { slugExists } from '../../lib/api';
+import { personExtraNotes } from '../../lib/format';
 import { btnPrimary, btnSecondary, inputClass, labelClass } from '../../lib/cn';
 import { RichTextEditor } from '../ui/RichTextEditor';
 import { ImageUploader } from './ImageUploader';
@@ -63,11 +64,11 @@ function personToValues(person: Person): PersonFormValues {
     gender: person.gender ?? '',
     short_bio: person.short_bio ?? '',
     biography: person.biography ?? '',
-    education: person.education ?? '',
-    positions: person.positions ?? '',
-    works: person.works ?? '',
-    notable_works: person.notable_works ?? '',
-    contributions: person.contributions ?? '',
+    education: personExtraNotes(person),
+    positions: '',
+    works: '',
+    notable_works: '',
+    contributions: '',
     birth_date: person.birth_date ?? '',
     death_date: person.death_date ?? '',
     birth_place: person.birth_place ?? '',
@@ -302,20 +303,16 @@ export function PersonForm({ person, draft, categories, defaultSource, saving, o
             <span className={labelClass}>Uzun biyografi</span>
             <RichTextEditor value={values.biography} onChange={(html) => update('biography', html)} />
           </div>
-          <Field label="Eğitim hayatı">
-            <textarea className={inputClass} rows={3} value={values.education} onChange={(e) => update('education', e.target.value)} />
-          </Field>
-          <Field label="Görevleri">
-            <textarea className={inputClass} rows={3} value={values.positions} onChange={(e) => update('positions', e.target.value)} />
-          </Field>
-          <Field label="Eserleri">
-            <textarea className={inputClass} rows={3} value={values.works} onChange={(e) => update('works', e.target.value)} />
-          </Field>
-          <Field label="Önemli çalışmaları">
-            <textarea className={inputClass} rows={3} value={values.notable_works} onChange={(e) => update('notable_works', e.target.value)} />
-          </Field>
-          <Field label="Gümüşhane'ye katkıları">
-            <textarea className={inputClass} rows={3} value={values.contributions} onChange={(e) => update('contributions', e.target.value)} />
+          <Field
+            label="Bilgiler"
+            hint="Eğitim, görev, eser, önemli çalışmalar ve Gümüşhane'ye katkılar bu kutuya yazılır."
+          >
+            <textarea
+              className={inputClass}
+              rows={10}
+              value={values.education}
+              onChange={(e) => update('education', e.target.value)}
+            />
           </Field>
         </div>
       </section>

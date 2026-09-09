@@ -65,3 +65,19 @@ export function plainTextExcerpt(html: string | null | undefined, max = 160): st
   if (text.length <= max) return text;
   return `${text.slice(0, max).trim()}…`;
 }
+
+export function personExtraNotes(
+  person: Pick<Person, 'education' | 'positions' | 'works' | 'notable_works' | 'contributions'>
+): string {
+  const labeled: [string, string | null][] = [
+    ['Eğitim hayatı', person.education],
+    ['Görevleri', person.positions],
+    ['Eserleri', person.works],
+    ['Önemli çalışmaları', person.notable_works],
+    ["Gümüşhane'ye katkıları", person.contributions],
+  ];
+  const filled = labeled.filter(([, body]) => hasText(body));
+  if (filled.length === 0) return '';
+  if (filled.length === 1) return filled[0][1]!.trim();
+  return filled.map(([title, body]) => `${title}\n${body!.trim()}`).join('\n\n');
+}

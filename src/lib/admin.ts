@@ -1,6 +1,6 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { optimizeImage } from './image';
-import type { Category, Person, PersonFormValues, PersonStatus, Source } from '../types';
+import type { AuthorBook, AuthorBookFormValues, AuthorProfile, Category, Person, PersonFormValues, PersonStatus, Source } from '../types';
 
 function emptyToNull(value: string): string | null {
   const trimmed = value.trim();
@@ -22,10 +22,10 @@ export function formValuesToPersonPayload(values: PersonFormValues) {
     short_bio: emptyToNull(values.short_bio),
     biography: emptyToNull(values.biography),
     education: emptyToNull(values.education),
-    positions: emptyToNull(values.positions),
-    works: emptyToNull(values.works),
-    notable_works: emptyToNull(values.notable_works),
-    contributions: emptyToNull(values.contributions),
+    positions: null,
+    works: null,
+    notable_works: null,
+    contributions: null,
     birth_date: emptyToNull(values.birth_date),
     death_date: emptyToNull(values.death_date),
     birth_place: emptyToNull(values.birth_place),
@@ -228,5 +228,158 @@ export async function updateSource(
 
 export async function deleteSource(id: string) {
   const { error } = await supabase.from('sources').delete().eq('id', id);
+  if (error) throw error;
+}
+
+const AUTHOR_STORAGE_PREFIX = 'author';
+
+async function uploadAuthorFile(file: File, kind: 'profile' | 'book') {
+  const optimized = await optimizeImage(file);
+  const storagePath = `${AUTHOR_STORAGE_PREFIX}/${kind}-${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: data.publicUrl, storagePath };
+}
+
+async function removeStoragePath(path?: string | null) {
+  if (!path) return;
+  await supabase.storage.from(PEOPLE_IMAGES_BUCKET).remove([path]);
+}
+
+export async function upsertAuthorProfile(
+  input: Pick<AuthorProfile, 'full_name' | 'title' | 'short_bio' | 'biography' | 'birth_date' | 'birth_place'>
+): Promise<AuthorProfile> {
+  const payload = {
+    id: 1,
+    full_name: input.full_name.trim() || 'İsmail Hayal',
+    title: emptyToNull(input.title ?? ''),
+    short_bio: emptyToNull(input.short_bio ?? ''),
+    biography: emptyToNull(input.biography ?? ''),
+    birth_date: emptyToNull(input.birth_date ?? ''),
+    birth_place: emptyToNull(input.birth_place ?? ''),
+  };
+  const { data, error } = await supabase
+    .from('author_profile')
+    .upsert(payload, { onConflict: 'id' })
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data as AuthorProfile;
+}
+
+export async function setAuthorPhoto(file: File, previousPath?: string | null): Promise<AuthorProfile> {
+  const uploaded = await uploadAuthorFile(file, 'profile');
+  if (previousPath) await removeStoragePath(previousPath);
+  const { data, error } = await supabase
+    .from('author_profile')
+    .upsert(
+      {
+        id: 1,
+        photo_url: uploaded.publicUrl,
+        photo_path: uploaded.storagePath,
+      },
+      { onConflict: 'id' }
+    )
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data as AuthorProfile;
+}
+
+export async function clearAuthorPhoto(previousPath?: string | null): Promise<void> {
+  await removeStoragePath(previousPath);
+  const { error } = await supabase
+    .from('author_profile')
+    .update({ photo_url: null, photo_path: null })
+    .eq('id', 1);
+  if (error) throw error;
+}
+
+export async function authorBookSlugExists(slug: string, excludeId?: string): Promise<boolean> {
+  let request = supabase.from('author_books').select('id').eq('slug', slug);
+  if (excludeId) request = request.neq('id', excludeId);
+  const { data, error } = await request.maybeSingle();
+  if (error && error.code !== 'PGRST116') throw error;
+  return Boolean(data);
+}
+
+function bookPayloadFromForm(values: AuthorBookFormValues, slug: string, sortOrder: number) {
+  return {
+    title: values.title.trim(),
+    slug,
+    year: yearToNumber(values.year),
+    publisher: emptyToNull(values.publisher),
+    description: emptyToNull(values.description),
+    published: values.published,
+    sort_order: sortOrder,
+  };
+}
+
+export async function createAuthorBook(values: AuthorBookFormValues, slug: string): Promise<AuthorBook> {
+  const { data: last } = await supabase
+    .from('author_books')
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { data, error } = await supabase
+    .from('author_books')
+    .insert(bookPayloadFromForm(values, slug, (last?.sort_order ?? 0) + 1))
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data as AuthorBook;
+}
+
+export async function updateAuthorBook(
+  id: string,
+  values: AuthorBookFormValues,
+  slug: string,
+  sortOrder: number
+): Promise<AuthorBook> {
+  const { data, error } = await supabase
+    .from('author_books')
+    .update(bookPayloadFromForm(values, slug, sortOrder))
+    .eq('id', id)
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data as AuthorBook;
+}
+
+export async function setAuthorBookCover(
+  bookId: string,
+  file: File,
+  previousPath?: string | null
+): Promise<AuthorBook> {
+  const uploaded = await uploadAuthorFile(file, 'book');
+  if (previousPath) await removeStoragePath(previousPath);
+  const { data, error } = await supabase
+    .from('author_books')
+    .update({ cover_url: uploaded.publicUrl, cover_path: uploaded.storagePath })
+    .eq('id', bookId)
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data as AuthorBook;
+}
+
+export async function clearAuthorBookCover(bookId: string, previousPath?: string | null): Promise<void> {
+  await removeStoragePath(previousPath);
+  const { error } = await supabase
+    .from('author_books')
+    .update({ cover_url: null, cover_path: null })
+    .eq('id', bookId);
+  if (error) throw error;
+}
+
+export async function deleteAuthorBook(book: AuthorBook): Promise<void> {
+  await removeStoragePath(book.cover_path);
+  const { error } = await supabase.from('author_books').delete().eq('id', book.id);
   if (error) throw error;
 }

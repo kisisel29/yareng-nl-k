@@ -1,11 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Search, X } from 'lucide-react';
-import { SITE_NAME } from '../../lib/constants';
 import { cn } from '../../lib/cn';
 import { useAuth } from '../../context/AuthContext';
 import { SocialLinks } from './SocialLinks';
 import { SearchBox } from '../people/SearchBox';
+import { SiteWordmark } from '../brand/SiteLogo';
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -36,9 +36,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-cream-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
-        <Link to="/" className="min-w-0 shrink font-serif text-lg text-ink-900 sm:text-2xl">
-          <span className="block truncate">{SITE_NAME}</span>
-        </Link>
+        <SiteWordmark className="min-w-0 shrink" />
 
         <nav className="hidden items-center gap-5 lg:flex">
           {NAV.map((item) => (

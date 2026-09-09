@@ -2,6 +2,8 @@ import { supabase } from './supabase';
 import { letterFilterVariants, sanitizeSearchTerm } from './slug';
 import { PAGE_SIZE } from './constants';
 import type {
+  AuthorBook,
+  AuthorProfile,
   BiographySubmission,
   Category,
   Person,
@@ -366,4 +368,43 @@ export async function fetchAllPeopleForExport(): Promise<Person[]> {
 
   if (error) throw error;
   return (data as Person[]) ?? [];
+}
+
+export function isMissingRelation(error: { code?: string; message?: string } | null | undefined): boolean {
+  if (!error) return false;
+  const message = error.message ?? '';
+  return (
+    error.code === '42P01' ||
+    error.code === 'PGRST205' ||
+    /author_profile|author_books|schema cache/i.test(message)
+  );
+}
+
+export async function fetchAuthorProfile(): Promise<AuthorProfile | null> {
+  const { data, error } = await supabase.from('author_profile').select('*').eq('id', 1).maybeSingle();
+  if (error) {
+    if (isMissingRelation(error)) return null;
+    throw error;
+  }
+  return (data as AuthorProfile) ?? null;
+}
+
+export async function fetchAuthorBooks(options?: { includeUnpublished?: boolean }): Promise<AuthorBook[]> {
+  let request = supabase
+    .from('author_books')
+    .select('*')
+    .order('year', { ascending: false, nullsFirst: false })
+    .order('sort_order', { ascending: true })
+    .order('title', { ascending: true });
+
+  if (!options?.includeUnpublished) {
+    request = request.eq('published', true);
+  }
+
+  const { data, error } = await request;
+  if (error) {
+    if (isMissingRelation(error)) return [];
+    throw error;
+  }
+  return (data as AuthorBook[]) ?? [];
 }

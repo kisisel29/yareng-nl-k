@@ -7,6 +7,8 @@ import { AlphabetIndex } from '../components/people/AlphabetIndex';
 import { PersonRail } from '../components/people/PersonRail';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Seo } from '../components/seo/Seo';
+import { SiteBanner, SITE_BANNER_SRC } from '../components/brand/SiteBanner';
+import { SiteLogo } from '../components/brand/SiteLogo';
 import { SectionTitle } from '../components/brand/SectionTitle';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
 import { fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
@@ -147,13 +149,18 @@ export function HomePage() {
 
   return (
     <>
-      <Seo jsonLd={jsonLd} />
+      <Seo jsonLd={jsonLd} image={`${siteUrl()}${SITE_BANNER_SRC}`} />
 
       <section className="border-b border-cream-200">
-        <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 sm:py-20">
-          <p className="text-sm text-ink-500">İsmail Hayal'in resmi sitesi · {count} isim</p>
-          <h1 className="mt-4 font-serif text-3xl leading-tight text-ink-900 sm:text-5xl">
-            Gümüşhane'nin iz bırakan insanlarını tanıyın
+        <SiteBanner />
+        <div className="mx-auto max-w-3xl px-4 pb-10 text-center sm:px-6 sm:pb-14">
+          <SiteLogo
+            className="relative z-10 mx-auto -mt-8 h-[5.5rem] w-[5.5rem] sm:-mt-12 sm:h-28 sm:w-28"
+            decorative
+          />
+          <p className="mt-5 text-sm text-ink-500">İsmail Hayal'in resmi sitesi · {count} isim</p>
+          <h1 className="mt-4 font-calibri text-3xl font-bold leading-tight tracking-wide text-ink-900 sm:text-5xl">
+            GÜMÜŞHANE'NİN İZ BIRAKANLARINI TANIYALIM
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-600">
             Eğitimci ve yazar İsmail Hayal'in Gümüşhaneli Simalar eserinden yola çıkan dijital biyografi arşivi.

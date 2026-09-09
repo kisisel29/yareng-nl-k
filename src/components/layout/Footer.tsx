@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AUTHOR_NAME, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
 import { fetchCategories } from '../../lib/api';
 import { SocialLinks } from './SocialLinks';
+import { SiteLogo } from '../brand/SiteLogo';
 import type { Category } from '../../types';
 
 export function Footer() {
@@ -19,8 +20,13 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="font-serif text-lg text-ink-900">{SITE_NAME}</p>
-            <p className="mt-1">{SITE_TAGLINE}</p>
+            <Link to="/" className="inline-flex items-center gap-3">
+              <SiteLogo className="h-16 w-16 shrink-0" decorative />
+              <span>
+                <span className="block font-serif text-lg text-ink-900">{SITE_NAME}</span>
+                <span className="mt-0.5 block text-sm">{SITE_TAGLINE}</span>
+              </span>
+            </Link>
             <p className="mt-3 max-w-xs text-sm text-ink-600">
               {AUTHOR_NAME}'in resmi sitesi. Gümüşhaneli Simalar dijital biyografi arşivi.
             </p>
