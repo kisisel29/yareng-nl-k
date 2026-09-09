@@ -72,6 +72,10 @@ export function Footer() {
             </ul>
           </div>
         </div>
+        <p className="mt-10 border-t border-cream-200 pt-6 text-sm text-ink-500">
+          Yazılar, araştırmalar ve görseller {AUTHOR_NAME}'e aittir. İzinsiz kopyalanamaz. Kullanmak için lütfen
+          kendisiyle iletişime geçiniz.
+        </p>
       </div>
     </footer>
   );

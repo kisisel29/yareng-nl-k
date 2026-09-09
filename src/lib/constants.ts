@@ -6,6 +6,8 @@ export const SITE_NAME = 'Gümüşhaneli Simalar';
 export const SITE_TAGLINE = "Gümüşhane'nin İnsan Hafızası";
 export const AUTHOR_NAME = 'İsmail Hayal';
 export const AUTHOR_PAGE_PATH = '/ismail-hayal';
+export const COPY_PROTECTION_MESSAGE =
+  "Bu sitedeki yazılar, araştırmalar ve görseller İsmail Hayal'in emeğidir. Kopyalamak, çoğaltmak veya kullanmak için lütfen İsmail Hayal ile iletişime geçiniz.";
 export const DEFAULT_AUTHOR_TITLE = 'Eğitimci, şair ve yazar';
 export const DEFAULT_AUTHOR_SHORT_BIO =
   "Gümüşhane doğumlu eğitimci, şair ve araştırmacı yazar. Gümüşhane'nin insan hafızasını kayıt altına alan kitapları ve Gümüşhaneli Simalar arşiviyle tanınır.";

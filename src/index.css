@@ -18,6 +18,26 @@ svg {
   max-width: 100%;
 }
 
+.public-site {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.public-site img,
+.public-site video,
+.public-site svg {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.public-site input,
+.public-site textarea,
+.public-site select,
+.public-site [contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 ::selection {
   background: #163a5f22;
 }
