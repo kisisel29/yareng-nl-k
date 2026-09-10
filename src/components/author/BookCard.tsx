@@ -26,7 +26,7 @@ export function BookCard({
       <div
         className={cn(
           'relative mx-auto aspect-[2/3] overflow-hidden bg-cream-100 transition duration-300 group-hover:-translate-y-2 group-hover:shadow-book',
-          size === 'lg' ? 'max-w-[18rem]' : 'max-w-[15rem]',
+          size === 'lg' ? 'max-w-[14rem]' : 'max-w-[11rem]',
           'shadow-book-rest'
         )}
       >
