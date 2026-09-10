@@ -21,14 +21,14 @@ export function ColumnistAvatar({
       <img
         src={columnist.photo_url}
         alt={columnist.name}
-        className={cn('shrink-0 rounded-full object-cover', sizeClass)}
+        className={cn('shrink-0 rounded object-cover', sizeClass)}
       />
     );
   }
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-full bg-cream-200 font-semibold text-ink-700',
+        'inline-flex shrink-0 items-center justify-center rounded bg-cream-200 font-semibold text-ink-700',
         sizeClass
       )}
       aria-hidden
