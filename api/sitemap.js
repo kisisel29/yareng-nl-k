@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       { loc: `${siteUrl}/`, changefreq: 'weekly', priority: '1.0' },
       { loc: `${siteUrl}/simalar`, changefreq: 'weekly', priority: '0.9' },
       { loc: `${siteUrl}/kitaplarim`, changefreq: 'monthly', priority: '0.9' },
+      { loc: `${siteUrl}/kose-yazarlari`, changefreq: 'weekly', priority: '0.7' },
       { loc: `${siteUrl}/hakkinda`, changefreq: 'monthly', priority: '0.5' },
       ...people.map((person) => ({
         loc: `${siteUrl}/simalar/${person.slug}`,

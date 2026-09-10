@@ -12,9 +12,10 @@ import {
   Settings,
   Users,
   Library,
+  PenLine,
   X,
 } from 'lucide-react';
-import { AUTHOR_ADMIN_PATH, SITE_NAME } from '../../lib/constants';
+import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, SITE_NAME } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -22,6 +23,7 @@ import { SiteLogo } from '../brand/SiteLogo';
 const LINKS = [
   { to: '/admin', label: 'Genel Bakış', icon: LayoutDashboard, end: true },
   { to: AUTHOR_ADMIN_PATH, label: 'Kitaplarım', icon: Library, end: false },
+  { to: COLUMNISTS_ADMIN_PATH, label: 'Köşe Yazarları', icon: PenLine, end: false },
   { to: '/admin/simalar', label: 'Simalar', icon: Users, end: true },
   { to: '/admin/simalar/yeni', label: 'Yeni Kişi Ekle', icon: Plus, end: false },
   { to: '/admin/kategoriler', label: 'Kategoriler', icon: FolderOpen, end: false },

@@ -6,6 +6,8 @@ import type {
   AuthorProfile,
   BiographySubmission,
   Category,
+  Columnist,
+  ColumnistArticle,
   Person,
   PersonSearchParams,
   SiteSettingsMap,
@@ -411,4 +413,77 @@ export async function fetchAuthorBooks(options?: { includeUnpublished?: boolean 
   const list = Array.isArray(books) ? books : [];
   const visible = options?.includeUnpublished ? list : list.filter((book) => book.published);
   return sortAuthorBooks(visible);
+}
+
+function normalizeColumnist(raw: Partial<Columnist> & { name?: string }): Columnist | null {
+  if (!raw?.name || !raw.id) return null;
+  const articles = Array.isArray(raw.articles)
+    ? raw.articles
+        .filter((article): article is ColumnistArticle => Boolean(article?.id && article?.title && article?.slug))
+        .map((article) => ({
+          id: article.id,
+          title: article.title,
+          slug: article.slug,
+          body: article.body ?? '',
+          published: article.published !== false,
+          created_at: article.created_at,
+          updated_at: article.updated_at,
+        }))
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+    : [];
+  return {
+    id: raw.id,
+    name: raw.name,
+    slug: raw.slug || 'yazar',
+    title: raw.title ?? null,
+    photo_url: raw.photo_url ?? null,
+    photo_path: raw.photo_path ?? null,
+    published: raw.published !== false,
+    sort_order: raw.sort_order ?? 0,
+    created_at: raw.created_at ?? '',
+    updated_at: raw.updated_at ?? '',
+    articles,
+  };
+}
+
+function sortColumnists(list: Columnist[]): Columnist[] {
+  return [...list].sort((a, b) => {
+    if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+    return a.name.localeCompare(b.name, 'tr');
+  });
+}
+
+export async function fetchColumnists(options?: { includeUnpublished?: boolean }): Promise<Columnist[]> {
+  const settings = await fetchSiteSettings();
+  const parsed = parseJson<Partial<Columnist>[]>(settings.columnists, []);
+  const list = (Array.isArray(parsed) ? parsed : [])
+    .map(normalizeColumnist)
+    .filter((item): item is Columnist => Boolean(item));
+  const visible = options?.includeUnpublished ? list : list.filter((item) => item.published);
+  return sortColumnists(
+    visible.map((item) => ({
+      ...item,
+      articles: options?.includeUnpublished ? item.articles : item.articles.filter((article) => article.published),
+    }))
+  );
+}
+
+export async function fetchColumnistBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<Columnist | null> {
+  const list = await fetchColumnists(options);
+  return list.find((item) => item.slug === slug) ?? null;
+}
+
+export async function fetchColumnistArticle(
+  columnistSlug: string,
+  articleSlug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<{ columnist: Columnist; article: ColumnistArticle } | null> {
+  const columnist = await fetchColumnistBySlug(columnistSlug, options);
+  if (!columnist) return null;
+  const article = columnist.articles.find((item) => item.slug === articleSlug);
+  if (!article) return null;
+  return { columnist, article };
 }

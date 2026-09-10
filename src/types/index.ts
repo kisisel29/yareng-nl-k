@@ -91,6 +91,7 @@ export interface SiteSettingsMap {
   site_tagline: string;
   author_profile: string;
   author_books: string;
+  columnists: string;
 }
 
 export interface AuthorProfile {
@@ -126,6 +127,42 @@ export interface AuthorBookFormValues {
   year: string;
   publisher: string;
   description: string;
+  published: boolean;
+}
+
+export interface ColumnistArticle {
+  id: string;
+  title: string;
+  slug: string;
+  body: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Columnist {
+  id: string;
+  name: string;
+  slug: string;
+  title: string | null;
+  photo_url: string | null;
+  photo_path: string | null;
+  published: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  articles: ColumnistArticle[];
+}
+
+export interface ColumnistFormValues {
+  name: string;
+  title: string;
+  published: boolean;
+}
+
+export interface ColumnistArticleFormValues {
+  title: string;
+  body: string;
   published: boolean;
 }
 

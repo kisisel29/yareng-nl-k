@@ -24,8 +24,14 @@ const SubmitBiographyPage = lazy(() =>
 const AuthorPage = lazy(() =>
   import('./pages/AuthorPage').then((module) => ({ default: module.AuthorPage }))
 );
+const ColumnistsPage = lazy(() =>
+  import('./pages/ColumnistsPage').then((module) => ({ default: module.ColumnistsPage }))
+);
 const AuthorAdminPage = lazy(() =>
   import('./pages/admin/AuthorAdminPage').then((module) => ({ default: module.AuthorAdminPage }))
+);
+const ColumnistsAdminPage = lazy(() =>
+  import('./pages/admin/ColumnistsAdminPage').then((module) => ({ default: module.ColumnistsAdminPage }))
 );
 const DashboardPage = lazy(() =>
   import('./pages/admin/DashboardPage').then((module) => ({ default: module.DashboardPage }))
@@ -86,6 +92,7 @@ export default function App() {
               <Route path="/admin/kaynaklar" element={<SourcesPage />} />
               <Route path="/admin/basvurular" element={<SubmissionsPage />} />
               <Route path="/admin/kitaplarim" element={<AuthorAdminPage />} />
+              <Route path="/admin/kose-yazarlari" element={<ColumnistsAdminPage />} />
               <Route path="/admin/ismail-hayal" element={<Navigate to="/admin/kitaplarim" replace />} />
               <Route path="/admin/ayarlar" element={<SettingsPage />} />
               <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
@@ -96,6 +103,9 @@ export default function App() {
             <Route path="/simalar" element={<PeoplePage />} />
             <Route path="/simalar/:slug" element={<PersonDetailPage />} />
             <Route path="/kitaplarim" element={<AuthorPage />} />
+            <Route path="/kose-yazarlari/:slug/:articleSlug" element={<ColumnistsPage />} />
+            <Route path="/kose-yazarlari/:slug" element={<ColumnistsPage />} />
+            <Route path="/kose-yazarlari" element={<ColumnistsPage />} />
             <Route path="/ismail-hayal" element={<Navigate to="/kitaplarim" replace />} />
             <Route path="/hakkinda" element={<AboutPage />} />
             <Route path="/biyografi-gonder" element={<SubmitBiographyPage />} />

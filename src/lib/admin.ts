@@ -1,8 +1,21 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { optimizeImage } from './image';
 import { slugify } from './slug';
-import { fetchAuthorBooks, fetchAuthorProfile } from './api';
-import type { AuthorBook, AuthorBookFormValues, AuthorProfile, Category, Person, PersonFormValues, PersonStatus, Source } from '../types';
+import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists } from './api';
+import type {
+  AuthorBook,
+  AuthorBookFormValues,
+  AuthorProfile,
+  Category,
+  Columnist,
+  ColumnistArticle,
+  ColumnistArticleFormValues,
+  ColumnistFormValues,
+  Person,
+  PersonFormValues,
+  PersonStatus,
+  Source,
+} from '../types';
 
 function emptyToNull(value: string): string | null {
   const trimmed = value.trim();
@@ -407,4 +420,171 @@ export async function deleteAuthorBook(book: AuthorBook): Promise<void> {
   await removeStoragePath(book.cover_path);
   const books = await fetchAuthorBooks({ includeUnpublished: true });
   await writeAuthorBooks(books.filter((item) => item.id !== book.id));
+}
+
+function uniqueSlug(base: string, taken: Set<string>, fallback = 'yazi'): string {
+  const root = slugify(base) || fallback;
+  let slug = root;
+  let n = 2;
+  while (taken.has(slug)) {
+    slug = `${root}-${n}`;
+    n += 1;
+  }
+  return slug;
+}
+
+async function writeColumnists(list: Columnist[]): Promise<void> {
+  await upsertSiteSettings({ columnists: JSON.stringify(list) });
+}
+
+async function uploadColumnistPhoto(file: File) {
+  const optimized = await optimizeImage(file);
+  const storagePath = `columnists/${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: data.publicUrl, storagePath };
+}
+
+export async function createColumnist(values: ColumnistFormValues, photo?: File | null): Promise<Columnist> {
+  const list = await fetchColumnists({ includeUnpublished: true });
+  const now = new Date().toISOString();
+  const taken = new Set(list.map((item) => item.slug));
+  let photo_url: string | null = null;
+  let photo_path: string | null = null;
+  if (photo) {
+    const uploaded = await uploadColumnistPhoto(photo);
+    photo_url = uploaded.publicUrl;
+    photo_path = uploaded.storagePath;
+  }
+  const created: Columnist = {
+    id: crypto.randomUUID(),
+    name: values.name.trim(),
+    slug: uniqueSlug(values.name, taken, 'yazar'),
+    title: emptyToNull(values.title),
+    photo_url,
+    photo_path,
+    published: values.published,
+    sort_order: list.reduce((max, item) => Math.max(max, item.sort_order), 0) + 1,
+    created_at: now,
+    updated_at: now,
+    articles: [],
+  };
+  await writeColumnists([...list, created]);
+  return created;
+}
+
+export async function updateColumnist(
+  id: string,
+  values: ColumnistFormValues,
+  photo?: File | null,
+  clearPhoto = false
+): Promise<Columnist> {
+  const list = await fetchColumnists({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === id);
+  if (!existing) throw new Error('Köşe yazarı bulunamadı.');
+  let photo_url = existing.photo_url;
+  let photo_path = existing.photo_path;
+  if (clearPhoto) {
+    await removeStoragePath(photo_path);
+    photo_url = null;
+    photo_path = null;
+  } else if (photo) {
+    const uploaded = await uploadColumnistPhoto(photo);
+    await removeStoragePath(photo_path);
+    photo_url = uploaded.publicUrl;
+    photo_path = uploaded.storagePath;
+  }
+  const updated: Columnist = {
+    ...existing,
+    name: values.name.trim(),
+    title: emptyToNull(values.title),
+    photo_url,
+    photo_path,
+    published: values.published,
+    updated_at: new Date().toISOString(),
+  };
+  await writeColumnists(list.map((item) => (item.id === id ? updated : item)));
+  return updated;
+}
+
+export async function deleteColumnist(columnist: Columnist): Promise<void> {
+  await removeStoragePath(columnist.photo_path);
+  const list = await fetchColumnists({ includeUnpublished: true });
+  await writeColumnists(list.filter((item) => item.id !== columnist.id));
+}
+
+export async function createColumnistArticle(
+  columnistId: string,
+  values: ColumnistArticleFormValues
+): Promise<ColumnistArticle> {
+  const list = await fetchColumnists({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === columnistId);
+  if (!existing) throw new Error('Köşe yazarı bulunamadı.');
+  const now = new Date().toISOString();
+  const taken = new Set(existing.articles.map((article) => article.slug));
+  const created: ColumnistArticle = {
+    id: crypto.randomUUID(),
+    title: values.title.trim(),
+    slug: uniqueSlug(values.title, taken),
+    body: values.body.trim(),
+    published: values.published,
+    created_at: now,
+    updated_at: now,
+  };
+  await writeColumnists(
+    list.map((item) =>
+      item.id === columnistId
+        ? { ...item, articles: [created, ...item.articles], updated_at: now }
+        : item
+    )
+  );
+  return created;
+}
+
+export async function updateColumnistArticle(
+  columnistId: string,
+  articleId: string,
+  values: ColumnistArticleFormValues
+): Promise<ColumnistArticle> {
+  const list = await fetchColumnists({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === columnistId);
+  if (!existing) throw new Error('Köşe yazarı bulunamadı.');
+  const article = existing.articles.find((item) => item.id === articleId);
+  if (!article) throw new Error('Yazı bulunamadı.');
+  const now = new Date().toISOString();
+  const updated: ColumnistArticle = {
+    ...article,
+    title: values.title.trim(),
+    body: values.body.trim(),
+    published: values.published,
+    updated_at: now,
+  };
+  await writeColumnists(
+    list.map((item) =>
+      item.id === columnistId
+        ? {
+            ...item,
+            updated_at: now,
+            articles: item.articles.map((entry) => (entry.id === articleId ? updated : entry)),
+          }
+        : item
+    )
+  );
+  return updated;
+}
+
+export async function deleteColumnistArticle(columnistId: string, articleId: string): Promise<void> {
+  const list = await fetchColumnists({ includeUnpublished: true });
+  const now = new Date().toISOString();
+  await writeColumnists(
+    list.map((item) =>
+      item.id === columnistId
+        ? { ...item, updated_at: now, articles: item.articles.filter((article) => article.id !== articleId) }
+        : item
+    )
+  );
 }
