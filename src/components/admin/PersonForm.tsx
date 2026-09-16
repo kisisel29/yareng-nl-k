@@ -11,6 +11,7 @@ import { ImageUploader } from './ImageUploader';
 interface PersonFormProps {
   person?: Person | null;
   draft?: Partial<PersonFormValues>;
+  initialPhotoUrl?: string | null;
   categories: Category[];
   defaultSource?: { author: string; book: string; year: string };
   saving: boolean;
@@ -87,14 +88,14 @@ function personToValues(person: Person): PersonFormValues {
   };
 }
 
-export function PersonForm({ person, draft, categories, defaultSource, saving, onSubmit }: PersonFormProps) {
+export function PersonForm({ person, draft, initialPhotoUrl, categories, defaultSource, saving, onSubmit }: PersonFormProps) {
   const [values, setValues] = useState<PersonFormValues>(() =>
     person ? personToValues(person) : { ...emptyValues(defaultSource), ...draft }
   );
   const [slugManual, setSlugManual] = useState(Boolean(person));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profileFile, setProfileFile] = useState<File | null>(null);
-  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(initialPhotoUrl ?? null);
   const [clearProfile, setClearProfile] = useState(false);
   const [galleryFiles, setGalleryFiles] = useState<{ id: string; file: File; url: string }[]>([]);
   const [existingGallery, setExistingGallery] = useState<PersonImage[]>(person?.images ?? []);

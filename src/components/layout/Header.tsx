@@ -15,12 +15,12 @@ export function Header() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const NAV = [
-    { to: '/', label: 'Ana Sayfa' },
+    { to: '/', label: 'ANA SAYFA' },
     { to: '/simalar', label: 'GÜMÜŞHANELİ SİMALAR' },
-    { to: ABOUT_PAGE_PATH, label: 'İsmail Hayal' },
-    { to: POEMS_PAGE_PATH, label: 'Şiirler' },
-    { to: '/biyografi-gonder', label: 'Biyografi Gönder' },
-    { to: user ? '/admin' : '/login', label: 'Yönetim' },
+    { to: ABOUT_PAGE_PATH, label: 'İSMAİL HAYAL' },
+    { to: POEMS_PAGE_PATH, label: 'ŞİİRLER' },
+    { to: '/biyografi-gonder', label: 'BİYOGRAFİ GÖNDER' },
+    { to: user ? '/admin' : '/login', label: 'YÖNETİM' },
   ];
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-cream-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-cream-200 bg-cream-50/95 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
         <SiteWordmark className="min-w-0 shrink" />
 

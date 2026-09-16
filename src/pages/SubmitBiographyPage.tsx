@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Seo } from '../components/seo/Seo';
+import { ImageField } from '../components/admin/ImageField';
 import { createBiographySubmission, fetchCategories } from '../lib/api';
 import { btnPrimary, inputClass, labelClass } from '../lib/cn';
 import type { Category } from '../types';
@@ -13,6 +14,8 @@ export function SubmitBiographyPage() {
   const [birthPlace, setBirthPlace] = useState('');
   const [biography, setBiography] = useState('');
   const [notes, setNotes] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -21,6 +24,16 @@ export function SubmitBiographyPage() {
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => setCategories([]));
   }, []);
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(photoFile);
+    setPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photoFile]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -35,15 +48,18 @@ export function SubmitBiographyPage() {
     }
     setSubmitting(true);
     try {
-      await createBiographySubmission({
-        full_name: fullName,
-        email,
-        category_id: categoryId || undefined,
-        profession,
-        birth_place: birthPlace,
-        biography,
-        notes,
-      });
+      await createBiographySubmission(
+        {
+          full_name: fullName,
+          email,
+          category_id: categoryId || undefined,
+          profession,
+          birth_place: birthPlace,
+          biography,
+          notes,
+        },
+        photoFile
+      );
       setDone(true);
     } catch {
       setError('Başvuru gönderilemedi. Lütfen daha sonra tekrar deneyin.');
@@ -62,7 +78,8 @@ export function SubmitBiographyPage() {
       <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
         <h1 className="font-serif text-3xl text-ink-900 sm:text-4xl">Biyografi gönder</h1>
         <p className="mt-4 leading-relaxed text-ink-600">
-          Kendinizin veya bir hemşerinin biyografisini önerin. Metinler yönetici incelemesinden sonra arşive eklenir.
+          Kendinizin veya bir hemşerinin biyografisini önerin. Metinler ve vesikalık fotoğraf yönetici incelemesinden
+          sonra arşive eklenir.
         </p>
 
         {done ? (
@@ -104,6 +121,14 @@ export function SubmitBiographyPage() {
                 <input className={inputClass} value={birthPlace} onChange={(e) => setBirthPlace(e.target.value)} />
               </label>
             </div>
+            <ImageField
+              label="Vesikalık fotoğraf (isteğe bağlı)"
+              hint="JPG, PNG veya WEBP. En fazla 5 MB. Vesikalık ölçüye yakın bir portre fotoğrafı gönderin."
+              src={photoPreview}
+              frameClassName="h-48 w-36"
+              onSelect={setPhotoFile}
+              onClear={() => setPhotoFile(null)}
+            />
             <label className="block">
               <span className={labelClass}>Biyografi</span>
               <textarea

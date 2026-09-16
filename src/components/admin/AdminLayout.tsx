@@ -118,7 +118,7 @@ export function AdminLayout() {
         ) : null}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center gap-3 border-b border-cream-200 bg-white px-4 py-3 md:hidden">
+          <div className="flex items-center gap-3 border-b border-cream-200 bg-cream-50 px-4 py-3 md:hidden">
             <button type="button" onClick={() => setOpen(true)} aria-label="Menü">
               <Menu className="h-6 w-6" />
             </button>

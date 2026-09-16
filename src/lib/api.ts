@@ -1,6 +1,7 @@
-import { supabase } from './supabase';
+import { PEOPLE_IMAGES_BUCKET, supabase } from './supabase';
 import { lastNameStartsWithLetter, sanitizeSearchTerm } from './slug';
 import { PAGE_SIZE } from './constants';
+import { blobToDataUrl, isAllowedImage, optimizeImage } from './image';
 import type {
   AuthorBook,
   AuthorProfile,
@@ -195,26 +196,133 @@ export async function incrementPersonViews(slug: string): Promise<void> {
   await supabase.rpc('increment_person_views', { p_slug: slug });
 }
 
-export async function createBiographySubmission(input: {
-  full_name: string;
-  email?: string;
-  category_id?: string;
-  profession?: string;
-  birth_place?: string;
-  biography: string;
-  notes?: string;
-}): Promise<void> {
-  const { error } = await supabase.from('biography_submissions').insert({
+const PHOTO_URL_MARK = '[[VESIKALIK_URL]]';
+const PHOTO_PATH_MARK = '[[VESIKALIK_PATH]]';
+const PHOTO_DATA_MARK = '[[VESIKALIK_DATA]]';
+const PHOTO_NOTES_SPLIT = '\n[[NOTES]]\n';
+const VESIKALIK_MAX_WIDTH = 900;
+
+export function parseSubmissionPhoto(item: Pick<BiographySubmission, 'notes' | 'photo_url' | 'photo_path'>): {
+  photoUrl: string | null;
+  photoPath: string | null;
+  notes: string | null;
+} {
+  let photoUrl = item.photo_url?.trim() || null;
+  let photoPath = item.photo_path?.trim() || null;
+  let notes = item.notes ?? '';
+
+  const takeMark = (mark: string) => {
+    const line = notes.split('\n').find((entry) => entry.startsWith(mark));
+    return line ? line.slice(mark.length).trim() : '';
+  };
+
+  if (!photoUrl) photoUrl = takeMark(PHOTO_URL_MARK) || takeMark(PHOTO_DATA_MARK) || null;
+  if (!photoPath) photoPath = takeMark(PHOTO_PATH_MARK) || null;
+
+  if (notes.includes(PHOTO_NOTES_SPLIT)) {
+    notes = notes.split(PHOTO_NOTES_SPLIT).slice(1).join(PHOTO_NOTES_SPLIT);
+  } else if (
+    notes.startsWith(PHOTO_URL_MARK) ||
+    notes.startsWith(PHOTO_PATH_MARK) ||
+    notes.startsWith(PHOTO_DATA_MARK)
+  ) {
+    notes = '';
+  }
+
+  return { photoUrl, photoPath, notes: notes.trim() || null };
+}
+
+function encodeSubmissionNotes(
+  notes: string,
+  photo: { url?: string | null; path?: string | null; dataUrl?: string | null }
+): string | null {
+  const lines: string[] = [];
+  if (photo.url) lines.push(`${PHOTO_URL_MARK}${photo.url}`);
+  if (photo.path) lines.push(`${PHOTO_PATH_MARK}${photo.path}`);
+  if (photo.dataUrl && !photo.url) lines.push(`${PHOTO_DATA_MARK}${photo.dataUrl}`);
+  const userNotes = notes.trim();
+  if (!lines.length) return userNotes || null;
+  return userNotes ? `${lines.join('\n')}${PHOTO_NOTES_SPLIT}${userNotes}` : lines.join('\n');
+}
+
+function isMissingPhotoColumn(message?: string): boolean {
+  const text = message?.toLowerCase() ?? '';
+  return text.includes('photo_url') || text.includes('photo_path') || text.includes('pgrst204');
+}
+
+async function uploadSubmissionPhoto(file: File): Promise<{
+  photo_url: string | null;
+  photo_path: string | null;
+  dataUrl: string | null;
+}> {
+  if (!isAllowedImage(file)) {
+    throw new Error('Vesikalık yalnızca JPG, PNG veya WEBP olabilir.');
+  }
+  const optimized = await optimizeImage(file, VESIKALIK_MAX_WIDTH);
+  const storagePath = `submissions/${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (!error) {
+    const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+    return { photo_url: data.publicUrl, photo_path: storagePath, dataUrl: null };
+  }
+  return { photo_url: null, photo_path: null, dataUrl: await blobToDataUrl(optimized.blob) };
+}
+
+export async function createBiographySubmission(
+  input: {
+    full_name: string;
+    email?: string;
+    category_id?: string;
+    profession?: string;
+    birth_place?: string;
+    biography: string;
+    notes?: string;
+  },
+  photo?: File | null
+): Promise<void> {
+  let photo_url: string | null = null;
+  let photo_path: string | null = null;
+  let dataUrl: string | null = null;
+
+  if (photo) {
+    const uploaded = await uploadSubmissionPhoto(photo);
+    photo_url = uploaded.photo_url;
+    photo_path = uploaded.photo_path;
+    dataUrl = uploaded.dataUrl;
+  }
+
+  const notes = input.notes?.trim() || null;
+  const row = {
     full_name: input.full_name.trim(),
     email: input.email?.trim() || null,
     category_id: input.category_id || null,
     profession: input.profession?.trim() || null,
     birth_place: input.birth_place?.trim() || null,
     biography: input.biography.trim(),
-    notes: input.notes?.trim() || null,
+    notes,
+    photo_url: photo_url || dataUrl,
+    photo_path,
+    status: 'pending' as const,
+  };
+
+  const { error } = await supabase.from('biography_submissions').insert(row);
+  if (!error) return;
+  if (!isMissingPhotoColumn(error.message) && !photo) throw error;
+
+  const { error: fallbackError } = await supabase.from('biography_submissions').insert({
+    full_name: row.full_name,
+    email: row.email,
+    category_id: row.category_id,
+    profession: row.profession,
+    birth_place: row.birth_place,
+    biography: row.biography,
+    notes: encodeSubmissionNotes(notes ?? '', { url: photo_url, path: photo_path, dataUrl }),
     status: 'pending',
   });
-  if (error) throw error;
+  if (fallbackError) throw fallbackError;
 }
 
 export async function fetchSubmissions(status?: SubmissionStatus | 'all'): Promise<BiographySubmission[]> {
@@ -240,6 +348,88 @@ export async function updateSubmissionStatus(id: string, status: SubmissionStatu
 export async function deleteSubmission(id: string): Promise<void> {
   const { error } = await supabase.from('biography_submissions').delete().eq('id', id);
   if (error) throw error;
+}
+
+export async function updateSubmission(
+  id: string,
+  input: {
+    full_name: string;
+    email?: string | null;
+    category_id?: string | null;
+    profession?: string | null;
+    birth_place?: string | null;
+    biography: string;
+    notes?: string | null;
+    status?: SubmissionStatus;
+  },
+  options?: {
+    photo?: File | null;
+    clearPhoto?: boolean;
+    current?: BiographySubmission;
+  }
+): Promise<BiographySubmission> {
+  const parsed = parseSubmissionPhoto(
+    options?.current ?? { notes: input.notes ?? null, photo_url: null, photo_path: null }
+  );
+  let photo_url = parsed.photoUrl;
+  let photo_path = parsed.photoPath;
+  const userNotes = input.notes ?? parsed.notes;
+
+  async function removeStoredPhoto(path: string | null) {
+    if (!path || path.startsWith('data:')) return;
+    await supabase.storage.from(PEOPLE_IMAGES_BUCKET).remove([path]).catch(() => undefined);
+  }
+
+  if (options?.clearPhoto) {
+    await removeStoredPhoto(photo_path);
+    photo_url = null;
+    photo_path = null;
+  }
+
+  if (options?.photo) {
+    await removeStoredPhoto(photo_path);
+    const uploaded = await uploadSubmissionPhoto(options.photo);
+    photo_url = uploaded.photo_url || uploaded.dataUrl;
+    photo_path = uploaded.photo_path;
+  }
+
+  const base = {
+    full_name: input.full_name.trim(),
+    email: input.email?.trim() || null,
+    category_id: input.category_id || null,
+    profession: input.profession?.trim() || null,
+    birth_place: input.birth_place?.trim() || null,
+    biography: input.biography.trim(),
+    notes: userNotes?.trim() || null,
+    ...(input.status ? { status: input.status } : {}),
+  };
+
+  const { data, error } = await supabase
+    .from('biography_submissions')
+    .update({ ...base, photo_url, photo_path })
+    .eq('id', id)
+    .select('*, category:categories(*)')
+    .single();
+
+  if (!error) return data as BiographySubmission;
+  if (!isMissingPhotoColumn(error.message)) throw error;
+
+  const { data: fallback, error: fallbackError } = await supabase
+    .from('biography_submissions')
+    .update({
+      ...base,
+      notes: encodeSubmissionNotes(userNotes ?? '', {
+        url: photo_url?.startsWith('data:') ? null : photo_url,
+        path: photo_path,
+        dataUrl: photo_url?.startsWith('data:') ? photo_url : null,
+      }),
+    })
+    .eq('id', id)
+    .select('*, category:categories(*)')
+    .single();
+
+  if (fallbackError) throw fallbackError;
+  return fallback as BiographySubmission;
 }
 
 export async function fetchPersonBySlug(slug: string): Promise<Person | null> {

@@ -6,6 +6,7 @@ import { useToast } from '../../context/ToastContext';
 import { fetchCategories, fetchPersonById, fetchSiteSettings } from '../../lib/api';
 import {
   addGalleryImage,
+  applySubmissionPhoto,
   clearProfileImage,
   createPerson,
   deleteGalleryImage,
@@ -19,7 +20,14 @@ export function PersonFormPage() {
   const isEdit = Boolean(id);
   const navigate = useNavigate();
   const location = useLocation();
-  const draft = (location.state as { draft?: Partial<PersonFormValues> } | null)?.draft;
+  const locationState = location.state as {
+    draft?: Partial<PersonFormValues>;
+    photoUrl?: string | null;
+    photoPath?: string | null;
+  } | null;
+  const draft = locationState?.draft;
+  const draftPhotoUrl = locationState?.photoUrl ?? null;
+  const draftPhotoPath = locationState?.photoPath ?? null;
   const { notify } = useToast();
   const [person, setPerson] = useState<Person | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -81,6 +89,8 @@ export function PersonFormPage() {
         await clearProfileImage(saved.id, person?.profile_image_path);
       } else if (extras.profileFile) {
         await setProfileImage(saved.id, extras.profileFile, person?.profile_image_path);
+      } else if (draftPhotoUrl && !isEdit) {
+        await applySubmissionPhoto(saved.id, draftPhotoUrl, draftPhotoPath);
       }
 
       for (const image of extras.removedGallery) {
@@ -113,6 +123,7 @@ export function PersonFormPage() {
       <PersonForm
         person={person}
         draft={draft}
+        initialPhotoUrl={draftPhotoUrl}
         categories={categories}
         defaultSource={defaults}
         saving={saving}

@@ -1,5 +1,5 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
-import { optimizeImage } from './image';
+import { dataUrlToFile, optimizeImage } from './image';
 import { slugify } from './slug';
 import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchPoems } from './api';
 import type {
@@ -171,6 +171,22 @@ export async function setProfileImage(personId: string, file: File, previousPath
     .eq('id', personId);
   if (error) throw error;
   return uploaded;
+}
+
+export async function applySubmissionPhoto(personId: string, photoUrl: string, photoPath?: string | null) {
+  if (photoUrl.startsWith('data:')) {
+    const file = await dataUrlToFile(photoUrl);
+    await setProfileImage(personId, file);
+    return;
+  }
+  const { error } = await supabase
+    .from('people')
+    .update({
+      profile_image_url: photoUrl,
+      profile_image_path: photoPath || null,
+    })
+    .eq('id', personId);
+  if (error) throw error;
 }
 
 export async function addGalleryImage(personId: string, file: File, caption?: string) {

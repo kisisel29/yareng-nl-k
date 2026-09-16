@@ -9,7 +9,10 @@ export function isAllowedImage(file: File): boolean {
   return typeOk || extOk;
 }
 
-export async function optimizeImage(file: File): Promise<{ blob: Blob; ext: string; contentType: string }> {
+export async function optimizeImage(
+  file: File,
+  maxWidth = MAX_IMAGE_WIDTH
+): Promise<{ blob: Blob; ext: string; contentType: string }> {
   if (!isAllowedImage(file)) {
     throw new Error('Yalnızca JPG, JPEG, PNG veya WEBP yükleyebilirsiniz.');
   }
@@ -19,7 +22,7 @@ export async function optimizeImage(file: File): Promise<{ blob: Blob; ext: stri
 
   try {
     const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, MAX_IMAGE_WIDTH / bitmap.width);
+    const scale = Math.min(1, maxWidth / bitmap.width);
     const width = Math.round(bitmap.width * scale);
     const height = Math.round(bitmap.height * scale);
 
@@ -49,6 +52,21 @@ export async function optimizeImage(file: File): Promise<{ blob: Blob; ext: stri
   } catch {
     return { blob: file, ext: extensionOf(file), contentType: file.type || 'image/jpeg' };
   }
+}
+
+export function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Fotoğraf okunamadı.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+export async function dataUrlToFile(dataUrl: string, filename = 'vesikalik.jpg'): Promise<File> {
+  const response = await fetch(dataUrl);
+  const blob = await response.blob();
+  return new File([blob], filename, { type: blob.type || 'image/jpeg' });
 }
 
 function extensionOf(file: File): string {

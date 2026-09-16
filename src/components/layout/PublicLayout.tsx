@@ -6,7 +6,7 @@ import { ColumnistsSidebar } from '../columnists/ColumnistsSidebar';
 
 export function PublicLayout() {
   return (
-    <div className="public-site flex min-h-screen flex-col bg-white text-ink-800">
+    <div className="public-site flex min-h-screen flex-col bg-cream-50 text-ink-800">
       <ContentProtection />
       <Header />
       <div className="mx-auto flex w-full max-w-7xl flex-1">
@@ -16,7 +16,7 @@ export function PublicLayout() {
           </div>
           <Outlet />
         </main>
-        <aside className="hidden w-72 shrink-0 border-l border-cream-200 bg-cream-50 lg:block">
+        <aside className="hidden w-72 shrink-0 border-l border-cream-200 bg-cream-100 lg:block">
           <div className="sticky top-[3.6rem] max-h-[calc(100vh-3.6rem)] overflow-y-auto">
             <ColumnistsSidebar />
           </div>

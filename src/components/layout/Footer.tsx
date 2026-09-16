@@ -16,7 +16,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="mt-auto border-t border-cream-200 bg-white pb-[env(safe-area-inset-bottom)]">
+    <footer className="mt-auto border-t border-cream-200 bg-cream-50 pb-[env(safe-area-inset-bottom)]">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -43,19 +43,19 @@ export function Footer() {
               GÜMÜŞHANELİ SİMALAR
             </Link>
             <Link to={ABOUT_PAGE_PATH} className="hover:text-ink-900">
-              İsmail Hayal
+              İSMAİL HAYAL
             </Link>
             <Link to={POEMS_PAGE_PATH} className="hover:text-ink-900">
-              Şiirler
+              ŞİİRLER
             </Link>
             <Link to={AUTHOR_PAGE_PATH} className="hover:text-ink-900">
-              Kitaplarım
+              KİTAPLARIM
             </Link>
             <Link to={COLUMNISTS_PAGE_PATH} className="hover:text-ink-900">
-              Köşe Yazarları
+              KÖŞE YAZARLARI
             </Link>
             <Link to="/biyografi-gonder" className="hover:text-ink-900">
-              Biyografi Gönder
+              BİYOGRAFİ GÖNDER
             </Link>
           </div>
           <div className="text-sm">

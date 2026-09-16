@@ -41,7 +41,7 @@ export function LoginPage() {
   return (
     <>
       <Seo title="Yönetici Girişi" path="/login" noindex />
-      <div className="flex min-h-screen items-center justify-center bg-white px-4">
+      <div className="flex min-h-screen items-center justify-center bg-cream-50 px-4">
         <div className="w-full max-w-md border border-cream-200 p-8">
           <Link to="/" aria-label={SITE_NAME} className="mx-auto mb-4 block w-24">
             <SiteLogo className="h-24 w-24" decorative />

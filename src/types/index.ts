@@ -76,6 +76,8 @@ export interface BiographySubmission {
   birth_place: string | null;
   biography: string;
   notes: string | null;
+  photo_url?: string | null;
+  photo_path?: string | null;
   status: SubmissionStatus;
   created_at: string;
   category?: Category | null;

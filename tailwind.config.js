@@ -5,11 +5,11 @@ export default {
     extend: {
       colors: {
         cream: {
-          50: '#FFFFFF',
-          100: '#F6F6F3',
-          200: '#EBEBE6',
-          300: '#D8D8D1',
-          400: '#B5B5AC',
+          50: '#F7F5F0',
+          100: '#EFECE4',
+          200: '#E2DDD3',
+          300: '#CFC8BA',
+          400: '#B3AB9C',
         },
         ink: {
           500: '#6F6F6A',
