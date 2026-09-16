@@ -15,7 +15,7 @@ export function AlphabetIndex({ activeLetter = '', onSelect }: AlphabetIndexProp
           const active = activeLetter === letter;
           const className = cn(
             'flex h-10 min-w-10 items-center justify-center rounded-sm px-2 text-sm',
-            active ? 'bg-ink-900 text-white' : 'text-ink-700 hover:bg-cream-100'
+            active ? 'bg-[#f3f1eb] text-[#111110]' : 'text-ink-700 hover:bg-white/10'
           );
 
           if (onSelect) {

@@ -6,7 +6,7 @@ import { ColumnistsSidebar } from '../columnists/ColumnistsSidebar';
 
 export function PublicLayout() {
   return (
-    <div className="public-site flex min-h-screen flex-col bg-cream-50 text-ink-800">
+    <div className="public-site flex min-h-screen flex-col text-ink-800">
       <ContentProtection />
       <Header />
       <div className="mx-auto flex w-full max-w-7xl flex-1">

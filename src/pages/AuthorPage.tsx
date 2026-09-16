@@ -73,7 +73,7 @@ export function AuthorPage() {
         jsonLd={jsonLd}
       />
 
-      <section className="bg-ink-900 text-cream-50">
+      <section className="bg-black text-cream-50">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-14 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-cream-300">İsmail Hayal</p>

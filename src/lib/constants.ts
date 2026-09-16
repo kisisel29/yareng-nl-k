@@ -3,6 +3,7 @@ export const FEATURED_LIMIT = 8;
 export const SEARCH_DEBOUNCE_MS = 350;
 
 export const SITE_NAME = 'Gümüşhaneli Simalar';
+export const SITE_NAME_CAPS = 'GÜMÜŞHANELİ SİMALAR';
 export const SITE_TAGLINE = "Gümüşhane'nin İnsan Hafızası";
 export const AUTHOR_NAME = 'İsmail Hayal';
 export const AUTHOR_PAGE_PATH = '/kitaplarim';

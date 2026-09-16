@@ -16,7 +16,7 @@ import {
   Feather,
   X,
 } from 'lucide-react';
-import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME } from '../../lib/constants';
+import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -60,7 +60,7 @@ export function AdminLayout() {
                 <SiteLogo className="h-11 w-11" decorative />
               </span>
               <span>
-                <span className="block font-serif text-lg text-cream-50">{SITE_NAME}</span>
+                <span className="block font-serif text-lg text-cream-50">{SITE_NAME_CAPS}</span>
                 <span className="block text-xs text-cream-300">Yönetim</span>
               </span>
             </Link>

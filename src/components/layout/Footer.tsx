@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ABOUT_PAGE_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, POEMS_PAGE_PATH, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
+import { ABOUT_PAGE_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, POEMS_PAGE_PATH, SITE_NAME_CAPS, SITE_TAGLINE } from '../../lib/constants';
 import { fetchCategories } from '../../lib/api';
 import { SocialLinks } from './SocialLinks';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -16,14 +16,14 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="mt-auto border-t border-cream-200 bg-cream-50 pb-[env(safe-area-inset-bottom)]">
+    <footer className="mt-auto border-t border-cream-200 bg-black/80 pb-[env(safe-area-inset-bottom)]">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <Link to="/" className="inline-flex items-center gap-3">
               <SiteLogo className="h-16 w-16 shrink-0" decorative />
               <span>
-                <span className="block font-serif text-lg text-ink-900">{SITE_NAME}</span>
+                <span className="block font-serif text-lg text-ink-900">{SITE_NAME_CAPS}</span>
                 <span className="mt-0.5 block text-sm">{SITE_TAGLINE}</span>
               </span>
             </Link>

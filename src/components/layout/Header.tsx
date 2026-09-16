@@ -36,7 +36,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-cream-200 bg-cream-50/95 pt-[env(safe-area-inset-top)] backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-cream-200 bg-black/80 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
         <SiteWordmark className="min-w-0 shrink" />
 
@@ -68,7 +68,7 @@ export function Header() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Ara"
-              className="w-full rounded-sm border border-cream-300 py-2 pl-9 pr-3 text-sm focus:border-ink-900 focus:outline-none"
+              className="w-full rounded-sm border border-cream-300 bg-cream-100 py-2 pl-9 pr-3 text-sm text-ink-800 focus:border-ink-900 focus:outline-none"
             />
           </label>
         </form>

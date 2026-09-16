@@ -200,7 +200,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-ink-900 text-cream-50">
+      <section className="bg-black text-cream-50">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -212,7 +212,7 @@ export function HomePage() {
             </div>
             <Link
               to={AUTHOR_PAGE_PATH}
-              className="inline-flex items-center justify-center bg-white px-5 py-3 text-sm font-semibold text-ink-900 hover:bg-cream-100"
+              className="inline-flex items-center justify-center bg-[#f3f1eb] px-5 py-3 text-sm font-semibold text-[#111110] hover:bg-white"
             >
               Tüm kitapları gör
             </Link>
