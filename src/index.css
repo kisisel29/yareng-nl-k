@@ -13,101 +13,20 @@ body {
 }
 
 .public-site {
-  color-scheme: dark;
-  background-color: #080808;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1.15px);
-  background-size: 17px 17px;
-  color: #eceae4;
+  color-scheme: light;
+  background-color: #e4d5b8;
+  background-image:
+    linear-gradient(rgb(245 234 210 / 0.55), rgb(240 226 196 / 0.72)),
+    url('/bg-parchment.jpg');
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
 }
 
-.public-site .text-ink-900,
-.public-site .text-ink-800 {
-  color: #f5f3ee;
-}
-
-.public-site .text-ink-700 {
-  color: #d8d6cf;
-}
-
-.public-site .text-ink-600 {
-  color: #c2c0b8;
-}
-
-.public-site .text-ink-500 {
-  color: #a09e96;
-}
-
-.public-site .bg-cream-50,
-.public-site .bg-cream-50\/95 {
-  background-color: rgb(8 8 8 / 0.88);
-}
-
-.public-site .bg-cream-100 {
-  background-color: rgb(24 24 22 / 0.92);
-}
-
-.public-site .bg-white {
-  background-color: rgb(18 18 16 / 0.92);
-}
-
-.public-site .border-cream-100,
-.public-site .border-cream-200,
-.public-site .border-cream-300,
-.public-site .border-cream-400 {
-  border-color: rgb(255 255 255 / 0.14);
-}
-
-.public-site .hover\:bg-cream-50:hover,
-.public-site .hover\:bg-cream-100:hover {
-  background-color: rgb(255 255 255 / 0.08);
-}
-
-.public-site .hover\:text-ink-900:hover,
-.public-site .hover\:text-ink-800:hover,
-.public-site .hover\:text-ink-700:hover {
-  color: #ffffff;
-}
-
-.public-site .hover\:border-ink-900:hover {
-  border-color: rgb(255 255 255 / 0.45);
-}
-
-.public-site .border-ink-900 {
-  border-color: #f3f1eb;
-}
-
-.public-site .bg-ink-900 {
-  background-color: #f3f1eb;
-  color: #111110;
-}
-
-.public-site .hover\:bg-ink-700:hover {
-  background-color: #ddd9cf;
-}
-
-.public-site .text-white {
-  color: #111110;
-}
-
-.public-site .text-burgundy-700 {
-  color: #8ec0ea;
-}
-
-.public-site .placeholder\:text-ink-500\/70::placeholder {
-  color: rgb(160 158 150 / 0.72);
-}
-
-.public-site .prose-archive {
-  color: #d8d6cf;
-}
-
-.public-site .prose-archive h2,
-.public-site .prose-archive h3 {
-  color: #f5f3ee;
-}
-
-.public-site ::selection {
-  background: #8ec0ea55;
+@media (min-width: 768px) {
+  .public-site {
+    background-attachment: fixed;
+  }
 }
 
 img,

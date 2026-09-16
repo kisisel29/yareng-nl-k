@@ -212,7 +212,7 @@ export function HomePage() {
             </div>
             <Link
               to={AUTHOR_PAGE_PATH}
-              className="inline-flex items-center justify-center bg-[#f3f1eb] px-5 py-3 text-sm font-semibold text-[#111110] hover:bg-white"
+              className="inline-flex items-center justify-center bg-white px-5 py-3 text-sm font-semibold text-ink-900 hover:bg-cream-100"
             >
               Tüm kitapları gör
             </Link>
