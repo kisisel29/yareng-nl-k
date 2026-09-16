@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { letterFilterVariants, sanitizeSearchTerm } from './slug';
+import { lastNameStartsWithLetter, sanitizeSearchTerm } from './slug';
 import { PAGE_SIZE } from './constants';
 import type {
   AuthorBook,
@@ -91,7 +91,7 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
     request = request.eq('category_id', category.id);
   }
 
-  if (query) {
+  if (query && !params.letter) {
     const like = `%${query}%`;
     request = request.or(
       [
@@ -108,15 +108,19 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
     );
   }
 
-  if (params.letter) {
-    const variants = letterFilterVariants(params.letter);
-    request = request.or(variants.map((item) => `last_name.ilike.${item}%`).join(','));
-  }
-
   if (params.sortAlpha || params.letter) {
     request = request.order('last_name', { ascending: true }).order('first_name', { ascending: true });
   } else {
     request = request.order('featured', { ascending: false }).order('last_name', { ascending: true });
+  }
+
+  if (params.letter) {
+    const { data, error } = await request;
+    if (error) throw error;
+    const items = ((data as Person[]) ?? []).filter((person) =>
+      lastNameStartsWithLetter(person.last_name, params.letter as string)
+    );
+    return { items: items.slice(from, to + 1), total: items.length };
   }
 
   const { data, error, count } = await request.range(from, to);

@@ -64,6 +64,7 @@ export function PeoplePage() {
     if (value) next.set(key, value);
     else next.delete(key);
     if (key !== 'sayfa') next.delete('sayfa');
+    if (key === 'harf' && value) next.delete('q');
     setParams(next);
   }
 
