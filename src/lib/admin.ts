@@ -1,7 +1,7 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { optimizeImage } from './image';
 import { slugify } from './slug';
-import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists } from './api';
+import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchPoems } from './api';
 import type {
   AuthorBook,
   AuthorBookFormValues,
@@ -14,6 +14,8 @@ import type {
   Person,
   PersonFormValues,
   PersonStatus,
+  Poem,
+  PoemFormValues,
   Source,
 } from '../types';
 
@@ -587,4 +589,86 @@ export async function deleteColumnistArticle(columnistId: string, articleId: str
         : item
     )
   );
+}
+
+async function writePoems(list: Poem[]): Promise<void> {
+  await upsertSiteSettings({ poems: JSON.stringify(list) });
+}
+
+async function uploadPoemImage(file: File) {
+  const optimized = await optimizeImage(file);
+  const storagePath = `poems/${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: data.publicUrl, storagePath };
+}
+
+export async function createPoem(values: PoemFormValues, image?: File | null): Promise<Poem> {
+  const list = await fetchPoems({ includeUnpublished: true });
+  const now = new Date().toISOString();
+  const taken = new Set(list.map((item) => item.slug));
+  let image_url: string | null = null;
+  let image_path: string | null = null;
+  if (image) {
+    const uploaded = await uploadPoemImage(image);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
+  const created: Poem = {
+    id: crypto.randomUUID(),
+    title: values.title.trim(),
+    slug: uniqueSlug(values.title, taken, 'siir'),
+    body: values.body,
+    image_url,
+    image_path,
+    published: values.published,
+    created_at: now,
+    updated_at: now,
+  };
+  await writePoems([created, ...list]);
+  return created;
+}
+
+export async function updatePoem(
+  id: string,
+  values: PoemFormValues,
+  image?: File | null,
+  clearImage = false
+): Promise<Poem> {
+  const list = await fetchPoems({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === id);
+  if (!existing) throw new Error('Şiir bulunamadı.');
+  let image_url = existing.image_url;
+  let image_path = existing.image_path;
+  if (clearImage) {
+    await removeStoragePath(image_path);
+    image_url = null;
+    image_path = null;
+  } else if (image) {
+    const uploaded = await uploadPoemImage(image);
+    await removeStoragePath(image_path);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
+  const updated: Poem = {
+    ...existing,
+    title: values.title.trim(),
+    body: values.body,
+    image_url,
+    image_path,
+    published: values.published,
+    updated_at: new Date().toISOString(),
+  };
+  await writePoems(list.map((item) => (item.id === id ? updated : item)));
+  return updated;
+}
+
+export async function deletePoem(poem: Poem): Promise<void> {
+  await removeStoragePath(poem.image_path);
+  const list = await fetchPoems({ includeUnpublished: true });
+  await writePoems(list.filter((item) => item.id !== poem.id));
 }

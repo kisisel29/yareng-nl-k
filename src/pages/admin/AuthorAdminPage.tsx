@@ -190,7 +190,7 @@ export function AuthorAdminPage() {
         <div>
           <h1 className="font-serif text-3xl text-ink-900">Kitaplarım</h1>
           <p className="mt-1 text-sm text-ink-500">
-            Kitapları buradan ekleyin. Özgeçmiş Hakkında sayfasında görünür.
+            Kitapları buradan ekleyin. Özgeçmiş İsmail Hayal sayfasında görünür.
           </p>
         </div>
         <Link to={AUTHOR_PAGE_PATH} className="text-sm text-burgundy-700 hover:underline">
@@ -200,7 +200,7 @@ export function AuthorAdminPage() {
 
       <section className="mt-8 rounded-lg border border-cream-200 bg-white p-5 sm:p-6">
         <h2 className="font-serif text-2xl text-ink-900">Hakkında / özgeçmiş</h2>
-        <p className="mt-1 text-sm text-ink-500">Bu bölüm sitede Hakkında sayfasında gösterilir.</p>
+        <p className="mt-1 text-sm text-ink-500">Bu bölüm sitede İsmail Hayal sayfasında gösterilir.</p>
         <form
           className="mt-5 space-y-4"
           onSubmit={(event) => {

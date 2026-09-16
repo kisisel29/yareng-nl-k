@@ -8,6 +8,7 @@ import {
   AUTHOR_ADMIN_PATH,
   AUTHOR_NAME,
   AUTHOR_PAGE_PATH,
+  ABOUT_PAGE_PATH,
   BOOK_SECTIONS,
   DEFAULT_AUTHOR_BIOGRAPHY,
   DEFAULT_AUTHOR_SHORT_BIO,
@@ -55,9 +56,9 @@ export function AboutPage() {
   return (
     <>
       <Seo
-        title="Hakkında"
+        title="İsmail Hayal"
         description="İsmail Hayal'in resmi sitesi. Gümüşhaneli Simalar dijital arşivi ve yazarın özgeçmişi."
-        path="/hakkinda"
+        path={ABOUT_PAGE_PATH}
         image={profile.photo_url}
         jsonLd={{
           '@context': 'https://schema.org',
@@ -74,7 +75,7 @@ export function AboutPage() {
       />
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         <SiteLogo className="mx-auto mb-8 h-36 w-36 sm:h-44 sm:w-44" />
-        <h1 className="text-center font-serif text-4xl text-ink-900">Hakkında</h1>
+        <h1 className="text-center font-serif text-4xl text-ink-900">İsmail Hayal</h1>
         {user ? (
           <p className="mt-3 text-center">
             <Link to={AUTHOR_ADMIN_PATH} className="text-sm text-burgundy-700 hover:underline">

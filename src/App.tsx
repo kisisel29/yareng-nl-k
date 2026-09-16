@@ -27,11 +27,17 @@ const AuthorPage = lazy(() =>
 const ColumnistsPage = lazy(() =>
   import('./pages/ColumnistsPage').then((module) => ({ default: module.ColumnistsPage }))
 );
+const PoemsPage = lazy(() =>
+  import('./pages/PoemsPage').then((module) => ({ default: module.PoemsPage }))
+);
 const AuthorAdminPage = lazy(() =>
   import('./pages/admin/AuthorAdminPage').then((module) => ({ default: module.AuthorAdminPage }))
 );
 const ColumnistsAdminPage = lazy(() =>
   import('./pages/admin/ColumnistsAdminPage').then((module) => ({ default: module.ColumnistsAdminPage }))
+);
+const PoemsAdminPage = lazy(() =>
+  import('./pages/admin/PoemsAdminPage').then((module) => ({ default: module.PoemsAdminPage }))
 );
 const DashboardPage = lazy(() =>
   import('./pages/admin/DashboardPage').then((module) => ({ default: module.DashboardPage }))
@@ -92,6 +98,7 @@ export default function App() {
               <Route path="/admin/kaynaklar" element={<SourcesPage />} />
               <Route path="/admin/basvurular" element={<SubmissionsPage />} />
               <Route path="/admin/kitaplarim" element={<AuthorAdminPage />} />
+              <Route path="/admin/siirler" element={<PoemsAdminPage />} />
               <Route path="/admin/kose-yazarlari" element={<ColumnistsAdminPage />} />
               <Route path="/admin/ismail-hayal" element={<Navigate to="/admin/kitaplarim" replace />} />
               <Route path="/admin/ayarlar" element={<SettingsPage />} />
@@ -103,11 +110,13 @@ export default function App() {
             <Route path="/simalar" element={<PeoplePage />} />
             <Route path="/simalar/:slug" element={<PersonDetailPage />} />
             <Route path="/kitaplarim" element={<AuthorPage />} />
+            <Route path="/siirler/:slug" element={<PoemsPage />} />
+            <Route path="/siirler" element={<PoemsPage />} />
             <Route path="/kose-yazarlari/:slug/:articleSlug" element={<ColumnistsPage />} />
             <Route path="/kose-yazarlari/:slug" element={<ColumnistsPage />} />
             <Route path="/kose-yazarlari" element={<ColumnistsPage />} />
-            <Route path="/ismail-hayal" element={<Navigate to="/kitaplarim" replace />} />
-            <Route path="/hakkinda" element={<AboutPage />} />
+            <Route path="/ismail-hayal" element={<AboutPage />} />
+            <Route path="/hakkinda" element={<Navigate to="/ismail-hayal" replace />} />
             <Route path="/biyografi-gonder" element={<SubmitBiographyPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

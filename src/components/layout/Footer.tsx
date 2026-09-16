@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
+import { ABOUT_PAGE_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, POEMS_PAGE_PATH, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
 import { fetchCategories } from '../../lib/api';
 import { SocialLinks } from './SocialLinks';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -32,7 +32,7 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <Link to="/hakkinda" className="text-sm font-medium text-ink-900 hover:text-ink-700">
+            <Link to={ABOUT_PAGE_PATH} className="text-sm font-medium text-ink-900 hover:text-ink-700">
               {AUTHOR_NAME}
             </Link>
             <p className="mt-1 text-sm text-ink-600">Eğitimci, şair ve yazar</p>
@@ -40,19 +40,22 @@ export function Footer() {
           </div>
           <div className="flex flex-col gap-3 text-sm">
             <Link to="/simalar" className="hover:text-ink-900">
-              Simalar
+              Gümüşhaneli Simalar
             </Link>
-            <Link to={AUTHOR_PAGE_PATH} className="font-semibold text-burgundy-700 hover:text-burgundy-800">
+            <Link to={ABOUT_PAGE_PATH} className="hover:text-ink-900">
+              İsmail Hayal
+            </Link>
+            <Link to={POEMS_PAGE_PATH} className="hover:text-ink-900">
+              Şiirler
+            </Link>
+            <Link to={AUTHOR_PAGE_PATH} className="hover:text-ink-900">
               Kitaplarım
             </Link>
             <Link to={COLUMNISTS_PAGE_PATH} className="hover:text-ink-900">
               Köşe Yazarları
             </Link>
-            <Link to="/hakkinda" className="hover:text-ink-900">
-              Hakkında
-            </Link>
             <Link to="/biyografi-gonder" className="hover:text-ink-900">
-              Biyografi gönder
+              Biyografi Gönder
             </Link>
           </div>
           <div className="text-sm">

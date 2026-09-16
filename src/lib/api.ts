@@ -10,6 +10,7 @@ import type {
   ColumnistArticle,
   Person,
   PersonSearchParams,
+  Poem,
   SiteSettingsMap,
   Source,
   SubmissionStatus,
@@ -486,4 +487,32 @@ export async function fetchColumnistArticle(
   const article = columnist.articles.find((item) => item.slug === articleSlug);
   if (!article) return null;
   return { columnist, article };
+}
+
+export async function fetchPoems(options?: { includeUnpublished?: boolean }): Promise<Poem[]> {
+  const settings = await fetchSiteSettings();
+  const parsed = parseJson<Partial<Poem>[]>(settings.poems, []);
+  const list = (Array.isArray(parsed) ? parsed : [])
+    .filter((item): item is Poem => Boolean(item?.id && item?.title && item?.slug))
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      body: item.body ?? '',
+      image_url: item.image_url ?? null,
+      image_path: item.image_path ?? null,
+      published: item.published !== false,
+      created_at: item.created_at ?? '',
+      updated_at: item.updated_at ?? '',
+    }));
+  const visible = options?.includeUnpublished ? list : list.filter((item) => item.published);
+  return visible.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+}
+
+export async function fetchPoemBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<Poem | null> {
+  const list = await fetchPoems(options);
+  return list.find((item) => item.slug === slug) ?? null;
 }

@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Search, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
-import { AUTHOR_PAGE_PATH } from '../../lib/constants';
+import { ABOUT_PAGE_PATH, POEMS_PAGE_PATH } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { SocialLinks } from './SocialLinks';
 import { SearchBox } from '../people/SearchBox';
@@ -16,11 +16,11 @@ export function Header() {
   const { user } = useAuth();
   const NAV = [
     { to: '/', label: 'Ana Sayfa' },
-    { to: AUTHOR_PAGE_PATH, label: 'Kitaplarım', featured: true },
-    { to: '/simalar', label: 'Simalar' },
-    { to: '/hakkinda', label: 'Hakkında' },
-    { to: '/biyografi-gonder', label: 'Biyografi gönder' },
-    { to: user ? '/admin' : '/login', label: user ? 'Yönetim' : 'Giriş' },
+    { to: '/simalar', label: 'Gümüşhaneli Simalar' },
+    { to: ABOUT_PAGE_PATH, label: 'İsmail Hayal' },
+    { to: POEMS_PAGE_PATH, label: 'Şiirler' },
+    { to: '/biyografi-gonder', label: 'Biyografi Gönder' },
+    { to: user ? '/admin' : '/login', label: 'Yönetim' },
   ];
 
   useEffect(() => {
@@ -37,27 +37,20 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-cream-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
         <SiteWordmark className="min-w-0 shrink" />
 
-        <nav className="hidden items-center gap-5 lg:flex">
+        <nav className="hidden items-center gap-3 xl:gap-5 lg:flex">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                item.featured
-                  ? cn(
-                      'rounded-sm px-3 py-1.5 text-sm font-semibold tracking-wide',
-                      isActive
-                        ? 'bg-burgundy-700 text-white'
-                        : 'bg-burgundy-700 text-white hover:bg-burgundy-800'
-                    )
-                  : cn(
-                      'border-b-2 pb-0.5 text-sm',
-                      isActive ? 'border-ink-900 text-ink-900' : 'border-transparent text-ink-600 hover:text-ink-900'
-                    )
+                cn(
+                  'border-b-2 pb-0.5 text-sm',
+                  isActive ? 'border-ink-900 text-ink-900' : 'border-transparent text-ink-600 hover:text-ink-900'
+                )
               }
             >
               {item.label}
@@ -100,12 +93,7 @@ export function Header() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  item.featured
-                    ? cn(
-                        'my-1 min-h-11 rounded-sm px-3 py-3 text-base font-semibold',
-                        isActive ? 'bg-burgundy-700 text-white' : 'bg-burgundy-700 text-white'
-                      )
-                    : cn('min-h-11 px-2 py-3 text-base', isActive ? 'text-ink-900' : 'text-ink-600')
+                  cn('min-h-11 px-2 py-3 text-base', isActive ? 'text-ink-900' : 'text-ink-600')
                 }
               >
                 {item.label}
