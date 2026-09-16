@@ -84,7 +84,7 @@ export function PeoplePage() {
           {activeCategory
             ? `İsmail Hayal'in Gümüşhaneli Simalar eserindeki ${activeCategory.name} bölümü.`
             : letter
-              ? `Soyadı ${letter} harfi ile başlayan simalar.`
+              ? `Adı veya soyadı ${letter} harfi ile başlayan simalar.`
               : 'Ad, soyad, meslek, doğum yeri veya kitap bölümüne göre arayın.'}
         </p>
         <div className="mt-8 max-w-xl">

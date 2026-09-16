@@ -159,7 +159,7 @@ export function HomePage() {
 
       <section className="border-b border-cream-200">
         <SiteBanner />
-        <div className="mx-auto max-w-3xl px-4 pb-10 text-center sm:px-6 sm:pb-14">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <SiteLogo
             className="relative z-10 mx-auto -mt-8 h-[5.5rem] w-[5.5rem] sm:-mt-12 sm:h-28 sm:w-28"
             decorative
@@ -194,6 +194,10 @@ export function HomePage() {
             ) : null}
           </div>
         </div>
+        <div className="mx-auto max-w-6xl px-4 pb-10 pt-8 sm:px-6 sm:pb-14">
+          <p className="mb-3 text-center text-xs uppercase tracking-[0.16em] text-ink-500">Harfe göre isimler</p>
+          <AlphabetIndex />
+        </div>
       </section>
 
       <section className="bg-ink-900 text-cream-50">
@@ -224,12 +228,6 @@ export function HomePage() {
           ) : (
             <p className="mt-10 text-cream-200">Kitap kapakları ve yeni eserler yakında burada yer alacak.</p>
           )}
-        </div>
-      </section>
-
-      <section className="border-b border-cream-200">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-          <AlphabetIndex />
         </div>
       </section>
 
