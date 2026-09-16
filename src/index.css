@@ -13,18 +13,29 @@ body {
 }
 
 .public-site {
+  position: relative;
+  isolation: isolate;
   color-scheme: light;
-  background-color: #e4d5b8;
+  background-color: #efe4cc;
+}
+
+.public-site::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: #efe4cc;
   background-image:
-    linear-gradient(rgb(245 234 210 / 0.55), rgb(240 226 196 / 0.72)),
+    linear-gradient(rgb(247 238 220 / 0.82), rgb(247 238 220 / 0.82)),
     url('/bg-parchment.jpg');
   background-size: cover;
   background-position: left center;
   background-repeat: no-repeat;
+  filter: saturate(0.88);
 }
 
 @media (min-width: 768px) {
-  .public-site {
+  .public-site::before {
     background-attachment: fixed;
   }
 }

@@ -16,7 +16,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="mt-auto border-t border-cream-200 bg-[#f3ead4]/88 pb-[env(safe-area-inset-bottom)]">
+    <footer className="mt-auto border-t border-cream-200 bg-transparent pb-[env(safe-area-inset-bottom)]">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>

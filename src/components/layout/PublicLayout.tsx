@@ -16,7 +16,7 @@ export function PublicLayout() {
           </div>
           <Outlet />
         </main>
-        <aside className="hidden w-72 shrink-0 border-l border-cream-200 bg-[#f3ead4]/70 lg:block">
+        <aside className="hidden w-72 shrink-0 border-l border-cream-200 lg:block">
           <div className="sticky top-[3.6rem] max-h-[calc(100vh-3.6rem)] overflow-y-auto">
             <ColumnistsSidebar />
           </div>

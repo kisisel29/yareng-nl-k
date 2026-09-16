@@ -18,7 +18,7 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
 
   if (variant === 'horizontal') {
     return (
-      <div className="border-b border-cream-200 bg-cream-50 px-4 py-3">
+      <div className="border-b border-cream-200 px-4 py-3">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-500">Köşe Yazarları</p>
           <Link to={COLUMNISTS_PAGE_PATH} className="text-xs text-burgundy-700 hover:underline">

@@ -36,7 +36,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-cream-200 bg-[#f3ead4]/88 pt-[env(safe-area-inset-top)] backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-cream-200 bg-transparent pt-[env(safe-area-inset-top)] backdrop-blur-[2px]">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
         <SiteWordmark className="min-w-0 shrink" />
 
