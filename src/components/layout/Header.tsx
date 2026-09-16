@@ -16,7 +16,7 @@ export function Header() {
   const { user } = useAuth();
   const NAV = [
     { to: '/', label: 'Ana Sayfa' },
-    { to: '/simalar', label: 'Gümüşhaneli Simalar' },
+    { to: '/simalar', label: 'GÜMÜŞHANELİ SİMALAR' },
     { to: ABOUT_PAGE_PATH, label: 'İsmail Hayal' },
     { to: POEMS_PAGE_PATH, label: 'Şiirler' },
     { to: '/biyografi-gonder', label: 'Biyografi Gönder' },

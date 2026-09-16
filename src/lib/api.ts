@@ -110,12 +110,7 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
 
   if (params.letter) {
     const variants = letterFilterVariants(params.letter);
-    const clauses = variants.flatMap((item) => [
-      `first_name.ilike.${item}%`,
-      `last_name.ilike.${item}%`,
-      `display_name.ilike.${item}%`,
-    ]);
-    request = request.or(clauses.join(','));
+    request = request.or(variants.map((item) => `last_name.ilike.${item}%`).join(','));
   }
 
   if (params.sortAlpha || params.letter) {

@@ -40,7 +40,7 @@ export function Footer() {
           </div>
           <div className="flex flex-col gap-3 text-sm">
             <Link to="/simalar" className="hover:text-ink-900">
-              Gümüşhaneli Simalar
+              GÜMÜŞHANELİ SİMALAR
             </Link>
             <Link to={ABOUT_PAGE_PATH} className="hover:text-ink-900">
               İsmail Hayal
