@@ -83,10 +83,10 @@ export function PoemsPage() {
         ) : null}
 
         {loading ? (
-          <div className="mt-10 h-80 animate-pulse bg-cream-100" />
+          <div className="mt-10 text-sm text-ink-500">Yükleniyor…</div>
         ) : (
           <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(16rem,20rem)_1fr]">
-            <div className="aspect-[3/4] border border-cream-200 bg-cream-100">
+            <div className="aspect-[3/4] border border-cream-200/70">
               {current?.image_url ? (
                 <img src={current.image_url} alt={current.title} className="h-full w-full object-cover" />
               ) : (
@@ -96,7 +96,7 @@ export function PoemsPage() {
                 </div>
               )}
             </div>
-            <div className="min-h-[24rem] border border-cream-200 bg-white px-6 py-8 sm:px-10">
+            <div className="min-h-[24rem] px-1 py-2 sm:px-2">
               {current ? (
                 <>
                   <h2 className="font-serif text-3xl text-ink-900">{current.title}</h2>

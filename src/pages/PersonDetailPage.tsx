@@ -136,7 +136,7 @@ export function PersonDetailPage() {
 
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-[16rem_1fr]">
           <div>
-            <div className="bg-cream-100">
+            <div>
               {activeImage ? (
                 <img src={activeImage} alt={name} className="aspect-[4/5] w-full object-cover" />
               ) : (

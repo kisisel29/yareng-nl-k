@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ColumnistAvatar } from '../components/columnists/ColumnistAvatar';
+import { ReactionBar } from '../components/columnists/ReactionBar';
 import { SocialShareButtons } from '../components/columnists/SocialShareButtons';
 import { fetchColumnistArticle, fetchColumnistBySlug, fetchColumnists } from '../lib/api';
 import { COLUMNISTS_ADMIN_PATH, COLUMNISTS_PAGE_PATH } from '../lib/constants';
@@ -213,6 +214,7 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
         <div className="mt-10">
           <SocialShareButtons url={path} title={article.title} />
         </div>
+        <ReactionBar targetKey={`article:${article.id}`} />
       </article>
     </>
   );

@@ -85,7 +85,7 @@ export function AboutPage() {
         ) : null}
 
         <section className="mt-12 grid items-start gap-8 sm:grid-cols-[11rem_1fr]">
-          <div className="bg-cream-100">
+          <div>
             {profile.photo_url ? (
               <img
                 src={profile.photo_url}

@@ -710,3 +710,110 @@ export async function fetchPoemBySlug(
   const list = await fetchPoems(options);
   return list.find((item) => item.slug === slug) ?? null;
 }
+
+export const REACTION_KEYS = ['love', 'dislike', 'laugh', 'sad', 'angry', 'wow'] as const;
+export type ReactionKey = (typeof REACTION_KEYS)[number];
+export type ReactionCounts = Record<ReactionKey, number>;
+
+const REACTION_CHOICE_PREFIX = 'gs-reaction:';
+const REACTION_COUNTS_PREFIX = 'gs-reaction-counts:';
+
+export function emptyReactions(): ReactionCounts {
+  return { love: 0, dislike: 0, laugh: 0, sad: 0, angry: 0, wow: 0 };
+}
+
+export function isReactionKey(value: string | null | undefined): value is ReactionKey {
+  return Boolean(value && REACTION_KEYS.includes(value as ReactionKey));
+}
+
+function normalizeCounts(input: unknown): ReactionCounts {
+  const counts = emptyReactions();
+  if (!input || typeof input !== 'object') return counts;
+  for (const key of REACTION_KEYS) {
+    const value = Number((input as Record<string, unknown>)[key]);
+    if (Number.isFinite(value) && value >= 0) counts[key] = Math.floor(value);
+  }
+  return counts;
+}
+
+function applyReactionVote(
+  counts: ReactionCounts,
+  reaction: ReactionKey,
+  previous: ReactionKey | null
+): ReactionCounts {
+  const next = { ...counts };
+  if (previous === reaction) {
+    next[reaction] = Math.max(0, next[reaction] - 1);
+  } else {
+    if (previous) next[previous] = Math.max(0, next[previous] - 1);
+    next[reaction] += 1;
+  }
+  return next;
+}
+
+export function readStoredReaction(key: string): ReactionKey | null {
+  try {
+    const value = localStorage.getItem(REACTION_CHOICE_PREFIX + key);
+    return isReactionKey(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredReaction(key: string, reaction: ReactionKey | null) {
+  try {
+    if (reaction) localStorage.setItem(REACTION_CHOICE_PREFIX + key, reaction);
+    else localStorage.removeItem(REACTION_CHOICE_PREFIX + key);
+  } catch {
+    /* ignore */
+  }
+}
+
+function readLocalReactionCounts(key: string): ReactionCounts {
+  try {
+    return normalizeCounts(JSON.parse(localStorage.getItem(REACTION_COUNTS_PREFIX + key) || '{}'));
+  } catch {
+    return emptyReactions();
+  }
+}
+
+function writeLocalReactionCounts(key: string, counts: ReactionCounts) {
+  try {
+    localStorage.setItem(REACTION_COUNTS_PREFIX + key, JSON.stringify(counts));
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function fetchContentReactions(key: string): Promise<ReactionCounts> {
+  const settings = await fetchSiteSettings();
+  const tree = parseJson<Record<string, Partial<ReactionCounts>>>(settings.content_reactions, {});
+  const server = normalizeCounts(tree[key]);
+  if (Object.values(server).some((count) => count > 0)) return server;
+  return readLocalReactionCounts(key);
+}
+
+export async function submitContentReaction(
+  key: string,
+  reaction: ReactionKey,
+  previous: ReactionKey | null
+): Promise<ReactionCounts> {
+  const nextChoice = previous === reaction ? null : reaction;
+  const { data, error } = await supabase.rpc('react_to_content', {
+    p_key: key,
+    p_reaction: reaction,
+    p_previous: previous ?? '',
+  });
+
+  if (!error && data) {
+    const counts = normalizeCounts(data);
+    writeStoredReaction(key, nextChoice);
+    writeLocalReactionCounts(key, counts);
+    return counts;
+  }
+
+  const counts = applyReactionVote(readLocalReactionCounts(key), reaction, previous);
+  writeStoredReaction(key, nextChoice);
+  writeLocalReactionCounts(key, counts);
+  return counts;
+}

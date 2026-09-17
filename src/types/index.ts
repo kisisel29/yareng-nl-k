@@ -95,6 +95,7 @@ export interface SiteSettingsMap {
   author_books: string;
   columnists: string;
   poems: string;
+  content_reactions: string;
 }
 
 export interface AuthorProfile {
