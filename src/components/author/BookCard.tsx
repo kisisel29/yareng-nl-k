@@ -15,7 +15,7 @@ export function BookCard({
   variant?: 'light' | 'dark';
   size?: 'md' | 'lg';
 }) {
-  const href = to ?? `${AUTHOR_PAGE_PATH}#kitap-${book.slug}`;
+  const href = to ?? `${AUTHOR_PAGE_PATH}/${book.slug}`;
   const dark = variant === 'dark';
 
   return (

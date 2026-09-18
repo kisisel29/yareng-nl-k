@@ -13,21 +13,39 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/people?select=slug,updated_at&status=eq.published&order=updated_at.desc`,
-      {
+    const [peopleRes, settingsRes] = await Promise.all([
+      fetch(
+        `${supabaseUrl}/rest/v1/people?select=slug,updated_at&status=eq.published&order=updated_at.desc`,
+        {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+          },
+        }
+      ),
+      fetch(`${supabaseUrl}/rest/v1/site_settings?key=eq.author_books&select=value`, {
         headers: {
           apikey: supabaseKey,
           Authorization: `Bearer ${supabaseKey}`,
         },
-      }
-    );
+      }),
+    ]);
 
-    if (!response.ok) {
+    if (!peopleRes.ok) {
       throw new Error('People fetch failed');
     }
 
-    const people = await response.json();
+    const people = await peopleRes.json();
+    let books = [];
+    if (settingsRes.ok) {
+      const rows = await settingsRes.json();
+      try {
+        const parsed = JSON.parse(rows?.[0]?.value || '[]');
+        books = Array.isArray(parsed) ? parsed.filter((book) => book?.slug && book.published !== false) : [];
+      } catch {
+        books = [];
+      }
+    }
     const lastmod = new Date().toISOString().split('T')[0];
 
     const urls = [
@@ -42,6 +60,12 @@ export default async function handler(req, res) {
         lastmod: person.updated_at
           ? String(person.updated_at).split('T')[0]
           : lastmod,
+        changefreq: 'monthly',
+        priority: '0.8',
+      })),
+      ...books.map((book) => ({
+        loc: `${siteUrl}/kitaplarim/${book.slug}`,
+        lastmod: book.updated_at ? String(book.updated_at).split('T')[0] : lastmod,
         changefreq: 'monthly',
         priority: '0.8',
       })),

@@ -610,6 +610,14 @@ export async function fetchAuthorBooks(options?: { includeUnpublished?: boolean 
   return sortAuthorBooks(visible);
 }
 
+export async function fetchAuthorBookBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<AuthorBook | null> {
+  const books = await fetchAuthorBooks(options);
+  return books.find((book) => book.slug === slug) ?? null;
+}
+
 function normalizeColumnist(raw: Partial<Columnist> & { name?: string }): Columnist | null {
   if (!raw?.name || !raw.id) return null;
   const articles = Array.isArray(raw.articles)

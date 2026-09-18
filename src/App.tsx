@@ -24,6 +24,9 @@ const SubmitBiographyPage = lazy(() =>
 const AuthorPage = lazy(() =>
   import('./pages/AuthorPage').then((module) => ({ default: module.AuthorPage }))
 );
+const BookDetailPage = lazy(() =>
+  import('./pages/BookDetailPage').then((module) => ({ default: module.BookDetailPage }))
+);
 const ColumnistsPage = lazy(() =>
   import('./pages/ColumnistsPage').then((module) => ({ default: module.ColumnistsPage }))
 );
@@ -109,6 +112,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/simalar" element={<PeoplePage />} />
             <Route path="/simalar/:slug" element={<PersonDetailPage />} />
+            <Route path="/kitaplarim/:slug" element={<BookDetailPage />} />
             <Route path="/kitaplarim" element={<AuthorPage />} />
             <Route path="/siirler/:slug" element={<PoemsPage />} />
             <Route path="/siirler" element={<PoemsPage />} />

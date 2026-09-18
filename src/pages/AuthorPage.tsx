@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { ShareMenu } from '../components/people/ShareMenu';
 import { BookCard } from '../components/author/BookCard';
@@ -12,8 +12,16 @@ import type { AuthorBook } from '../types';
 
 export function AuthorPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [books, setBooks] = useState<AuthorBook[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const match = window.location.hash.match(/^#kitap-(.+)$/);
+    if (match?.[1]) {
+      navigate(`${AUTHOR_PAGE_PATH}/${match[1]}`, { replace: true });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     let active = true;
@@ -31,13 +39,6 @@ export function AuthorPage() {
       active = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (loading) return;
-    const id = window.location.hash.replace('#', '');
-    if (!id) return;
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [books, loading]);
 
   const pageUrl = `${siteUrl()}${AUTHOR_PAGE_PATH}`;
   const jsonLd = useMemo(
@@ -57,6 +58,7 @@ export function AuthorPage() {
             description: book.description || undefined,
             image: book.cover_url || undefined,
             author: { '@type': 'Person', name: AUTHOR_NAME },
+            url: `${pageUrl}/${book.slug}`,
           },
         })),
       },
@@ -109,13 +111,8 @@ export function AuthorPage() {
           ) : (
             <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
               {books.map((book) => (
-                <li key={book.id} id={`kitap-${book.slug}`} className="scroll-mt-28">
-                  <BookCard book={book} to={`${AUTHOR_PAGE_PATH}#kitap-${book.slug}`} size="lg" />
-                  {book.description ? (
-                    <p className="mx-auto mt-4 max-w-sm text-center text-sm leading-relaxed text-ink-600">
-                      {book.description}
-                    </p>
-                  ) : null}
+                <li key={book.id}>
+                  <BookCard book={book} size="lg" />
                 </li>
               ))}
             </ul>
