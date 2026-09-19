@@ -161,7 +161,7 @@ export function HomePage() {
         <SiteBanner />
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <SiteLogo
-            className="relative z-10 mx-auto -mt-8 h-[5.5rem] w-[5.5rem] sm:-mt-12 sm:h-28 sm:w-28"
+            className="relative z-10 mx-auto mt-4 h-[5.5rem] w-[5.5rem] sm:mt-5 sm:h-28 sm:w-28"
             decorative
           />
           <p className="mt-5 text-sm text-ink-500">İsmail Hayal'in resmi sitesi · {count} isim</p>
