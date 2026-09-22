@@ -9,7 +9,7 @@ interface AlphabetIndexProps {
 
 export function AlphabetIndex({ activeLetter = '', onSelect }: AlphabetIndexProps) {
   return (
-    <nav aria-label="Soyada göre A–Z dizin" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
+    <nav aria-label="Ada göre A–Z dizin" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
       <ul className="flex w-max gap-1 sm:w-full sm:flex-wrap sm:justify-center">
         {TURKISH_ALPHABET.map((letter) => {
           const active = activeLetter === letter;

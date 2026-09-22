@@ -195,7 +195,7 @@ export function HomePage() {
           </div>
         </div>
         <div className="mx-auto max-w-6xl px-4 pb-10 pt-8 sm:px-6 sm:pb-14">
-          <p className="mb-3 text-center text-xs uppercase tracking-[0.16em] text-ink-500">Harfe göre soyadlar</p>
+          <p className="mb-3 text-center text-xs uppercase tracking-[0.16em] text-ink-500">Harfe göre adlar</p>
           <AlphabetIndex />
         </div>
       </section>

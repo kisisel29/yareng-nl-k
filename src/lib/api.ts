@@ -1,5 +1,5 @@
 import { PEOPLE_IMAGES_BUCKET, supabase } from './supabase';
-import { lastNameStartsWithLetter, sanitizeSearchTerm } from './slug';
+import { firstNameStartsWithLetter, sanitizeSearchTerm } from './slug';
 import { PAGE_SIZE } from './constants';
 import { blobToDataUrl, isAllowedImage, optimizeImage } from './image';
 import type {
@@ -109,7 +109,9 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
     );
   }
 
-  if (params.sortAlpha || params.letter) {
+  if (params.letter) {
+    request = request.order('first_name', { ascending: true }).order('last_name', { ascending: true });
+  } else if (params.sortAlpha) {
     request = request.order('last_name', { ascending: true }).order('first_name', { ascending: true });
   } else {
     request = request.order('featured', { ascending: false }).order('last_name', { ascending: true });
@@ -119,7 +121,7 @@ export async function searchPeople(params: PersonSearchParams): Promise<{
     const { data, error } = await request;
     if (error) throw error;
     const items = ((data as Person[]) ?? []).filter((person) =>
-      lastNameStartsWithLetter(person.last_name, params.letter as string)
+      firstNameStartsWithLetter(person.first_name, params.letter as string)
     );
     return { items: items.slice(from, to + 1), total: items.length };
   }

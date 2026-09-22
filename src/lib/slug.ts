@@ -40,11 +40,11 @@ export function letterFilterVariants(letter: string): string[] {
   return [upper, upper.toLocaleLowerCase('tr-TR')];
 }
 
-export function lastNameStartsWithLetter(lastName: string | null | undefined, letter: string): boolean {
-  const surname = (lastName ?? '').trim();
+export function firstNameStartsWithLetter(firstName: string | null | undefined, letter: string): boolean {
+  const name = (firstName ?? '').trim();
   const target = letter.trim().charAt(0);
-  if (!surname || !target) return false;
-  return surname.charAt(0).toLocaleUpperCase('tr-TR') === target.toLocaleUpperCase('tr-TR');
+  if (!name || !target) return false;
+  return name.charAt(0).toLocaleUpperCase('tr-TR') === target.toLocaleUpperCase('tr-TR');
 }
 
 export function splitFullName(fullName: string): { first_name: string; last_name: string } {
