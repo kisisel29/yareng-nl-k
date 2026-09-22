@@ -97,6 +97,7 @@ export interface SiteSettingsMap {
   poems: string;
   news: string;
   content_reactions: string;
+  content_comments: string;
 }
 
 export interface AuthorProfile {

@@ -956,3 +956,71 @@ export async function submitContentReaction(
   writeLocalReactionCounts(key, counts);
   return counts;
 }
+
+export type ContentComment = {
+  id: string;
+  name: string;
+  body: string;
+  created_at: string;
+};
+
+function normalizeComment(input: unknown): ContentComment | null {
+  if (!input || typeof input !== 'object') return null;
+  const row = input as Record<string, unknown>;
+  const id = String(row.id ?? '').trim();
+  const name = String(row.name ?? '').trim();
+  const body = String(row.body ?? '').trim();
+  const created_at = String(row.created_at ?? '').trim();
+  if (!id || !name || !body) return null;
+  return { id, name, body, created_at };
+}
+
+export async function fetchContentComments(key: string): Promise<ContentComment[]> {
+  const settings = await fetchSiteSettings();
+  const tree = parseJson<Record<string, unknown[]>>(settings.content_comments, {});
+  const list = Array.isArray(tree[key]) ? tree[key] : [];
+  return list.map(normalizeComment).filter((item): item is ContentComment => Boolean(item));
+}
+
+export async function submitContentComment(input: {
+  key: string;
+  name: string;
+  body: string;
+  a: number;
+  b: number;
+  answer: number;
+  honeypot?: string;
+}): Promise<ContentComment> {
+  if (input.honeypot?.trim()) {
+    return {
+      id: crypto.randomUUID(),
+      name: input.name.trim(),
+      body: input.body.trim(),
+      created_at: new Date().toISOString(),
+    };
+  }
+
+  const { data, error } = await supabase.rpc('add_content_comment', {
+    p_key: input.key,
+    p_name: input.name.trim(),
+    p_body: input.body.trim(),
+    p_a: input.a,
+    p_b: input.b,
+    p_answer: input.answer,
+  });
+
+  if (error) {
+    const message = error.message || '';
+    if (message.includes('captcha')) throw new Error('Doğrulama cevabı hatalı.');
+    if (message.includes('invalid name')) throw new Error('İsim en az 2 karakter olmalı.');
+    if (message.includes('invalid body')) throw new Error('Yorum 3–500 karakter olmalı.');
+    if (message.includes('add_content_comment') || message.includes('Could not find')) {
+      throw new Error('Yorum sistemi henüz kurulmadı. SQL migration çalıştırılmalı.');
+    }
+    throw new Error('Yorum gönderilemedi.');
+  }
+
+  const comment = normalizeComment(data);
+  if (!comment) throw new Error('Yorum gönderilemedi.');
+  return comment;
+}
