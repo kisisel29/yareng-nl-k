@@ -8,8 +8,8 @@ export function SiteBanner() {
       <img
         src={SITE_BANNER_SRC}
         alt={`${SITE_NAME} — ${SITE_TAGLINE}`}
-        width={1024}
-        height={309}
+        width={954}
+        height={382}
         className="mx-auto block h-[10.5rem] w-full object-cover object-center sm:h-auto sm:object-contain"
         fetchPriority="high"
         decoding="async"
