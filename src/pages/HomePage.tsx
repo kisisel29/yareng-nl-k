@@ -200,6 +200,23 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="border-b border-cream-200" aria-label="Arşiv fotoğrafı">
+        <figure className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
+          <img
+            src="/home-archive.jpg"
+            alt="Gümüşhane tarihinden resmi bir topluluk fotoğrafı"
+            width={954}
+            height={382}
+            className="mx-auto block h-auto w-full object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption className="mt-4 text-center text-xs uppercase tracking-[0.16em] text-ink-500">
+            Gümüşhane hafızasından
+          </figcaption>
+        </figure>
+      </section>
+
       <section className="bg-black text-cream-50">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
