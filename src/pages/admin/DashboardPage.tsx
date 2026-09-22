@@ -42,6 +42,9 @@ export function DashboardPage() {
           <h1 className="font-serif text-3xl text-ink-900">Genel Bakış</h1>
           <p className="mt-1 text-sm text-ink-500">Arşiv özeti</p>
         </div>
+        <Link to="/admin/analiz" className="text-sm text-burgundy-700 hover:underline">
+          Trafik analizi
+        </Link>
         <Link to="/admin/simalar/yeni" className={btnPrimary}>
           Yeni kişi ekle
         </Link>

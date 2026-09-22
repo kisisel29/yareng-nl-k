@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [peopleRes, settingsRes] = await Promise.all([
+    const [peopleRes, booksRes, newsRes] = await Promise.all([
       fetch(
         `${supabaseUrl}/rest/v1/people?select=slug,updated_at&status=eq.published&order=updated_at.desc`,
         {
@@ -29,6 +29,12 @@ export default async function handler(req, res) {
           Authorization: `Bearer ${supabaseKey}`,
         },
       }),
+      fetch(`${supabaseUrl}/rest/v1/site_settings?key=eq.news&select=value`, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+        },
+      }),
     ]);
 
     if (!peopleRes.ok) {
@@ -37,13 +43,23 @@ export default async function handler(req, res) {
 
     const people = await peopleRes.json();
     let books = [];
-    if (settingsRes.ok) {
-      const rows = await settingsRes.json();
+    if (booksRes.ok) {
+      const rows = await booksRes.json();
       try {
         const parsed = JSON.parse(rows?.[0]?.value || '[]');
         books = Array.isArray(parsed) ? parsed.filter((book) => book?.slug && book.published !== false) : [];
       } catch {
         books = [];
+      }
+    }
+    let news = [];
+    if (newsRes.ok) {
+      const rows = await newsRes.json();
+      try {
+        const parsed = JSON.parse(rows?.[0]?.value || '[]');
+        news = Array.isArray(parsed) ? parsed.filter((item) => item?.slug && item.published !== false) : [];
+      } catch {
+        news = [];
       }
     }
     const lastmod = new Date().toISOString().split('T')[0];
@@ -52,6 +68,7 @@ export default async function handler(req, res) {
       { loc: `${siteUrl}/`, changefreq: 'weekly', priority: '1.0' },
       { loc: `${siteUrl}/simalar`, changefreq: 'weekly', priority: '0.9' },
       { loc: `${siteUrl}/kitaplarim`, changefreq: 'monthly', priority: '0.9' },
+      { loc: `${siteUrl}/haberler`, changefreq: 'weekly', priority: '0.85' },
       { loc: `${siteUrl}/kose-yazarlari`, changefreq: 'weekly', priority: '0.7' },
       { loc: `${siteUrl}/ismail-hayal`, changefreq: 'monthly', priority: '0.8' },
       { loc: `${siteUrl}/siirler`, changefreq: 'weekly', priority: '0.8' },
@@ -68,6 +85,12 @@ export default async function handler(req, res) {
         lastmod: book.updated_at ? String(book.updated_at).split('T')[0] : lastmod,
         changefreq: 'monthly',
         priority: '0.8',
+      })),
+      ...news.map((item) => ({
+        loc: `${siteUrl}/haberler/${item.slug}`,
+        lastmod: item.updated_at ? String(item.updated_at).split('T')[0] : lastmod,
+        changefreq: 'weekly',
+        priority: '0.75',
       })),
     ];
 

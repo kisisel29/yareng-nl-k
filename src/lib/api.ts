@@ -9,6 +9,7 @@ import type {
   Category,
   Columnist,
   ColumnistArticle,
+  NewsItem,
   Person,
   PersonSearchParams,
   Poem,
@@ -196,6 +197,106 @@ export async function fetchRelatedPeople(
 
 export async function incrementPersonViews(slug: string): Promise<void> {
   await supabase.rpc('increment_person_views', { p_slug: slug });
+}
+
+export type TrafficKind = 'visit' | 'click';
+
+export type TrafficDay = {
+  day: string;
+  visits: number;
+  clicks: number;
+};
+
+export type TrafficSummary = {
+  today: { visits: number; clicks: number };
+  week: { visits: number; clicks: number };
+  month: { visits: number; clicks: number };
+  series: TrafficDay[];
+  available: boolean;
+};
+
+function istanbulTodayIso(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Istanbul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+function shiftIsoDay(isoDay: string, delta: number): string {
+  const date = new Date(`${isoDay}T12:00:00+03:00`);
+  date.setDate(date.getDate() + delta);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Istanbul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+function sumTraffic(rows: TrafficDay[]): { visits: number; clicks: number } {
+  return rows.reduce(
+    (acc, row) => ({
+      visits: acc.visits + row.visits,
+      clicks: acc.clicks + row.clicks,
+    }),
+    { visits: 0, clicks: 0 }
+  );
+}
+
+export async function recordSiteTraffic(kind: TrafficKind): Promise<void> {
+  try {
+    await supabase.rpc('record_site_traffic', { p_kind: kind });
+  } catch {
+    /* trafik tablosu yoksa sessizce geç */
+  }
+}
+
+export async function fetchSiteTrafficSummary(days = 30): Promise<TrafficSummary> {
+  const empty = { visits: 0, clicks: 0 };
+  const today = istanbulTodayIso();
+  const from = shiftIsoDay(today, -(Math.max(1, days) - 1));
+  const weekFrom = shiftIsoDay(today, -6);
+
+  const { data, error } = await supabase
+    .from('site_traffic_daily')
+    .select('day, visits, clicks')
+    .gte('day', from)
+    .lte('day', today)
+    .order('day', { ascending: true });
+
+  if (error) {
+    return { today: empty, week: empty, month: empty, series: [], available: false };
+  }
+
+  const byDay = new Map<string, TrafficDay>();
+  for (const row of data ?? []) {
+    const day = String(row.day).slice(0, 10);
+    byDay.set(day, {
+      day,
+      visits: Number(row.visits) || 0,
+      clicks: Number(row.clicks) || 0,
+    });
+  }
+
+  const series: TrafficDay[] = [];
+  for (let i = Math.max(1, days) - 1; i >= 0; i -= 1) {
+    const day = shiftIsoDay(today, -i);
+    series.push(byDay.get(day) ?? { day, visits: 0, clicks: 0 });
+  }
+
+  const todayRow = byDay.get(today) ?? { day: today, visits: 0, clicks: 0 };
+  const weekRows = series.filter((row) => row.day >= weekFrom);
+  const monthRows = series;
+
+  return {
+    today: { visits: todayRow.visits, clicks: todayRow.clicks },
+    week: sumTraffic(weekRows),
+    month: sumTraffic(monthRows),
+    series,
+    available: true,
+  };
 }
 
 const PHOTO_URL_MARK = '[[VESIKALIK_URL]]';
@@ -718,6 +819,34 @@ export async function fetchPoemBySlug(
   options?: { includeUnpublished?: boolean }
 ): Promise<Poem | null> {
   const list = await fetchPoems(options);
+  return list.find((item) => item.slug === slug) ?? null;
+}
+
+export async function fetchNews(options?: { includeUnpublished?: boolean }): Promise<NewsItem[]> {
+  const settings = await fetchSiteSettings();
+  const parsed = parseJson<Partial<NewsItem>[]>(settings.news, []);
+  const list = (Array.isArray(parsed) ? parsed : [])
+    .filter((item): item is NewsItem => Boolean(item?.id && item?.title && item?.slug))
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      body: item.body ?? '',
+      image_url: item.image_url ?? null,
+      image_path: item.image_path ?? null,
+      published: item.published !== false,
+      created_at: item.created_at ?? '',
+      updated_at: item.updated_at ?? '',
+    }));
+  const visible = options?.includeUnpublished ? list : list.filter((item) => item.published);
+  return visible.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+}
+
+export async function fetchNewsBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<NewsItem | null> {
+  const list = await fetchNews(options);
   return list.find((item) => item.slug === slug) ?? null;
 }
 

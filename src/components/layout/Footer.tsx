@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ABOUT_PAGE_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, POEMS_PAGE_PATH, SITE_NAME_CAPS, SITE_TAGLINE } from '../../lib/constants';
+import { ABOUT_PAGE_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, NEWS_PAGE_PATH, POEMS_PAGE_PATH, SITE_NAME_CAPS, SITE_TAGLINE } from '../../lib/constants';
 import { fetchCategories } from '../../lib/api';
 import { SocialLinks } from './SocialLinks';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -47,6 +47,9 @@ export function Footer() {
             </Link>
             <Link to={POEMS_PAGE_PATH} className="hover:text-ink-900">
               ŞİİRLER
+            </Link>
+            <Link to={NEWS_PAGE_PATH} className="hover:text-ink-900">
+              HABERLER
             </Link>
             <Link to={AUTHOR_PAGE_PATH} className="hover:text-ink-900">
               KİTAPLARIM

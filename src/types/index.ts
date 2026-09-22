@@ -95,6 +95,7 @@ export interface SiteSettingsMap {
   author_books: string;
   columnists: string;
   poems: string;
+  news: string;
   content_reactions: string;
 }
 
@@ -183,6 +184,24 @@ export interface Poem {
 }
 
 export interface PoemFormValues {
+  title: string;
+  body: string;
+  published: boolean;
+}
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  slug: string;
+  body: string;
+  image_url: string | null;
+  image_path: string | null;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewsFormValues {
   title: string;
   body: string;
   published: boolean;

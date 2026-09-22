@@ -3,10 +3,12 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { ContentProtection } from './ContentProtection';
 import { ColumnistsSidebar } from '../columnists/ColumnistsSidebar';
+import { TrafficTracker } from '../analytics/TrafficTracker';
 
 export function PublicLayout() {
   return (
     <div className="public-site flex min-h-screen flex-col text-ink-800">
+      <TrafficTracker />
       <ContentProtection />
       <Header />
       <div className="mx-auto flex w-full max-w-7xl flex-1">

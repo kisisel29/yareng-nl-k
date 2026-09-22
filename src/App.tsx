@@ -33,6 +33,9 @@ const ColumnistsPage = lazy(() =>
 const PoemsPage = lazy(() =>
   import('./pages/PoemsPage').then((module) => ({ default: module.PoemsPage }))
 );
+const NewsPage = lazy(() =>
+  import('./pages/NewsPage').then((module) => ({ default: module.NewsPage }))
+);
 const AuthorAdminPage = lazy(() =>
   import('./pages/admin/AuthorAdminPage').then((module) => ({ default: module.AuthorAdminPage }))
 );
@@ -42,8 +45,14 @@ const ColumnistsAdminPage = lazy(() =>
 const PoemsAdminPage = lazy(() =>
   import('./pages/admin/PoemsAdminPage').then((module) => ({ default: module.PoemsAdminPage }))
 );
+const NewsAdminPage = lazy(() =>
+  import('./pages/admin/NewsAdminPage').then((module) => ({ default: module.NewsAdminPage }))
+);
 const DashboardPage = lazy(() =>
   import('./pages/admin/DashboardPage').then((module) => ({ default: module.DashboardPage }))
+);
+const AnalyticsPage = lazy(() =>
+  import('./pages/admin/AnalyticsPage').then((module) => ({ default: module.AnalyticsPage }))
 );
 const PeopleListPage = lazy(() =>
   import('./pages/admin/PeopleListPage').then((module) => ({ default: module.PeopleListPage }))
@@ -93,6 +102,7 @@ export default function App() {
           <Route element={<AdminGuard />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<DashboardPage />} />
+              <Route path="/admin/analiz" element={<AnalyticsPage />} />
               <Route path="/admin/simalar" element={<PeopleListPage />} />
               <Route path="/admin/simalar/yeni" element={<PersonFormPage />} />
               <Route path="/admin/simalar/ice-aktar" element={<ImportPage />} />
@@ -102,6 +112,7 @@ export default function App() {
               <Route path="/admin/basvurular" element={<SubmissionsPage />} />
               <Route path="/admin/kitaplarim" element={<AuthorAdminPage />} />
               <Route path="/admin/siirler" element={<PoemsAdminPage />} />
+              <Route path="/admin/haberler" element={<NewsAdminPage />} />
               <Route path="/admin/kose-yazarlari" element={<ColumnistsAdminPage />} />
               <Route path="/admin/ismail-hayal" element={<Navigate to="/admin/kitaplarim" replace />} />
               <Route path="/admin/ayarlar" element={<SettingsPage />} />
@@ -116,6 +127,8 @@ export default function App() {
             <Route path="/kitaplarim" element={<AuthorPage />} />
             <Route path="/siirler/:slug" element={<PoemsPage />} />
             <Route path="/siirler" element={<PoemsPage />} />
+            <Route path="/haberler/:slug" element={<NewsPage />} />
+            <Route path="/haberler" element={<NewsPage />} />
             <Route path="/kose-yazarlari/:slug/:articleSlug" element={<ColumnistsPage />} />
             <Route path="/kose-yazarlari/:slug" element={<ColumnistsPage />} />
             <Route path="/kose-yazarlari" element={<ColumnistsPage />} />

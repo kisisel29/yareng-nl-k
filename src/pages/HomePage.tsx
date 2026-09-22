@@ -11,21 +11,22 @@ import { SiteBanner, SITE_BANNER_SRC } from '../components/brand/SiteBanner';
 import { SiteLogo } from '../components/brand/SiteLogo';
 import { SectionTitle } from '../components/brand/SectionTitle';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
-import { fetchAuthorBooks, fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
+import { fetchAuthorBooks, fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchNews, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
 import {
   AUTHOR_NAME,
   AUTHOR_PAGE_PATH,
   BOOK_SECTIONS,
   DEFAULT_DESCRIPTION,
+  NEWS_PAGE_PATH,
   PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
   SITE_NAME,
   SOCIAL_LINKS,
 } from '../lib/constants';
-import { formatLifeYears, personName, siteUrl } from '../lib/format';
+import { formatDateTimeTr, formatLifeYears, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { useDebounce } from '../hooks/useDebounce';
 import { BookCard } from '../components/author/BookCard';
-import type { AuthorBook, Category, Person } from '../types';
+import type { AuthorBook, Category, NewsItem, Person } from '../types';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export function HomePage() {
   const [popular, setPopular] = useState<Person[]>([]);
   const [random, setRandom] = useState<Person[]>([]);
   const [books, setBooks] = useState<AuthorBook[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -54,8 +56,9 @@ export function HomePage() {
       fetchMostViewedPeople(8),
       fetchRandomPeople(8),
       fetchAuthorBooks(),
+      fetchNews(),
     ])
-      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople, authorBooks]) => {
+      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople, authorBooks, newsItems]) => {
         if (!active) return;
         setFeatured(featuredPeople);
         setPeople(listed.items);
@@ -65,6 +68,7 @@ export function HomePage() {
         setPopular(popularPeople);
         setRandom(randomPeople);
         setBooks(authorBooks);
+        setNews(newsItems);
       })
       .catch(() => {
         if (!active) return;
@@ -76,6 +80,7 @@ export function HomePage() {
         setPopular([]);
         setRandom([]);
         setBooks([]);
+        setNews([]);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -197,6 +202,97 @@ export function HomePage() {
         <div className="mx-auto max-w-6xl px-4 pb-10 pt-8 sm:px-6 sm:pb-14">
           <p className="mb-3 text-center text-xs uppercase tracking-[0.16em] text-ink-500">Harfe göre adlar</p>
           <AlphabetIndex />
+        </div>
+      </section>
+
+      <section className="bg-ink-900 text-cream-50">
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-cream-300">Gümüşhaneli Simalar</p>
+              <h2 className="mt-2 font-serif text-4xl sm:text-5xl">Haberler</h2>
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-cream-200 sm:text-base">
+                Gümüşhaneli simalardan güncel haberler ve duyurular.
+              </p>
+            </div>
+            <Link
+              to={NEWS_PAGE_PATH}
+              className="inline-flex items-center justify-center bg-white px-5 py-3 text-sm font-semibold text-ink-900 hover:bg-cream-100"
+            >
+              Tüm haberler
+            </Link>
+          </div>
+
+          {news.length > 0 ? (
+            <div className="mt-12 grid gap-8 lg:grid-cols-[1.35fr_1fr]">
+              <Link to={`${NEWS_PAGE_PATH}/${news[0].slug}`} className="group block">
+                <div className="aspect-[16/10] overflow-hidden bg-ink-800 sm:aspect-[2/1]">
+                  {news[0].image_url ? (
+                    <img
+                      src={news[0].image_url}
+                      alt=""
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-sm text-cream-300">Fotoğraf</div>
+                  )}
+                </div>
+                {news[0].created_at ? (
+                  <p className="mt-4 text-xs uppercase tracking-[0.14em] text-cream-300">
+                    {formatDateTimeTr(news[0].created_at)}
+                  </p>
+                ) : null}
+                <h3 className="mt-2 font-serif text-3xl leading-snug text-cream-50 group-hover:underline sm:text-4xl">
+                  {news[0].title}
+                </h3>
+                {news[0].body ? (
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cream-200 sm:text-base">
+                    {plainTextExcerpt(news[0].body, 160)}
+                  </p>
+                ) : null}
+              </Link>
+
+              <ul className="flex flex-col gap-6 border-t border-cream-100/20 pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+                {news.slice(1, 4).map((item) => (
+                  <li key={item.id} className="border-b border-cream-100/15 pb-6 last:border-b-0 last:pb-0">
+                    <Link to={`${NEWS_PAGE_PATH}/${item.slug}`} className="group grid grid-cols-[6.5rem_1fr] gap-4">
+                      <div className="aspect-[4/3] overflow-hidden bg-ink-800">
+                        {item.image_url ? (
+                          <img
+                            src={item.image_url}
+                            alt=""
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                            loading="lazy"
+                          />
+                        ) : null}
+                      </div>
+                      <div>
+                        {item.created_at ? (
+                          <p className="text-xs uppercase tracking-[0.14em] text-cream-300">
+                            {formatDateTimeTr(item.created_at)}
+                          </p>
+                        ) : null}
+                        <h3 className="mt-1 font-serif text-xl leading-snug text-cream-50 group-hover:underline">
+                          {item.title}
+                        </h3>
+                        {item.body ? (
+                          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-cream-200">
+                            {plainTextExcerpt(item.body, 90)}
+                          </p>
+                        ) : null}
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+                {news.length === 1 ? (
+                  <li className="text-sm text-cream-300">Diğer haberler eklendikçe burada listelenir.</li>
+                ) : null}
+              </ul>
+            </div>
+          ) : (
+            <p className="mt-10 text-cream-200">Yeni haberler yakında burada yer alacak.</p>
+          )}
         </div>
       </section>
 

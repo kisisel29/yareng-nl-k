@@ -13,6 +13,8 @@ export const POEMS_PAGE_PATH = '/siirler';
 export const POEMS_ADMIN_PATH = '/admin/siirler';
 export const COLUMNISTS_PAGE_PATH = '/kose-yazarlari';
 export const COLUMNISTS_ADMIN_PATH = '/admin/kose-yazarlari';
+export const NEWS_PAGE_PATH = '/haberler';
+export const NEWS_ADMIN_PATH = '/admin/haberler';
 export const COPY_PROTECTION_MESSAGE =
   "Bu sitedeki yazılar, araştırmalar ve görseller İsmail Hayal'in emeğidir. Kopyalamak, çoğaltmak veya kullanmak için lütfen İsmail Hayal ile iletişime geçiniz.";
 export const DEFAULT_AUTHOR_TITLE = 'Eğitimci, şair ve yazar';

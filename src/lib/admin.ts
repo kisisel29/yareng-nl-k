@@ -1,7 +1,7 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { dataUrlToFile, optimizeImage } from './image';
 import { slugify } from './slug';
-import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchPoems } from './api';
+import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchNews, fetchPoems } from './api';
 import type {
   AuthorBook,
   AuthorBookFormValues,
@@ -11,6 +11,8 @@ import type {
   ColumnistArticle,
   ColumnistArticleFormValues,
   ColumnistFormValues,
+  NewsFormValues,
+  NewsItem,
   Person,
   PersonFormValues,
   PersonStatus,
@@ -687,4 +689,86 @@ export async function deletePoem(poem: Poem): Promise<void> {
   await removeStoragePath(poem.image_path);
   const list = await fetchPoems({ includeUnpublished: true });
   await writePoems(list.filter((item) => item.id !== poem.id));
+}
+
+async function writeNews(list: NewsItem[]): Promise<void> {
+  await upsertSiteSettings({ news: JSON.stringify(list) });
+}
+
+async function uploadNewsImage(file: File) {
+  const optimized = await optimizeImage(file);
+  const storagePath = `news/${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: data.publicUrl, storagePath };
+}
+
+export async function createNews(values: NewsFormValues, image?: File | null): Promise<NewsItem> {
+  const list = await fetchNews({ includeUnpublished: true });
+  const now = new Date().toISOString();
+  const taken = new Set(list.map((item) => item.slug));
+  let image_url: string | null = null;
+  let image_path: string | null = null;
+  if (image) {
+    const uploaded = await uploadNewsImage(image);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
+  const created: NewsItem = {
+    id: crypto.randomUUID(),
+    title: values.title.trim(),
+    slug: uniqueSlug(values.title, taken, 'haber'),
+    body: values.body,
+    image_url,
+    image_path,
+    published: values.published,
+    created_at: now,
+    updated_at: now,
+  };
+  await writeNews([created, ...list]);
+  return created;
+}
+
+export async function updateNews(
+  id: string,
+  values: NewsFormValues,
+  image?: File | null,
+  clearImage = false
+): Promise<NewsItem> {
+  const list = await fetchNews({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === id);
+  if (!existing) throw new Error('Haber bulunamadı.');
+  let image_url = existing.image_url;
+  let image_path = existing.image_path;
+  if (clearImage) {
+    await removeStoragePath(image_path);
+    image_url = null;
+    image_path = null;
+  } else if (image) {
+    const uploaded = await uploadNewsImage(image);
+    await removeStoragePath(image_path);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
+  const updated: NewsItem = {
+    ...existing,
+    title: values.title.trim(),
+    body: values.body,
+    image_url,
+    image_path,
+    published: values.published,
+    updated_at: new Date().toISOString(),
+  };
+  await writeNews(list.map((item) => (item.id === id ? updated : item)));
+  return updated;
+}
+
+export async function deleteNews(item: NewsItem): Promise<void> {
+  await removeStoragePath(item.image_path);
+  const list = await fetchNews({ includeUnpublished: true });
+  await writeNews(list.filter((entry) => entry.id !== item.id));
 }
