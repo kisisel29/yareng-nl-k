@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { BookCard } from '../components/author/BookCard';
 import { BookCover } from '../components/author/BookCover';
+import { AuthorWhatsAppContact } from '../components/author/AuthorWhatsAppContact';
 import { ShareMenu } from '../components/people/ShareMenu';
 import { fetchAuthorBookBySlug, fetchAuthorBooks } from '../lib/api';
 import { AUTHOR_ADMIN_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH } from '../lib/constants';
@@ -127,6 +128,8 @@ export function BookDetailPage() {
             ) : (
               <p className="mt-8 text-ink-600">Bu kitabın tanıtım metni henüz eklenmedi.</p>
             )}
+
+            <AuthorWhatsAppContact bookTitle={book.title} className="mt-10" />
           </div>
         </div>
 
