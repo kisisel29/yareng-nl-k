@@ -5,20 +5,21 @@ import { Seo } from '../../components/seo/Seo';
 import { useToast } from '../../context/ToastContext';
 import {
   fetchAllContentComments,
+  fetchColumnists,
   fetchNews,
   fetchPersonById,
   moderateContentComment,
   type ContentComment,
 } from '../../lib/api';
-import { NEWS_PAGE_PATH } from '../../lib/constants';
+import { COLUMNISTS_PAGE_PATH, NEWS_PAGE_PATH } from '../../lib/constants';
 import { formatDateTimeTr, personName } from '../../lib/format';
 import { btnPrimary, btnSecondary } from '../../lib/cn';
-import type { NewsItem, Person } from '../../types';
+import type { Columnist, NewsItem, Person } from '../../types';
 
 type Filter = 'pending' | 'approved' | 'rejected' | 'all';
 
 type TargetMeta = {
-  kind: 'news' | 'person' | 'other';
+  kind: 'news' | 'person' | 'article' | 'other';
   label: string;
   href: string;
 };
@@ -27,18 +28,21 @@ export function CommentsAdminPage() {
   const { notify } = useToast();
   const [comments, setComments] = useState<ContentComment[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [columnists, setColumnists] = useState<Columnist[]>([]);
   const [peopleById, setPeopleById] = useState<Record<string, Person>>({});
   const [filter, setFilter] = useState<Filter>('pending');
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function reload() {
-    const [nextComments, nextNews] = await Promise.all([
+    const [nextComments, nextNews, nextColumnists] = await Promise.all([
       fetchAllContentComments(),
       fetchNews({ includeUnpublished: true }),
+      fetchColumnists({ includeUnpublished: true }),
     ]);
     setComments(nextComments);
     setNews(nextNews);
+    setColumnists(nextColumnists);
 
     const personIds = [
       ...new Set(
@@ -98,6 +102,20 @@ export function CommentsAdminPage() {
         label: person ? personName(person) : 'Sima',
         href: person ? `/simalar/${person.slug}` : '/simalar',
       };
+    }
+    if (targetKey.startsWith('article:')) {
+      const id = targetKey.slice(8);
+      for (const columnist of columnists) {
+        const article = columnist.articles.find((item) => item.id === id);
+        if (article) {
+          return {
+            kind: 'article',
+            label: article.title,
+            href: `${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${article.slug}`,
+          };
+        }
+      }
+      return { kind: 'article', label: 'Köşe yazısı', href: COLUMNISTS_PAGE_PATH };
     }
     return { kind: 'other', label: targetKey, href: '/' };
   }
@@ -175,7 +193,14 @@ export function CommentsAdminPage() {
                     </p>
                     <p className="mt-1 font-medium text-ink-900">{comment.name}</p>
                     <p className="mt-1 text-sm text-ink-600">
-                      {target.kind === 'person' ? 'Sima' : target.kind === 'news' ? 'Haber' : 'İçerik'}:{' '}
+                      {target.kind === 'person'
+                        ? 'Sima'
+                        : target.kind === 'news'
+                          ? 'Haber'
+                          : target.kind === 'article'
+                            ? 'Köşe yazısı'
+                            : 'İçerik'}
+                      :{' '}
                       <Link to={target.href} className="text-burgundy-700 hover:underline">
                         {target.label}
                       </Link>

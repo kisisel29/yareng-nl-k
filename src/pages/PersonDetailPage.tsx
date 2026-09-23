@@ -210,6 +210,11 @@ export function PersonDetailPage() {
                 {extraNotes}
               </p>
             ) : null}
+            <div className="mt-10">
+              <SocialShareButtons url={sharePath} title={name} />
+            </div>
+            <ReactionBar targetKey={`person:${person.id}`} />
+            <CommentSection targetKey={`person:${person.id}`} />
           </section>
         ) : person.short_bio || extraNotes ? (
           <section className="mt-12 max-w-3xl">
@@ -222,8 +227,21 @@ export function PersonDetailPage() {
                 {extraNotes}
               </p>
             ) : null}
+            <div className="mt-10">
+              <SocialShareButtons url={sharePath} title={name} />
+            </div>
+            <ReactionBar targetKey={`person:${person.id}`} />
+            <CommentSection targetKey={`person:${person.id}`} />
           </section>
-        ) : null}
+        ) : (
+          <section className="mt-12 max-w-3xl">
+            <div className="mt-2">
+              <SocialShareButtons url={sharePath} title={name} />
+            </div>
+            <ReactionBar targetKey={`person:${person.id}`} />
+            <CommentSection targetKey={`person:${person.id}`} />
+          </section>
+        )}
 
         {sources.length > 0 ? (
           <section className="mt-14 max-w-3xl border-t border-cream-200 pt-8">
@@ -241,12 +259,6 @@ export function PersonDetailPage() {
             </ul>
           </section>
         ) : null}
-
-        <section className="mt-12 max-w-3xl">
-          <SocialShareButtons url={sharePath} title={name} />
-          <ReactionBar targetKey={`person:${person.id}`} />
-          <CommentSection targetKey={`person:${person.id}`} />
-        </section>
 
         {related.length > 0 ? (
           <section className="mt-16 border-t border-cream-200 pt-10">

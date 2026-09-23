@@ -5,6 +5,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { ColumnistAvatar } from '../components/columnists/ColumnistAvatar';
 import { ReactionBar } from '../components/columnists/ReactionBar';
 import { SocialShareButtons } from '../components/columnists/SocialShareButtons';
+import { CommentSection } from '../components/comments/CommentSection';
 import { fetchColumnistArticle, fetchColumnistBySlug, fetchColumnists } from '../lib/api';
 import { COLUMNISTS_ADMIN_PATH, COLUMNISTS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
@@ -215,6 +216,7 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
           <SocialShareButtons url={path} title={article.title} />
         </div>
         <ReactionBar targetKey={`article:${article.id}`} />
+        <CommentSection targetKey={`article:${article.id}`} />
       </article>
     </>
   );
