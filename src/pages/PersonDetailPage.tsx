@@ -3,9 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
 import { PersonGrid } from '../components/people/PersonGrid';
-import { ReactionBar } from '../components/columnists/ReactionBar';
-import { SocialShareButtons } from '../components/columnists/SocialShareButtons';
-import { CommentSection } from '../components/comments/CommentSection';
+import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { DetailSkeleton } from '../components/ui/Skeleton';
 import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
 import { formatDateTr, formatLifeYears, hasText, personExtraNotes, personName, plainTextExcerpt, siteUrl } from '../lib/format';
@@ -210,11 +208,7 @@ export function PersonDetailPage() {
                 {extraNotes}
               </p>
             ) : null}
-            <div className="mt-10">
-              <SocialShareButtons url={sharePath} title={name} />
-            </div>
-            <ReactionBar targetKey={`person:${person.id}`} />
-            <CommentSection targetKey={`person:${person.id}`} />
+            <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
           </section>
         ) : person.short_bio || extraNotes ? (
           <section className="mt-12 max-w-3xl">
@@ -227,19 +221,11 @@ export function PersonDetailPage() {
                 {extraNotes}
               </p>
             ) : null}
-            <div className="mt-10">
-              <SocialShareButtons url={sharePath} title={name} />
-            </div>
-            <ReactionBar targetKey={`person:${person.id}`} />
-            <CommentSection targetKey={`person:${person.id}`} />
+            <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
           </section>
         ) : (
           <section className="mt-12 max-w-3xl">
-            <div className="mt-2">
-              <SocialShareButtons url={sharePath} title={name} />
-            </div>
-            <ReactionBar targetKey={`person:${person.id}`} />
-            <CommentSection targetKey={`person:${person.id}`} />
+            <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
           </section>
         )}
 

@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
-import { ReactionBar } from '../components/columnists/ReactionBar';
-import { SocialShareButtons } from '../components/columnists/SocialShareButtons';
-import { CommentSection } from '../components/comments/CommentSection';
+import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { fetchNews, fetchNewsBySlug } from '../lib/api';
 import { NEWS_ADMIN_PATH, NEWS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
@@ -169,11 +167,7 @@ function NewsDetailView({ slug }: { slug: string }) {
         {hasText(item.body) ? (
           <div className="prose-archive mt-8 whitespace-pre-line">{item.body}</div>
         ) : null}
-        <div className="mt-10">
-          <SocialShareButtons url={path} title={item.title} />
-        </div>
-        <ReactionBar targetKey={`news:${item.id}`} />
-        <CommentSection targetKey={`news:${item.id}`} />
+        <ContentEngagement url={path} title={item.title} targetKey={`news:${item.id}`} />
       </article>
     </>
   );

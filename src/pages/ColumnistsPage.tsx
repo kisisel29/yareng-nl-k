@@ -3,9 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ColumnistAvatar } from '../components/columnists/ColumnistAvatar';
-import { ReactionBar } from '../components/columnists/ReactionBar';
-import { SocialShareButtons } from '../components/columnists/SocialShareButtons';
-import { CommentSection } from '../components/comments/CommentSection';
+import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { fetchColumnistArticle, fetchColumnistBySlug, fetchColumnists } from '../lib/api';
 import { COLUMNISTS_ADMIN_PATH, COLUMNISTS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
@@ -212,11 +210,7 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body) }}
           />
         ) : null}
-        <div className="mt-10">
-          <SocialShareButtons url={path} title={article.title} />
-        </div>
-        <ReactionBar targetKey={`article:${article.id}`} />
-        <CommentSection targetKey={`article:${article.id}`} />
+        <ContentEngagement url={path} title={article.title} targetKey={`article:${article.id}`} />
       </article>
     </>
   );
