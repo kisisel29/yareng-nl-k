@@ -6,6 +6,17 @@ import {
   DEFAULT_AUTHOR_TITLE,
 } from '../../lib/constants';
 
+function buildWhatsAppHref(bookTitle?: string) {
+  const text = bookTitle
+    ? `Merhaba ${AUTHOR_NAME}, ${bookTitle} kitabı hakkında bilgi almak istiyorum.`
+    : `Merhaba ${AUTHOR_NAME}, kitaplarınız hakkında bilgi almak istiyorum.`;
+  const params = new URLSearchParams({
+    phone: '905306072929',
+    text,
+  });
+  return `${AUTHOR_WHATSAPP_URL}?${params.toString()}`;
+}
+
 export function AuthorWhatsAppContact({
   bookTitle,
   className = '',
@@ -13,10 +24,7 @@ export function AuthorWhatsAppContact({
   bookTitle?: string;
   className?: string;
 }) {
-  const message = bookTitle
-    ? encodeURIComponent(`Merhaba ${AUTHOR_NAME}, "${bookTitle}" kitabı hakkında bilgi almak istiyorum.`)
-    : encodeURIComponent(`Merhaba ${AUTHOR_NAME}, kitaplarınız hakkında bilgi almak istiyorum.`);
-  const href = `${AUTHOR_WHATSAPP_URL}?text=${message}`;
+  const href = buildWhatsAppHref(bookTitle);
 
   return (
     <aside
@@ -28,7 +36,9 @@ export function AuthorWhatsAppContact({
         <div>
           <p className="font-serif text-2xl text-ink-900">{AUTHOR_NAME}</p>
           <p className="mt-1 text-sm text-ink-600">{DEFAULT_AUTHOR_TITLE}</p>
-          <p className="mt-2 text-sm tabular-nums text-ink-700">{AUTHOR_PHONE_DISPLAY}</p>
+          <a href={`tel:+905306072929`} className="mt-2 block text-sm tabular-nums text-ink-700 hover:underline">
+            {AUTHOR_PHONE_DISPLAY}
+          </a>
         </div>
         <a
           href={href}
@@ -42,6 +52,7 @@ export function AuthorWhatsAppContact({
       </div>
       <p className="mt-4 text-sm leading-relaxed text-ink-600">
         Kitap siparişi, imza veya bilgi için {AUTHOR_NAME} ile WhatsApp üzerinden doğrudan iletişime geçebilirsiniz.
+        Açılmazsa numarayı kaydedip WhatsApp uygulamasından yazabilirsiniz.
       </p>
     </aside>
   );

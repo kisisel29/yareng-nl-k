@@ -15,7 +15,7 @@ export const SITE_KEYWORDS =
   'gümüşhaneli simalar, gümüş simalar, gümüşhane simalar, gümüşhaneli biyografi, gümüşhane tarihi isimler, ismail hayal';
 export const AUTHOR_NAME = 'İsmail Hayal';
 export const AUTHOR_PHONE_DISPLAY = '0530 607 29 29';
-export const AUTHOR_WHATSAPP_URL = 'https://wa.me/905306072929';
+export const AUTHOR_WHATSAPP_URL = 'https://api.whatsapp.com/send';
 export const AUTHOR_PAGE_PATH = '/kitaplarim';
 export const AUTHOR_ADMIN_PATH = '/admin/kitaplarim';
 export const ABOUT_PAGE_PATH = '/ismail-hayal';
