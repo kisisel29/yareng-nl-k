@@ -17,9 +17,10 @@ import {
   Feather,
   BarChart3,
   MessageSquare,
+  Mic,
   X,
 } from 'lucide-react';
-import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, NEWS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
+import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, INTERVIEWS_ADMIN_PATH, NEWS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -30,6 +31,7 @@ const LINKS = [
   { to: AUTHOR_ADMIN_PATH, label: 'Kitaplarım', icon: Library, end: false },
   { to: POEMS_ADMIN_PATH, label: 'Şiirler', icon: Feather, end: false },
   { to: NEWS_ADMIN_PATH, label: 'Haberler', icon: Newspaper, end: false },
+  { to: INTERVIEWS_ADMIN_PATH, label: 'Söyleşiler', icon: Mic, end: false },
   { to: '/admin/yorumlar', label: 'Yorumlar', icon: MessageSquare, end: false },
   { to: COLUMNISTS_ADMIN_PATH, label: 'Köşe Yazarları', icon: PenLine, end: false },
   { to: '/admin/simalar', label: 'Simalar', icon: Users, end: true },

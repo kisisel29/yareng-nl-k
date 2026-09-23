@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Search, X } from 'lucide-react';
 import { cn } from '../../lib/cn';
-import { ABOUT_PAGE_PATH, NEWS_PAGE_PATH, POEMS_PAGE_PATH } from '../../lib/constants';
+import { ABOUT_PAGE_PATH, INTERVIEWS_PAGE_PATH, NEWS_PAGE_PATH, POEMS_PAGE_PATH } from '../../lib/constants';
 import { useAuth } from '../../context/AuthContext';
 import { SocialLinks } from './SocialLinks';
 import { SearchBox } from '../people/SearchBox';
@@ -20,6 +20,7 @@ export function Header() {
     { to: ABOUT_PAGE_PATH, label: 'İSMAİL HAYAL' },
     { to: POEMS_PAGE_PATH, label: 'ŞİİRLER' },
     { to: NEWS_PAGE_PATH, label: 'HABERLER' },
+    { to: INTERVIEWS_PAGE_PATH, label: 'SÖYLEŞİLER' },
     { to: '/biyografi-gonder', label: 'BİYOGRAFİ GÖNDER' },
     { to: user ? '/admin' : '/login', label: 'YÖNETİM' },
   ];

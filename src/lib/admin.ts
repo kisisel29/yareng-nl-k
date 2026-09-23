@@ -1,7 +1,7 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { dataUrlToFile, optimizeImage } from './image';
 import { slugify } from './slug';
-import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchNews, fetchPoems } from './api';
+import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchNews, fetchPoems } from './api';
 import type {
   AuthorBook,
   AuthorBookFormValues,
@@ -11,6 +11,8 @@ import type {
   ColumnistArticle,
   ColumnistArticleFormValues,
   ColumnistFormValues,
+  InterviewFormValues,
+  InterviewItem,
   NewsFormValues,
   NewsItem,
   Person,
@@ -771,4 +773,88 @@ export async function deleteNews(item: NewsItem): Promise<void> {
   await removeStoragePath(item.image_path);
   const list = await fetchNews({ includeUnpublished: true });
   await writeNews(list.filter((entry) => entry.id !== item.id));
+}
+
+async function writeInterviews(list: InterviewItem[]): Promise<void> {
+  await upsertSiteSettings({ interviews: JSON.stringify(list) });
+}
+
+async function uploadInterviewImage(file: File) {
+  const optimized = await optimizeImage(file);
+  const storagePath = `interviews/${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: data.publicUrl, storagePath };
+}
+
+export async function createInterview(values: InterviewFormValues, image?: File | null): Promise<InterviewItem> {
+  const list = await fetchInterviews({ includeUnpublished: true });
+  const now = new Date().toISOString();
+  const taken = new Set(list.map((item) => item.slug));
+  let image_url: string | null = null;
+  let image_path: string | null = null;
+  if (image) {
+    const uploaded = await uploadInterviewImage(image);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
+  const created: InterviewItem = {
+    id: crypto.randomUUID(),
+    title: values.title.trim(),
+    slug: uniqueSlug(values.title, taken, 'soylesi'),
+    body: values.body,
+    guest: emptyToNull(values.guest),
+    image_url,
+    image_path,
+    published: values.published,
+    created_at: now,
+    updated_at: now,
+  };
+  await writeInterviews([created, ...list]);
+  return created;
+}
+
+export async function updateInterview(
+  id: string,
+  values: InterviewFormValues,
+  image?: File | null,
+  clearImage = false
+): Promise<InterviewItem> {
+  const list = await fetchInterviews({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === id);
+  if (!existing) throw new Error('Söyleşi bulunamadı.');
+  let image_url = existing.image_url;
+  let image_path = existing.image_path;
+  if (clearImage) {
+    await removeStoragePath(image_path);
+    image_url = null;
+    image_path = null;
+  } else if (image) {
+    const uploaded = await uploadInterviewImage(image);
+    await removeStoragePath(image_path);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
+  const updated: InterviewItem = {
+    ...existing,
+    title: values.title.trim(),
+    body: values.body,
+    guest: emptyToNull(values.guest),
+    image_url,
+    image_path,
+    published: values.published,
+    updated_at: new Date().toISOString(),
+  };
+  await writeInterviews(list.map((item) => (item.id === id ? updated : item)));
+  return updated;
+}
+
+export async function deleteInterview(item: InterviewItem): Promise<void> {
+  await removeStoragePath(item.image_path);
+  const list = await fetchInterviews({ includeUnpublished: true });
+  await writeInterviews(list.filter((entry) => entry.id !== item.id));
 }

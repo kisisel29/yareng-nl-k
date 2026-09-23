@@ -6,20 +6,21 @@ import { useToast } from '../../context/ToastContext';
 import {
   fetchAllContentComments,
   fetchColumnists,
+  fetchInterviews,
   fetchNews,
   fetchPersonById,
   moderateContentComment,
   type ContentComment,
 } from '../../lib/api';
-import { COLUMNISTS_PAGE_PATH, NEWS_PAGE_PATH } from '../../lib/constants';
+import { COLUMNISTS_PAGE_PATH, INTERVIEWS_PAGE_PATH, NEWS_PAGE_PATH } from '../../lib/constants';
 import { formatDateTimeTr, personName } from '../../lib/format';
 import { btnPrimary, btnSecondary } from '../../lib/cn';
-import type { Columnist, NewsItem, Person } from '../../types';
+import type { Columnist, InterviewItem, NewsItem, Person } from '../../types';
 
 type Filter = 'pending' | 'approved' | 'rejected' | 'all';
 
 type TargetMeta = {
-  kind: 'news' | 'person' | 'article' | 'other';
+  kind: 'news' | 'person' | 'article' | 'interview' | 'other';
   label: string;
   href: string;
 };
@@ -28,6 +29,7 @@ export function CommentsAdminPage() {
   const { notify } = useToast();
   const [comments, setComments] = useState<ContentComment[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [interviews, setInterviews] = useState<InterviewItem[]>([]);
   const [columnists, setColumnists] = useState<Columnist[]>([]);
   const [peopleById, setPeopleById] = useState<Record<string, Person>>({});
   const [filter, setFilter] = useState<Filter>('pending');
@@ -35,13 +37,15 @@ export function CommentsAdminPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function reload() {
-    const [nextComments, nextNews, nextColumnists] = await Promise.all([
+    const [nextComments, nextNews, nextInterviews, nextColumnists] = await Promise.all([
       fetchAllContentComments(),
       fetchNews({ includeUnpublished: true }),
+      fetchInterviews({ includeUnpublished: true }),
       fetchColumnists({ includeUnpublished: true }),
     ]);
     setComments(nextComments);
     setNews(nextNews);
+    setInterviews(nextInterviews);
     setColumnists(nextColumnists);
 
     const personIds = [
@@ -116,6 +120,15 @@ export function CommentsAdminPage() {
         }
       }
       return { kind: 'article', label: 'Köşe yazısı', href: COLUMNISTS_PAGE_PATH };
+    }
+    if (targetKey.startsWith('interview:')) {
+      const id = targetKey.slice(10);
+      const item = interviews.find((row) => row.id === id);
+      return {
+        kind: 'interview',
+        label: item?.title || 'Söyleşi',
+        href: item ? `${INTERVIEWS_PAGE_PATH}/${item.slug}` : INTERVIEWS_PAGE_PATH,
+      };
     }
     return { kind: 'other', label: targetKey, href: '/' };
   }
@@ -199,7 +212,9 @@ export function CommentsAdminPage() {
                           ? 'Haber'
                           : target.kind === 'article'
                             ? 'Köşe yazısı'
-                            : 'İçerik'}
+                            : target.kind === 'interview'
+                              ? 'Söyleşi'
+                              : 'İçerik'}
                       :{' '}
                       <Link to={target.href} className="text-burgundy-700 hover:underline">
                         {target.label}

@@ -13,6 +13,7 @@ import type {
   Person,
   PersonSearchParams,
   Poem,
+  InterviewItem,
   SiteSettingsMap,
   Source,
   SubmissionStatus,
@@ -847,6 +848,35 @@ export async function fetchNewsBySlug(
   options?: { includeUnpublished?: boolean }
 ): Promise<NewsItem | null> {
   const list = await fetchNews(options);
+  return list.find((item) => item.slug === slug) ?? null;
+}
+
+export async function fetchInterviews(options?: { includeUnpublished?: boolean }): Promise<InterviewItem[]> {
+  const settings = await fetchSiteSettings();
+  const parsed = parseJson<Partial<InterviewItem>[]>(settings.interviews, []);
+  const list = (Array.isArray(parsed) ? parsed : [])
+    .filter((item): item is InterviewItem => Boolean(item?.id && item?.title && item?.slug))
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      body: item.body ?? '',
+      guest: item.guest ?? null,
+      image_url: item.image_url ?? null,
+      image_path: item.image_path ?? null,
+      published: item.published !== false,
+      created_at: item.created_at ?? '',
+      updated_at: item.updated_at ?? '',
+    }));
+  const visible = options?.includeUnpublished ? list : list.filter((item) => item.published);
+  return visible.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+}
+
+export async function fetchInterviewBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<InterviewItem | null> {
+  const list = await fetchInterviews(options);
   return list.find((item) => item.slug === slug) ?? null;
 }
 

@@ -96,6 +96,7 @@ export interface SiteSettingsMap {
   columnists: string;
   poems: string;
   news: string;
+  interviews: string;
   content_reactions: string;
   content_comments: string;
 }
@@ -204,6 +205,26 @@ export interface NewsItem {
 
 export interface NewsFormValues {
   title: string;
+  body: string;
+  published: boolean;
+}
+
+export interface InterviewItem {
+  id: string;
+  title: string;
+  slug: string;
+  body: string;
+  guest: string | null;
+  image_url: string | null;
+  image_path: string | null;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InterviewFormValues {
+  title: string;
+  guest: string;
   body: string;
   published: boolean;
 }

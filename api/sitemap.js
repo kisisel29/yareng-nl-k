@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [peopleRes, booksRes, newsRes] = await Promise.all([
+    const [peopleRes, booksRes, newsRes, interviewsRes] = await Promise.all([
       fetch(
         `${supabaseUrl}/rest/v1/people?select=slug,updated_at&status=eq.published&order=updated_at.desc`,
         {
@@ -30,6 +30,12 @@ export default async function handler(req, res) {
         },
       }),
       fetch(`${supabaseUrl}/rest/v1/site_settings?key=eq.news&select=value`, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+        },
+      }),
+      fetch(`${supabaseUrl}/rest/v1/site_settings?key=eq.interviews&select=value`, {
         headers: {
           apikey: supabaseKey,
           Authorization: `Bearer ${supabaseKey}`,
@@ -62,6 +68,18 @@ export default async function handler(req, res) {
         news = [];
       }
     }
+    let interviews = [];
+    if (interviewsRes.ok) {
+      const rows = await interviewsRes.json();
+      try {
+        const parsed = JSON.parse(rows?.[0]?.value || '[]');
+        interviews = Array.isArray(parsed)
+          ? parsed.filter((item) => item?.slug && item.published !== false)
+          : [];
+      } catch {
+        interviews = [];
+      }
+    }
     const lastmod = new Date().toISOString().split('T')[0];
 
     const urls = [
@@ -69,6 +87,7 @@ export default async function handler(req, res) {
       { loc: `${siteUrl}/simalar`, changefreq: 'weekly', priority: '0.9' },
       { loc: `${siteUrl}/kitaplarim`, changefreq: 'monthly', priority: '0.9' },
       { loc: `${siteUrl}/haberler`, changefreq: 'weekly', priority: '0.85' },
+      { loc: `${siteUrl}/soylesiler`, changefreq: 'weekly', priority: '0.85' },
       { loc: `${siteUrl}/kose-yazarlari`, changefreq: 'weekly', priority: '0.7' },
       { loc: `${siteUrl}/ismail-hayal`, changefreq: 'monthly', priority: '0.8' },
       { loc: `${siteUrl}/siirler`, changefreq: 'weekly', priority: '0.8' },
@@ -88,6 +107,12 @@ export default async function handler(req, res) {
       })),
       ...news.map((item) => ({
         loc: `${siteUrl}/haberler/${item.slug}`,
+        lastmod: item.updated_at ? String(item.updated_at).split('T')[0] : lastmod,
+        changefreq: 'weekly',
+        priority: '0.75',
+      })),
+      ...interviews.map((item) => ({
+        loc: `${siteUrl}/soylesiler/${item.slug}`,
         lastmod: item.updated_at ? String(item.updated_at).split('T')[0] : lastmod,
         changefreq: 'weekly',
         priority: '0.75',
