@@ -6,6 +6,7 @@ import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { fetchNews, fetchNewsBySlug } from '../lib/api';
 import { NEWS_ADMIN_PATH, NEWS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
+import { renderLinkedContent } from '../lib/sanitize';
 import { useAuth } from '../context/AuthContext';
 import type { NewsItem } from '../types';
 import { NotFoundPage } from './NotFoundPage';
@@ -165,7 +166,10 @@ function NewsDetailView({ slug }: { slug: string }) {
           </div>
         ) : null}
         {hasText(item.body) ? (
-          <div className="prose-archive mt-8 whitespace-pre-line">{item.body}</div>
+          <div
+            className="prose-archive mt-8"
+            dangerouslySetInnerHTML={{ __html: renderLinkedContent(item.body) }}
+          />
         ) : null}
         <ContentEngagement url={path} title={item.title} targetKey={`news:${item.id}`} />
       </article>

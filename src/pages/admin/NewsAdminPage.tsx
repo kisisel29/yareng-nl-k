@@ -159,7 +159,7 @@ export function NewsAdminPage() {
                 className={`${inputClass} min-h-[14rem] leading-relaxed`}
                 value={form.body}
                 onChange={(e) => setForm({ ...form, body: e.target.value })}
-                placeholder="Haberi yazın…"
+                placeholder="Haberi yazın… Linkler için https:// ile başlayan adresi aynen yapıştırın; sitede tıklanabilir olur."
               />
             </label>
             <label className="flex items-center gap-2 text-sm">
