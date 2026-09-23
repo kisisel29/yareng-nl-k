@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { SITE_BANNER_SRC } from '../brand/SiteBanner';
-import { DEFAULT_DESCRIPTION, SITE_NAME } from '../../lib/constants';
+import { DEFAULT_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TAGLINE } from '../../lib/constants';
 import { siteUrl } from '../../lib/format';
 
 interface SeoProps {
@@ -8,6 +8,7 @@ interface SeoProps {
   description?: string;
   path?: string;
   image?: string | null;
+  keywords?: string;
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
@@ -17,22 +18,26 @@ export function Seo({
   description = DEFAULT_DESCRIPTION,
   path = '/',
   image,
+  keywords = SITE_KEYWORDS,
   noindex = false,
   jsonLd,
 }: SeoProps) {
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Gümüşhane'nin İnsan Hafızası`;
+  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | ${SITE_TAGLINE}`;
   const canonical = `${siteUrl()}${path}`;
   const ogImage = image || `${siteUrl()}${SITE_BANNER_SRC}`;
 
   return (
     <Helmet>
+      <html lang="tr" />
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <meta name="author" content="İsmail Hayal" />
       <link rel="canonical" href={canonical} />
       {noindex ? (
         <meta name="robots" content="noindex, nofollow" />
       ) : (
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
       )}
       <meta property="og:type" content="website" />
       <meta property="og:title" content={fullTitle} />

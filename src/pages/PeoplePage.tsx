@@ -4,6 +4,7 @@ import { FilterBar } from '../components/people/FilterBar';
 import { PersonGrid } from '../components/people/PersonGrid';
 import { SearchBox } from '../components/people/SearchBox';
 import { AlphabetIndex } from '../components/people/AlphabetIndex';
+import { ArchivePeopleCount } from '../components/people/ArchivePeopleCount';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Pagination } from '../components/ui/Pagination';
 import { Seo } from '../components/seo/Seo';
@@ -73,20 +74,25 @@ export function PeoplePage() {
   return (
     <>
       <Seo
-        title={activeCategory ? activeCategory.name : 'Simalar'}
-        description="Gümüşhane tarihinde, kültüründe ve toplumsal hayatında yer edinmiş isimleri arayın ve keşfedin."
+        title={activeCategory ? activeCategory.name : 'Gümüşhaneli Simalar'}
+        description={
+          activeCategory
+            ? `Gümüşhaneli Simalar — ${activeCategory.name}. Gümüşhane tarihine iz bırakan isimleri keşfedin.`
+            : 'Gümüşhaneli Simalar ve Gümüş Simalar arşivi: Gümüşhane tarihinde, kültüründe ve toplumsal hayatında yer edinmiş isimleri arayın.'
+        }
         path="/simalar"
       />
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h1 className="font-serif text-3xl text-ink-900 sm:text-4xl">
-          {activeCategory ? activeCategory.name : letter ? `${letter} harfi` : 'Simalar'}
+          {activeCategory ? activeCategory.name : letter ? `${letter} harfi` : 'Gümüşhaneli Simalar'}
         </h1>
+        <ArchivePeopleCount className="mt-2" link={false} />
         <p className="mt-3 max-w-2xl text-ink-600">
           {activeCategory
             ? `İsmail Hayal'in Gümüşhaneli Simalar eserindeki ${activeCategory.name} bölümü.`
             : letter
-              ? `Adı ${letter} harfi ile başlayan simalar.`
-              : 'Ad, soyad, meslek, doğum yeri veya kitap bölümüne göre arayın.'}
+              ? `Adı ${letter} harfi ile başlayan Gümüşhaneli simalar.`
+              : 'Gümüş Simalar arşivinde ad, soyad, meslek, doğum yeri veya kitap bölümüne göre arayın.'}
         </p>
         <div className="mt-8 max-w-xl">
           <SearchBox value={query} onChange={(value) => updateParam('q', value)} />

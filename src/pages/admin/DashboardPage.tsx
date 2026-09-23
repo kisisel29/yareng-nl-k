@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Seo } from '../../components/seo/Seo';
-import { fetchAdminStats } from '../../lib/api';
+import { fetchAdminStats, fetchAllContentComments } from '../../lib/api';
 import { btnPrimary } from '../../lib/cn';
 
 interface Stats {
@@ -15,12 +15,16 @@ interface Stats {
 
 export function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [pendingComments, setPendingComments] = useState(0);
   const [error, setError] = useState('');
 
   useEffect(() => {
     fetchAdminStats()
       .then(setStats)
       .catch(() => setError('İstatistikler yüklenemedi. Supabase bağlantısını kontrol edin.'));
+    fetchAllContentComments()
+      .then((items) => setPendingComments(items.filter((item) => item.status === 'pending').length))
+      .catch(() => setPendingComments(0));
   }, []);
 
   const cards = stats
@@ -31,6 +35,7 @@ export function DashboardPage() {
         { label: 'Taslak kişi', value: stats.draftPeople },
         { label: 'Fotoğrafı olmayan kişi', value: stats.noPhotoPeople },
         { label: 'Bekleyen başvuru', value: stats.pendingSubmissions },
+        { label: 'Bekleyen yorum', value: pendingComments },
       ]
     : [];
 
@@ -58,7 +63,7 @@ export function DashboardPage() {
                 <p className="mt-2 font-serif text-4xl text-ink-900">{card.value}</p>
               </div>
             ))
-          : Array.from({ length: 6 }).map((_, index) => (
+          : Array.from({ length: 7 }).map((_, index) => (
               <div key={index} className="h-28 animate-pulse rounded-lg bg-cream-100" />
             ))}
       </div>
@@ -66,6 +71,13 @@ export function DashboardPage() {
         <p className="mt-6 text-sm">
           <Link to="/admin/basvurular" className="text-burgundy-700 hover:underline">
             {stats.pendingSubmissions} bekleyen biyografi başvurusunu incele
+          </Link>
+        </p>
+      ) : null}
+      {pendingComments > 0 ? (
+        <p className="mt-3 text-sm">
+          <Link to="/admin/yorumlar" className="text-burgundy-700 hover:underline">
+            {pendingComments} bekleyen yorumu incele
           </Link>
         </p>
       ) : null}

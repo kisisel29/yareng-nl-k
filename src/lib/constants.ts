@@ -5,6 +5,14 @@ export const SEARCH_DEBOUNCE_MS = 350;
 export const SITE_NAME = 'Gümüşhaneli Simalar';
 export const SITE_NAME_CAPS = 'GÜMÜŞHANELİ SİMALAR';
 export const SITE_TAGLINE = "Gümüşhane'nin İnsan Hafızası";
+/** Google ve diğer aramalarda hedeflediğimiz alternatif adlar */
+export const SITE_ALTERNATE_NAMES = [
+  'Gümüş Simalar',
+  'Gümüşhane Simalar',
+  'Gümüşhaneli Biyografiler',
+] as const;
+export const SITE_KEYWORDS =
+  'gümüşhaneli simalar, gümüş simalar, gümüşhane simalar, gümüşhaneli biyografi, gümüşhane tarihi isimler, ismail hayal';
 export const AUTHOR_NAME = 'İsmail Hayal';
 export const AUTHOR_PAGE_PATH = '/kitaplarim';
 export const AUTHOR_ADMIN_PATH = '/admin/kitaplarim';
@@ -23,7 +31,7 @@ export const DEFAULT_AUTHOR_SHORT_BIO =
 export const DEFAULT_AUTHOR_BIOGRAPHY =
   "<p>İsmail Hayal, 23 Mayıs 1969'da Gümüşhane'de doğdu. İlk, orta ve lise öğrenimini Trabzon'da, yükseköğrenimini Ankara Gazi Üniversitesi Eğitim Fakültesi'nde tamamladı.</p><p>Öğretmenlik ve idarecilik görevlerini Kars Kağızman, Gümüşhane Kürtün ve Gümüşhane'de sürdürdü. Gümüşhane Rehberlik Araştırma Merkezi müdürlüğü, Gümüşhane Ticaret Meslek Lisesi müdür başyardımcılığı ve 2012–2014 yıllarında Gümüşhane Milli Eğitim Şube Müdürlüğü görevlerinde bulundu.</p><p>Ulusal ve yerel basında şiir, makale, desen ve karikatürleri yayımlandı. Hayal Dükkanı başlığıyla uzun yıllar kültür ve sanat yazıları yazdı.</p><p>Gümüşhane'nin eğitim, kültür ve insan hafızasına dair çok sayıda kitabı bulunmaktadır. Gümüşhaneli Simalar dijital arşivi, bu birikimin çevrimiçi devamıdır.</p>";
 export const DEFAULT_DESCRIPTION =
-  "İsmail Hayal'in resmi sitesi. Gümüşhaneli Simalar eserinden yola çıkan dijital biyografi arşivi.";
+  "Gümüşhaneli Simalar (Gümüş Simalar): İsmail Hayal'in Gümüşhane tarihine iz bırakan isimlerini kayıt altına alan dijital biyografi arşivi.";
 
 export const SOCIAL_LINKS = [
   {

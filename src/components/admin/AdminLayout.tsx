@@ -16,6 +16,7 @@ import {
   PenLine,
   Feather,
   BarChart3,
+  MessageSquare,
   X,
 } from 'lucide-react';
 import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, NEWS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
@@ -29,6 +30,7 @@ const LINKS = [
   { to: AUTHOR_ADMIN_PATH, label: 'Kitaplarım', icon: Library, end: false },
   { to: POEMS_ADMIN_PATH, label: 'Şiirler', icon: Feather, end: false },
   { to: NEWS_ADMIN_PATH, label: 'Haberler', icon: Newspaper, end: false },
+  { to: '/admin/yorumlar', label: 'Yorumlar', icon: MessageSquare, end: false },
   { to: COLUMNISTS_ADMIN_PATH, label: 'Köşe Yazarları', icon: PenLine, end: false },
   { to: '/admin/simalar', label: 'Simalar', icon: Users, end: true },
   { to: '/admin/simalar/yeni', label: 'Yeni Kişi Ekle', icon: Plus, end: false },

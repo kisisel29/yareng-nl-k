@@ -70,7 +70,7 @@ export function CommentSection({ targetKey }: { targetKey: string }) {
 
     setSaving(true);
     try {
-      const created = await submitContentComment({
+      await submitContentComment({
         key: targetKey,
         name,
         body,
@@ -79,15 +79,12 @@ export function CommentSection({ targetKey }: { targetKey: string }) {
         answer: parsed,
         honeypot,
       });
-      if (!honeypot.trim()) {
-        setComments((current) => [created, ...current]);
-      }
       setName('');
       setBody('');
       setAnswer('');
       setHoneypot('');
       setCaptcha(newCaptcha());
-      setSuccess('Yorumunuz yayınlandı.');
+      setSuccess('Yorumunuz alındı. Yönetici onayından sonra yayınlanacak.');
     } catch (err) {
       setCaptcha(newCaptcha());
       setAnswer('');
@@ -166,7 +163,7 @@ export function CommentSection({ targetKey }: { targetKey: string }) {
       <div className="mt-10 space-y-6">
         {loading ? <p className="text-sm text-ink-500">Yorumlar yükleniyor…</p> : null}
         {!loading && comments.length === 0 ? (
-          <p className="text-sm text-ink-500">Henüz yorum yok. İlk yorumu siz yazın.</p>
+          <p className="text-sm text-ink-500">Henüz onaylanmış yorum yok.</p>
         ) : null}
         {comments.map((comment) => (
           <article key={comment.id} className="border-t border-cream-200 pt-4">

@@ -20,7 +20,9 @@ import {
   NEWS_PAGE_PATH,
   PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
+  SITE_ALTERNATE_NAMES,
   SITE_NAME,
+  SITE_TAGLINE,
   SOCIAL_LINKS,
 } from '../lib/constants';
 import { formatDateTimeTr, formatLifeYears, personName, plainTextExcerpt, siteUrl } from '../lib/format';
@@ -133,8 +135,10 @@ export function HomePage() {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: SITE_NAME,
+        alternateName: [...SITE_ALTERNATE_NAMES],
         url: siteUrl(),
         description: DEFAULT_DESCRIPTION,
+        inLanguage: 'tr-TR',
         author: {
           '@type': 'Person',
           name: AUTHOR_NAME,
@@ -144,6 +148,19 @@ export function HomePage() {
           '@type': 'SearchAction',
           target: `${siteUrl()}/simalar?q={search_term_string}`,
           'query-input': 'required name=search_term_string',
+        },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: SITE_NAME,
+        alternateName: [...SITE_ALTERNATE_NAMES],
+        description: DEFAULT_DESCRIPTION,
+        url: `${siteUrl()}/simalar`,
+        isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: siteUrl() },
+        about: {
+          '@type': 'Place',
+          name: 'Gümüşhane',
         },
       },
       {
@@ -169,13 +186,25 @@ export function HomePage() {
             className="relative z-10 mx-auto -mt-8 h-[5.5rem] w-[5.5rem] sm:-mt-12 sm:h-28 sm:w-28"
             decorative
           />
-          <p className="mt-5 text-sm text-ink-500">İsmail Hayal'in resmi sitesi · {count} isim</p>
+          <p className="mt-5 text-sm text-ink-500">İsmail Hayal&apos;in resmi sitesi</p>
           <h1 className="mt-4 font-calibri text-3xl font-bold leading-tight tracking-wide text-ink-900 sm:text-5xl">
-            GÜMÜŞHANE'NİN İZ BIRAKANLARINI TANIYALIM
+            {SITE_NAME.toLocaleUpperCase('tr-TR')}
           </h1>
+          <p className="mt-3 text-sm font-medium tracking-wide text-ink-500 sm:text-base">{SITE_TAGLINE}</p>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-600">
-            Eğitimci ve yazar İsmail Hayal'in Gümüşhaneli Simalar eserinden yola çıkan dijital biyografi arşivi.
+            Gümüşhane&apos;nin iz bırakanlarını tanıyalım. Eğitimci ve yazar İsmail Hayal&apos;in Gümüşhaneli
+            Simalar (Gümüş Simalar) eserinden yola çıkan dijital biyografi arşivi.
           </p>
+          {count > 0 ? (
+            <p className="mt-6 font-serif text-2xl text-ink-900 sm:text-3xl">
+              <Link to="/simalar" className="hover:underline">
+                {count.toLocaleString('tr-TR')}
+              </Link>
+              <span className="mt-1 block font-sans text-sm font-normal tracking-normal text-ink-500 sm:text-base">
+                Gümüşhaneli sima arşivde
+              </span>
+            </p>
+          ) : null}
           <div className="relative mx-auto mt-8 max-w-xl text-left">
             <SearchBox
               value={query}

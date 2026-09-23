@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
 import { PersonGrid } from '../components/people/PersonGrid';
-import { ShareMenu } from '../components/people/ShareMenu';
+import { ReactionBar } from '../components/columnists/ReactionBar';
+import { SocialShareButtons } from '../components/columnists/SocialShareButtons';
+import { CommentSection } from '../components/comments/CommentSection';
 import { DetailSkeleton } from '../components/ui/Skeleton';
 import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
 import { formatDateTr, formatLifeYears, hasText, personExtraNotes, personName, plainTextExcerpt, siteUrl } from '../lib/format';
@@ -87,7 +89,7 @@ export function PersonDetailPage() {
 
   const name = personName(person);
   const years = formatLifeYears(person.birth_date, person.death_date);
-  const pageUrl = `${siteUrl()}/simalar/${person.slug}`;
+  const sharePath = `/simalar/${person.slug}`;
   const gallery = person.images ?? [];
   const sources = (person.sources ?? []).filter((source) =>
     [source.author, source.book_title, source.edition_year, source.page_number, source.extra_source, source.description].some(
@@ -181,7 +183,6 @@ export function PersonDetailPage() {
                   <p className="mt-2 text-sm text-burgundy-700">Bu kayıt henüz yayında değil (taslak).</p>
                 ) : null}
               </div>
-              <ShareMenu title={name} url={pageUrl} />
             </div>
 
             {facts.length > 0 ? (
@@ -240,6 +241,13 @@ export function PersonDetailPage() {
             </ul>
           </section>
         ) : null}
+
+        <section className="mt-12 max-w-3xl">
+          <SocialShareButtons url={sharePath} title={name} />
+          <ReactionBar targetKey={`person:${person.id}`} />
+          <CommentSection targetKey={`person:${person.id}`} />
+        </section>
+
         {related.length > 0 ? (
           <section className="mt-16 border-t border-cream-200 pt-10">
             <h2 className="font-serif text-2xl text-ink-900">Aynı bölümdeki simalar</h2>

@@ -1,5 +1,5 @@
--- İçerik yorumları (site_settings JSON) + matematik doğrulama
--- SQL Editor'de çalıştırın.
+-- Yorum onay sistemi
+-- SQL Editor'de 008_content_comments.sql sonrası çalıştırın.
 
 create or replace function public.add_content_comment(
   p_key text,
@@ -92,4 +92,84 @@ begin
 end;
 $$;
 
+create or replace function public.moderate_content_comment(
+  p_key text,
+  p_id text,
+  p_action text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  raw text;
+  tree jsonb;
+  list jsonb;
+  next_list jsonb := '[]'::jsonb;
+  item jsonb;
+  found boolean := false;
+begin
+  if auth.role() is distinct from 'authenticated' then
+    raise exception 'forbidden';
+  end if;
+  if p_key is null or length(trim(p_key)) < 3 or length(p_key) > 180 then
+    raise exception 'invalid key';
+  end if;
+  if p_id is null or length(trim(p_id)) < 8 then
+    raise exception 'invalid id';
+  end if;
+  if p_action is distinct from 'approve'
+     and p_action is distinct from 'reject'
+     and p_action is distinct from 'delete' then
+    raise exception 'invalid action';
+  end if;
+
+  select value into raw from public.site_settings where key = 'content_comments';
+  if raw is null or raw = '' then
+    raise exception 'not found';
+  end if;
+
+  begin
+    tree := raw::jsonb;
+  exception
+    when others then
+      raise exception 'not found';
+  end;
+
+  list := coalesce(tree -> p_key, '[]'::jsonb);
+  if jsonb_typeof(list) <> 'array' then
+    raise exception 'not found';
+  end if;
+
+  for item in select value from jsonb_array_elements(list)
+  loop
+    if item ->> 'id' = p_id then
+      found := true;
+      if p_action = 'delete' then
+        continue;
+      elsif p_action = 'approve' then
+        item := jsonb_set(item, '{status}', '"approved"');
+      else
+        item := jsonb_set(item, '{status}', '"rejected"');
+      end if;
+    end if;
+    next_list := next_list || jsonb_build_array(item);
+  end loop;
+
+  if not found then
+    raise exception 'not found';
+  end if;
+
+  tree := jsonb_set(tree, array[p_key], next_list);
+
+  insert into public.site_settings (key, value)
+  values ('content_comments', tree::text)
+  on conflict (key) do update set value = excluded.value;
+
+  return jsonb_build_object('ok', true, 'action', p_action, 'id', p_id);
+end;
+$$;
+
 grant execute on function public.add_content_comment(text, text, text, integer, integer, integer) to anon, authenticated;
+grant execute on function public.moderate_content_comment(text, text, text) to authenticated;

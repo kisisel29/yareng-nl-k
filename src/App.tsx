@@ -48,6 +48,9 @@ const PoemsAdminPage = lazy(() =>
 const NewsAdminPage = lazy(() =>
   import('./pages/admin/NewsAdminPage').then((module) => ({ default: module.NewsAdminPage }))
 );
+const CommentsAdminPage = lazy(() =>
+  import('./pages/admin/CommentsAdminPage').then((module) => ({ default: module.CommentsAdminPage }))
+);
 const DashboardPage = lazy(() =>
   import('./pages/admin/DashboardPage').then((module) => ({ default: module.DashboardPage }))
 );
@@ -113,6 +116,7 @@ export default function App() {
               <Route path="/admin/kitaplarim" element={<AuthorAdminPage />} />
               <Route path="/admin/siirler" element={<PoemsAdminPage />} />
               <Route path="/admin/haberler" element={<NewsAdminPage />} />
+              <Route path="/admin/yorumlar" element={<CommentsAdminPage />} />
               <Route path="/admin/kose-yazarlari" element={<ColumnistsAdminPage />} />
               <Route path="/admin/ismail-hayal" element={<Navigate to="/admin/kitaplarim" replace />} />
               <Route path="/admin/ayarlar" element={<SettingsPage />} />

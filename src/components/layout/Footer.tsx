@@ -4,6 +4,7 @@ import { ABOUT_PAGE_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH, COLUMNISTS_PAGE_PATH, N
 import { fetchCategories } from '../../lib/api';
 import { SocialLinks } from './SocialLinks';
 import { SiteLogo } from '../brand/SiteLogo';
+import { ArchivePeopleCount } from '../people/ArchivePeopleCount';
 import type { Category } from '../../types';
 
 export function Footer() {
@@ -28,8 +29,9 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-ink-600">
-              {AUTHOR_NAME}'in resmi sitesi. Gümüşhaneli Simalar dijital biyografi arşivi.
+              {AUTHOR_NAME}&apos;in resmi sitesi. Gümüşhaneli Simalar (Gümüş Simalar) dijital biyografi arşivi.
             </p>
+            <ArchivePeopleCount className="mt-3" />
           </div>
           <div>
             <Link to={ABOUT_PAGE_PATH} className="text-sm font-medium text-ink-900 hover:text-ink-700">

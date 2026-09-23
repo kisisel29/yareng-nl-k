@@ -957,29 +957,74 @@ export async function submitContentReaction(
   return counts;
 }
 
+export type CommentStatus = 'pending' | 'approved' | 'rejected';
+
 export type ContentComment = {
   id: string;
   name: string;
   body: string;
+  status: CommentStatus;
   created_at: string;
+  target_key?: string;
 };
 
-function normalizeComment(input: unknown): ContentComment | null {
+function normalizeComment(input: unknown, targetKey?: string): ContentComment | null {
   if (!input || typeof input !== 'object') return null;
   const row = input as Record<string, unknown>;
   const id = String(row.id ?? '').trim();
   const name = String(row.name ?? '').trim();
   const body = String(row.body ?? '').trim();
   const created_at = String(row.created_at ?? '').trim();
+  const rawStatus = String(row.status ?? 'approved').trim();
+  const status: CommentStatus =
+    rawStatus === 'pending' || rawStatus === 'rejected' || rawStatus === 'approved'
+      ? rawStatus
+      : 'approved';
   if (!id || !name || !body) return null;
-  return { id, name, body, created_at };
+  return { id, name, body, status, created_at, target_key: targetKey };
 }
 
 export async function fetchContentComments(key: string): Promise<ContentComment[]> {
   const settings = await fetchSiteSettings();
   const tree = parseJson<Record<string, unknown[]>>(settings.content_comments, {});
   const list = Array.isArray(tree[key]) ? tree[key] : [];
-  return list.map(normalizeComment).filter((item): item is ContentComment => Boolean(item));
+  return list
+    .map((item) => normalizeComment(item, key))
+    .filter((item): item is ContentComment => Boolean(item && item.status === 'approved'));
+}
+
+export async function fetchAllContentComments(): Promise<ContentComment[]> {
+  const settings = await fetchSiteSettings();
+  const tree = parseJson<Record<string, unknown[]>>(settings.content_comments, {});
+  const items: ContentComment[] = [];
+  for (const [key, list] of Object.entries(tree)) {
+    if (!Array.isArray(list)) continue;
+    for (const row of list) {
+      const comment = normalizeComment(row, key);
+      if (comment) items.push(comment);
+    }
+  }
+  return items.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+}
+
+export async function moderateContentComment(
+  key: string,
+  id: string,
+  action: 'approve' | 'reject' | 'delete'
+): Promise<void> {
+  const { error } = await supabase.rpc('moderate_content_comment', {
+    p_key: key,
+    p_id: id,
+    p_action: action,
+  });
+  if (error) {
+    if (error.message.includes('forbidden')) throw new Error('Bu işlem için yönetici girişi gerekli.');
+    if (error.message.includes('not found')) throw new Error('Yorum bulunamadı.');
+    if (error.message.includes('moderate_content_comment') || error.message.includes('Could not find')) {
+      throw new Error('Yorum onay sistemi henüz kurulmadı. SQL migration çalıştırılmalı.');
+    }
+    throw new Error('Yorum güncellenemedi.');
+  }
 }
 
 export async function submitContentComment(input: {
@@ -996,6 +1041,7 @@ export async function submitContentComment(input: {
       id: crypto.randomUUID(),
       name: input.name.trim(),
       body: input.body.trim(),
+      status: 'pending',
       created_at: new Date().toISOString(),
     };
   }
@@ -1020,7 +1066,7 @@ export async function submitContentComment(input: {
     throw new Error('Yorum gönderilemedi.');
   }
 
-  const comment = normalizeComment(data);
+  const comment = normalizeComment(data, input.key);
   if (!comment) throw new Error('Yorum gönderilemedi.');
-  return comment;
+  return { ...comment, status: comment.status || 'pending' };
 }
