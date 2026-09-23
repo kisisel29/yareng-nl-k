@@ -208,7 +208,6 @@ export function PersonDetailPage() {
                 {extraNotes}
               </p>
             ) : null}
-            <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
           </section>
         ) : person.short_bio || extraNotes ? (
           <section className="mt-12 max-w-3xl">
@@ -221,13 +220,8 @@ export function PersonDetailPage() {
                 {extraNotes}
               </p>
             ) : null}
-            <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
           </section>
-        ) : (
-          <section className="mt-12 max-w-3xl">
-            <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
-          </section>
-        )}
+        ) : null}
 
         {sources.length > 0 ? (
           <section className="mt-14 max-w-3xl border-t border-cream-200 pt-8">
@@ -245,6 +239,10 @@ export function PersonDetailPage() {
             </ul>
           </section>
         ) : null}
+
+        <div className="max-w-3xl">
+          <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
+        </div>
 
         {related.length > 0 ? (
           <section className="mt-16 border-t border-cream-200 pt-10">
