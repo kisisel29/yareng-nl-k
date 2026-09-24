@@ -36,7 +36,7 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
                   <ColumnNameLabel
                     name={columnist.column_name}
                     size="sm"
-                    className="mt-0 justify-center text-center"
+                    className="mt-0 text-center"
                   />
                 ) : null}
               </Link>
