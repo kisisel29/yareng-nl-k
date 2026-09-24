@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchColumnists } from '../../lib/api';
 import { COLUMNISTS_PAGE_PATH } from '../../lib/constants';
@@ -6,14 +6,32 @@ import { ColumnistAvatar } from './ColumnistAvatar';
 import { ColumnNameLabel } from './ColumnNameLabel';
 import type { Columnist } from '../../types';
 
+const PAGE_SIZE = 5;
+
+function latestArticleAt(columnist: Columnist): string {
+  return columnist.articles[0]?.created_at || columnist.updated_at || columnist.created_at || '';
+}
+
+function byLatestWriting(a: Columnist, b: Columnist): number {
+  return latestArticleAt(b).localeCompare(latestArticleAt(a));
+}
+
 export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertical' | 'horizontal' }) {
   const [columnists, setColumnists] = useState<Columnist[]>([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchColumnists()
-      .then(setColumnists)
+      .then((list) => setColumnists([...list].sort(byLatestWriting)))
       .catch(() => setColumnists([]));
   }, []);
+
+  const pageCount = Math.max(1, Math.ceil(columnists.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const pageItems = useMemo(() => {
+    const start = (safePage - 1) * PAGE_SIZE;
+    return columnists.slice(start, start + PAGE_SIZE);
+  }, [columnists, safePage]);
 
   if (columnists.length === 0 && variant === 'horizontal') return null;
 
@@ -27,9 +45,9 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
           </Link>
         </div>
         <ul className="flex gap-4 overflow-x-auto pb-1">
-          {columnists.map((columnist) => (
+          {columnists.slice(0, PAGE_SIZE).map((columnist) => (
             <li key={columnist.id} className="shrink-0">
-              <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex w-20 flex-col items-center gap-1">
+              <Link to={columnistHref(columnist)} className="flex w-20 flex-col items-center gap-1">
                 <ColumnistAvatar columnist={columnist} size="sm" />
                 <span className="line-clamp-2 text-center text-[11px] leading-tight text-ink-700">{columnist.name}</span>
                 {columnist.column_name ? (
@@ -43,6 +61,13 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
             </li>
           ))}
         </ul>
+        {columnists.length > PAGE_SIZE ? (
+          <p className="mt-2 text-center text-[11px] text-ink-500">
+            <Link to={COLUMNISTS_PAGE_PATH} className="text-burgundy-700 hover:underline">
+              Diğer yazarlar
+            </Link>
+          </p>
+        ) : null}
       </div>
     );
   }
@@ -64,11 +89,11 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
             Köşe yazarları eklendikçe küçük fotoğrafları ve yazıları burada görünür.
           </li>
         ) : (
-          columnists.map((columnist) => {
+          pageItems.map((columnist) => {
             const latest = columnist.articles[0];
             return (
               <li key={columnist.id}>
-                <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex gap-3 hover:opacity-80">
+                <Link to={columnistHref(columnist)} className="flex gap-3 hover:opacity-80">
                   <ColumnistAvatar columnist={columnist} size="sm" />
                   <span className="min-w-0">
                     <span className="block text-sm font-medium text-ink-900">{columnist.name}</span>
@@ -87,6 +112,31 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
           })
         )}
       </ul>
+      {pageCount > 1 ? (
+        <nav className="mt-4 flex flex-wrap items-center justify-center gap-1.5" aria-label="Köşe yazarları sayfaları">
+          {Array.from({ length: pageCount }, (_, index) => index + 1).map((number) => (
+            <button
+              key={number}
+              type="button"
+              onClick={() => setPage(number)}
+              className={
+                number === safePage
+                  ? 'min-w-[1.75rem] bg-ink-900 px-2 py-1 text-xs font-medium text-cream-50'
+                  : 'min-w-[1.75rem] px-2 py-1 text-xs text-ink-600 hover:bg-cream-100'
+              }
+              aria-current={number === safePage ? 'page' : undefined}
+            >
+              {number}
+            </button>
+          ))}
+        </nav>
+      ) : null}
     </div>
   );
+}
+
+function columnistHref(columnist: Columnist): string {
+  const latest = columnist.articles[0];
+  if (latest) return `${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${latest.slug}`;
+  return `${COLUMNISTS_PAGE_PATH}/${columnist.slug}`;
 }
