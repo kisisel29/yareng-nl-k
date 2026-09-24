@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { siteUrl } from '../../lib/format';
 
 interface SocialShareButtonsProps {
   url: string;
@@ -7,8 +8,20 @@ interface SocialShareButtonsProps {
 
 export function SocialShareButtons({ url, title }: SocialShareButtonsProps) {
   const [copied, setCopied] = useState(false);
-  
-  const fullUrl = `${window.location.origin}${url}`;
+
+  const path = url.startsWith('http')
+    ? (() => {
+        try {
+          const parsed = new URL(url);
+          return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+        } catch {
+          return url;
+        }
+      })()
+    : url.startsWith('/')
+      ? url
+      : `/${url}`;
+  const fullUrl = `${siteUrl()}${path}`;
   const encodedUrl = encodeURIComponent(fullUrl);
   const encodedTitle = encodeURIComponent(title);
 

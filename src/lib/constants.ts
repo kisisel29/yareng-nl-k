@@ -5,6 +5,8 @@ export const SEARCH_DEBOUNCE_MS = 350;
 export const SITE_NAME = 'Gümüşhaneli Simalar';
 export const SITE_NAME_CAPS = 'GÜMÜŞHANELİ SİMALAR';
 export const SITE_TAGLINE = "Gümüşhane'nin İnsan Hafızası";
+/** Canlı site adresi — paylaşım / OG / canonical için (Vercel domain’i değil). */
+export const PRODUCTION_SITE_URL = 'https://www.gumussimalar.com';
 /** Google ve diğer aramalarda hedeflediğimiz alternatif adlar */
 export const SITE_ALTERNATE_NAMES = [
   'Gümüş Simalar',

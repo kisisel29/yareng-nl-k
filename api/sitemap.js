@@ -2,15 +2,20 @@ export default async function handler(req, res) {
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
   const supabaseKey =
     process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-  const siteUrl = (process.env.VITE_SITE_URL || process.env.SITE_URL || '')
+  const siteUrl = (process.env.VITE_SITE_URL || process.env.SITE_URL || 'https://www.gumussimalar.com')
     .replace(/\/$/, '');
+  const publicSiteUrl = /vercel\.app$/i.test(new URL(siteUrl).hostname)
+    ? 'https://www.gumussimalar.com'
+    : siteUrl;
 
-  if (!supabaseUrl || !supabaseKey || !siteUrl) {
+  if (!supabaseUrl || !supabaseKey) {
     res.statusCode = 503;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.end('Sitemap yapılandırması eksik.');
     return;
   }
+
+  const siteUrl = publicSiteUrl;
 
   try {
     const [peopleRes, booksRes, newsRes, interviewsRes] = await Promise.all([

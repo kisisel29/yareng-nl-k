@@ -1,4 +1,5 @@
 import type { Person } from '../types';
+import { PRODUCTION_SITE_URL } from './constants';
 
 export function personName(person: Pick<Person, 'first_name' | 'last_name' | 'display_name'>): string {
   const display = person.display_name?.trim();
@@ -46,11 +47,23 @@ export function formatDateTimeTr(value: string | null | undefined): string {
   });
 }
 
+function isUsablePublicSiteUrl(value: string): boolean {
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    if (!host || host === 'localhost' || host.endsWith('.local')) return false;
+    if (host.endsWith('.vercel.app')) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function siteUrl(): string {
-  const fromEnv = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '');
-  if (fromEnv) return fromEnv;
+  const fromEnv = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '') ?? '';
+  if (fromEnv && isUsablePublicSiteUrl(fromEnv)) return fromEnv;
+  if (import.meta.env.PROD) return PRODUCTION_SITE_URL;
   if (typeof window !== 'undefined') return window.location.origin;
-  return '';
+  return fromEnv || PRODUCTION_SITE_URL;
 }
 
 export function hasText(value: string | null | undefined): boolean {
