@@ -12,7 +12,7 @@ export const AD_SLOT_META: Record<
 > = {
   home_after_hero: {
     label: 'Ana sayfa — üst bant',
-    description: 'Alfabe dizininden sonra, haberlerden önce. Yüksek görünürlük.',
+    description: 'Arama ile alfabe dizini arasında. Yüksek görünürlük.',
     format: 'leaderboard',
     size_label: '728 × 90 (mobilde tam genişlik)',
   },
@@ -51,33 +51,72 @@ export function adsContactHref(): string {
   return `${AUTHOR_WHATSAPP_URL}?phone=${phone}&text=${text}`;
 }
 
-function santaStoreAd(
+function placeholderAd(
   id: string,
   slot: AdSlotId,
-  format: AdPlacement['format']
+  format: AdPlacement['format'],
+  body: string,
+  cta: string
 ): AdPlacement {
   return {
     id,
     slot,
     format,
     enabled: true,
-    live: true,
-    headline: 'Santa Store — Outdoor giyim ve Gümüşhane temalı tasarımlar',
-    body: 'Tişört, sweatshirt, gömlek, pantolon ve şişme yelek. 650 TL’den başlayan fiyatlarla.',
-    cta: 'Şimdi İncele',
-    href: SANTA_STORE_AD_HREF,
-    image_url: SANTA_STORE_AD_IMAGE,
-    sponsor: 'Santa Store',
+    live: false,
+    headline: 'Buraya reklam verebilirsiniz',
+    body,
+    cta,
+    href: adsContactHref(),
+    image_url: null,
+    sponsor: null,
     size_label: AD_SLOT_META[slot].size_label,
   };
 }
 
 export function defaultAdPlacements(): AdPlacement[] {
   return [
-    santaStoreAd('ad-home-after-hero', 'home_after_hero', 'leaderboard'),
-    santaStoreAd('ad-home-mid', 'home_mid', 'leaderboard'),
-    santaStoreAd('ad-sidebar', 'sidebar', 'rectangle'),
-    santaStoreAd('ad-content-after', 'content_after', 'inline'),
-    santaStoreAd('ad-footer', 'footer', 'leaderboard'),
+    {
+      id: 'ad-home-after-hero',
+      slot: 'home_after_hero',
+      format: 'leaderboard',
+      enabled: true,
+      live: true,
+      headline: 'Santa Store — Outdoor giyim ve Gümüşhane temalı tasarımlar',
+      body: 'Tişört, sweatshirt, gömlek, pantolon ve şişme yelek. 650 TL’den başlayan fiyatlarla.',
+      cta: 'Şimdi İncele',
+      href: SANTA_STORE_AD_HREF,
+      image_url: SANTA_STORE_AD_IMAGE,
+      sponsor: 'Santa Store',
+      size_label: AD_SLOT_META.home_after_hero.size_label,
+    },
+    placeholderAd(
+      'ad-home-mid',
+      'home_mid',
+      'leaderboard',
+      'Haberler ile kitaplar arasında premium bant. Haftalık veya aylık rezervasyon.',
+      'Yer ayırt'
+    ),
+    placeholderAd(
+      'ad-sidebar',
+      'sidebar',
+      'rectangle',
+      'Yan sütunda 300×250 alan. Gümüşhaneli okuyucuya sürekli görünürlük.',
+      'Teklif al'
+    ),
+    placeholderAd(
+      'ad-content-after',
+      'content_after',
+      'inline',
+      'Haber ve biyografi yazılarının altında. İçerikle uyumlu, sakin tanıtım alanı.',
+      'İletişime geç'
+    ),
+    placeholderAd(
+      'ad-footer',
+      'footer',
+      'leaderboard',
+      'Tüm genel sayfalarda alt bant. Kurumsal duyuru ve etkinlikler için ideal.',
+      'Reklam ver'
+    ),
   ];
 }

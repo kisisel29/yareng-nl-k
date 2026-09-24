@@ -888,8 +888,20 @@ export async function fetchAds(): Promise<AdPlacement[]> {
     }
     return defaults.map((item) => {
       const stored = bySlot.get(item.slot);
-      // Canlı kayıtlı reklam varsa onu kullan; aksi halde güncel varsayılan (Santa Store).
-      if (stored?.live && stored.enabled) return stored;
+      // Ana sayfa üst bant: canlı Santa Store (veya admin’in canlı kaydı)
+      if (item.slot === 'home_after_hero') {
+        if (stored?.live && stored.enabled) return stored;
+        return item;
+      }
+      // Diğer slotlar: özel canlı reklam (Santa dışı) varsa onu kullan, yoksa satılık alan
+      if (
+        stored?.live &&
+        stored.enabled &&
+        stored.image_url &&
+        !String(stored.image_url).includes('santa-store')
+      ) {
+        return stored;
+      }
       if (stored && !stored.enabled) return { ...item, enabled: false };
       return item;
     });
