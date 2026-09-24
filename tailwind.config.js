@@ -39,7 +39,6 @@ export default {
         serif: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
         sans: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
         calibri: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
-        column: ['"Cormorant Garamond"', 'Georgia', 'Times New Roman', 'serif'],
       },
       boxShadow: {
         card: 'none',
