@@ -1,4 +1,4 @@
-/** Köşe adı — yazı başlıklarından ayırt edilir. */
+/** Köşe adı — yazı başlıklarından ayırt edilen masthead stili. */
 export function ColumnNameLabel({
   name,
   className = '',
@@ -9,18 +9,17 @@ export function ColumnNameLabel({
   size?: 'sm' | 'md' | 'lg';
 }) {
   const sizeClass =
-    size === 'lg' ? 'text-sm' : size === 'sm' ? 'text-[10px]' : 'text-xs';
+    size === 'lg'
+      ? 'text-xl tracking-[0.2em] sm:text-2xl'
+      : size === 'sm'
+        ? 'text-[11px] tracking-[0.16em]'
+        : 'text-base tracking-[0.18em]';
 
   return (
     <span
-      className={`mt-1 inline-flex max-w-full items-baseline gap-1.5 ${sizeClass} ${className}`.trim()}
+      className={`mt-1 block font-column font-semibold uppercase leading-tight text-burgundy-700 ${sizeClass} ${className}`.trim()}
     >
-      <span className="shrink-0 font-sans font-normal uppercase tracking-[0.14em] text-ink-400">
-        Köşe
-      </span>
-      <span className="min-w-0 font-serif font-normal italic leading-snug tracking-normal text-burgundy-800">
-        {name}
-      </span>
+      {name}
     </span>
   );
 }
