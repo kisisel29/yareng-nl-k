@@ -152,6 +152,8 @@ export interface Columnist {
   name: string;
   slug: string;
   title: string | null;
+  /** Köşenin adı, örn. HAYAL ÖTESİ */
+  column_name: string | null;
   photo_url: string | null;
   photo_path: string | null;
   published: boolean;
@@ -164,6 +166,7 @@ export interface Columnist {
 export interface ColumnistFormValues {
   name: string;
   title: string;
+  column_name: string;
   published: boolean;
 }
 

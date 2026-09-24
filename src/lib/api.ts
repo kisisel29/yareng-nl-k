@@ -743,6 +743,7 @@ function normalizeColumnist(raw: Partial<Columnist> & { name?: string }): Column
     name: raw.name,
     slug: raw.slug || 'yazar',
     title: raw.title ?? null,
+    column_name: raw.column_name ?? null,
     photo_url: raw.photo_url ?? null,
     photo_path: raw.photo_path ?? null,
     published: raw.published !== false,

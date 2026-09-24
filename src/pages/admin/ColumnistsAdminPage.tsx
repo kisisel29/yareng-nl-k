@@ -24,6 +24,7 @@ import type { Columnist, ColumnistArticle, ColumnistArticleFormValues, Columnist
 const emptyColumnistForm = (): ColumnistFormValues => ({
   name: '',
   title: '',
+  column_name: '',
   published: true,
 });
 
@@ -57,19 +58,31 @@ export function ColumnistsAdminPage() {
   const photoSrc = clearPhoto ? null : photoPreview || editingColumnist?.photo_url || null;
 
   async function reload(nextSelectedId?: string | null) {
-    const next = await fetchColumnists({ includeUnpublished: true });
+    let next = await fetchColumnists({ includeUnpublished: true });
+    const ismail = next.find(
+      (item) => item.slug === 'ismail-hayal' || /^ismail\s+hayal$/i.test(item.name.trim())
+    );
+    if (ismail && !ismail.column_name?.trim()) {
+      await updateColumnist(
+        ismail.id,
+        {
+          name: ismail.name,
+          title: ismail.title ?? '',
+          column_name: 'HAYAL ÖTESİ',
+          published: ismail.published,
+        },
+        null,
+        false
+      );
+      next = await fetchColumnists({ includeUnpublished: true });
+    }
     setColumnists(next);
     const preferred = nextSelectedId === undefined ? selectedId : nextSelectedId;
     setSelectedId(preferred && next.some((item) => item.id === preferred) ? preferred : next[0]?.id ?? null);
   }
 
   useEffect(() => {
-    fetchColumnists({ includeUnpublished: true })
-      .then((next) => {
-        setColumnists(next);
-        setSelectedId(next[0]?.id ?? null);
-      })
-      .catch(() => notify('Köşe yazarları yüklenemedi.', 'error'));
+    reload().catch(() => notify('Köşe yazarları yüklenemedi.', 'error'));
   }, [notify]);
 
   function openNewColumnist() {
@@ -86,6 +99,7 @@ export function ColumnistsAdminPage() {
     setColumnistForm({
       name: columnist.name,
       title: columnist.title ?? '',
+      column_name: columnist.column_name ?? '',
       published: columnist.published,
     });
     setPhotoFile(null);
@@ -228,6 +242,7 @@ export function ColumnistsAdminPage() {
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium text-ink-900">{columnist.name}</span>
                     <span className="text-xs text-ink-500">
+                      {columnist.column_name ? `${columnist.column_name} · ` : ''}
                       {columnist.articles.length} yazı{columnist.published ? '' : ' · Gizli'}
                     </span>
                   </span>
@@ -277,6 +292,15 @@ export function ColumnistsAdminPage() {
                   />
                 </label>
                 <label className="block">
+                  <span className={labelClass}>Köşe adı</span>
+                  <input
+                    className={inputClass}
+                    value={columnistForm.column_name}
+                    onChange={(e) => setColumnistForm({ ...columnistForm, column_name: e.target.value })}
+                    placeholder="Örn. HAYAL ÖTESİ"
+                  />
+                </label>
+                <label className="block">
                   <span className={labelClass}>Unvan (isteğe bağlı)</span>
                   <input
                     className={inputClass}
@@ -319,6 +343,9 @@ export function ColumnistsAdminPage() {
                   <ColumnistAvatar columnist={selected} />
                   <div>
                     <h2 className="font-serif text-2xl text-ink-900">{selected.name}</h2>
+                    {selected.column_name ? (
+                      <p className="mt-1 text-sm font-medium tracking-wide text-ink-700">{selected.column_name}</p>
+                    ) : null}
                     <p className="text-sm text-ink-500">{selected.title || 'Köşe yazarı'}</p>
                   </div>
                 </div>

@@ -28,9 +28,14 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
         <ul className="flex gap-4 overflow-x-auto pb-1">
           {columnists.map((columnist) => (
             <li key={columnist.id} className="shrink-0">
-              <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex w-16 flex-col items-center gap-1">
+              <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex w-20 flex-col items-center gap-1">
                 <ColumnistAvatar columnist={columnist} size="sm" />
                 <span className="line-clamp-2 text-center text-[11px] leading-tight text-ink-700">{columnist.name}</span>
+                {columnist.column_name ? (
+                  <span className="line-clamp-2 text-center text-[10px] leading-tight tracking-wide text-ink-500">
+                    {columnist.column_name}
+                  </span>
+                ) : null}
               </Link>
             </li>
           ))}
@@ -64,6 +69,9 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
                   <ColumnistAvatar columnist={columnist} size="sm" />
                   <span className="min-w-0">
                     <span className="block text-sm font-medium text-ink-900">{columnist.name}</span>
+                    {columnist.column_name ? (
+                      <span className="mt-0.5 block text-xs tracking-wide text-ink-600">{columnist.column_name}</span>
+                    ) : null}
                     {latest ? (
                       <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-ink-500">{latest.title}</span>
                     ) : columnist.title ? (

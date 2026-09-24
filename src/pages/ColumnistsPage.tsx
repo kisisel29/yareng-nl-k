@@ -61,6 +61,11 @@ function IndexView() {
                   <ColumnistAvatar columnist={columnist} />
                   <span>
                     <span className="block font-serif text-2xl text-ink-900">{columnist.name}</span>
+                    {columnist.column_name ? (
+                      <span className="mt-1 block text-sm font-medium tracking-wide text-ink-700">
+                        {columnist.column_name}
+                      </span>
+                    ) : null}
                     {columnist.title ? <span className="mt-1 block text-sm text-ink-500">{columnist.title}</span> : null}
                     {columnist.articles[0] ? (
                       <span className="mt-2 block text-sm text-ink-600">{columnist.articles[0].title}</span>
@@ -103,7 +108,11 @@ function ColumnistView({ slug }: { slug: string }) {
     <>
       <Seo
         title={columnist.name}
-        description={columnist.title || `${columnist.name} köşe yazıları.`}
+        description={
+          columnist.column_name
+            ? `${columnist.name} — ${columnist.column_name} köşe yazıları.`
+            : columnist.title || `${columnist.name} köşe yazıları.`
+        }
         path={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`}
         image={columnist.photo_url}
       />
@@ -117,7 +126,10 @@ function ColumnistView({ slug }: { slug: string }) {
           <ColumnistAvatar columnist={columnist} size="lg" />
           <div>
             <h1 className="font-serif text-4xl text-ink-900">{columnist.name}</h1>
-            {columnist.title ? <p className="mt-2 text-ink-600">{columnist.title}</p> : null}
+            {columnist.column_name ? (
+              <p className="mt-2 text-lg font-medium tracking-wide text-ink-700">{columnist.column_name}</p>
+            ) : null}
+            {columnist.title ? <p className="mt-1 text-ink-600">{columnist.title}</p> : null}
             {user ? (
               <Link to={COLUMNISTS_ADMIN_PATH} className="mt-3 inline-block text-sm text-burgundy-700 hover:underline">
                 Düzenle
@@ -195,7 +207,12 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
         <div className="mt-5 flex items-center gap-3">
           <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex items-center gap-2">
             <ColumnistAvatar columnist={columnist} size="sm" />
-            <span className="text-sm font-medium text-ink-800">{columnist.name}</span>
+            <span>
+              <span className="block text-sm font-medium text-ink-800">{columnist.name}</span>
+              {columnist.column_name ? (
+                <span className="block text-xs tracking-wide text-ink-500">{columnist.column_name}</span>
+              ) : null}
+            </span>
           </Link>
           <span className="text-sm text-ink-500">{formatDateTimeTr(article.created_at)}</span>
           {user ? (
