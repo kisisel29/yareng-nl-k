@@ -888,21 +888,20 @@ export async function fetchAds(): Promise<AdPlacement[]> {
     }
     return defaults.map((item) => {
       const stored = bySlot.get(item.slot);
-      // Ana sayfa üst bant: canlı Santa Store (veya admin’in canlı kaydı)
-      if (item.slot === 'home_after_hero') {
-        if (stored?.live && stored.enabled) return stored;
+      if (stored && !stored.enabled) return { ...item, enabled: false };
+
+      // Yerleşik canlı reklamlar (Santa / Efora): varsayılanı koru; admin başka canlı görsel koyduysa onu kullan
+      if (item.live) {
+        const storedImage = String(stored?.image_url || '');
+        const isBuiltin =
+          storedImage.includes('santa-store') ||
+          storedImage.includes('efora-grup') ||
+          !storedImage;
+        if (stored?.live && stored.enabled && storedImage && !isBuiltin) return stored;
         return item;
       }
-      // Diğer slotlar: özel canlı reklam (Santa dışı) varsa onu kullan, yoksa satılık alan
-      if (
-        stored?.live &&
-        stored.enabled &&
-        stored.image_url &&
-        !String(stored.image_url).includes('santa-store')
-      ) {
-        return stored;
-      }
-      if (stored && !stored.enabled) return { ...item, enabled: false };
+
+      if (stored?.live && stored.enabled && stored.image_url) return stored;
       return item;
     });
   } catch {

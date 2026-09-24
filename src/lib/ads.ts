@@ -5,6 +5,8 @@ export const ADS_ADMIN_PATH = '/admin/reklamlar';
 
 export const SANTA_STORE_AD_HREF = 'https://www.shopier.com/santastore29';
 export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.jpg?v=3';
+export const EFORA_AD_HREF = 'https://eforagrup.com/';
+export const EFORA_AD_IMAGE = '/ads/efora-grup.jpg?v=1';
 
 export const AD_SLOT_META: Record<
   AdSlotId,
@@ -97,13 +99,20 @@ export function defaultAdPlacements(): AdPlacement[] {
       'Haberler ile kitaplar arasında premium bant. Haftalık veya aylık rezervasyon.',
       'Yer ayırt'
     ),
-    placeholderAd(
-      'ad-sidebar',
-      'sidebar',
-      'rectangle',
-      'Yan sütunda 300×250 alan. Gümüşhaneli okuyucuya sürekli görünürlük.',
-      'Teklif al'
-    ),
+    {
+      id: 'ad-sidebar',
+      slot: 'sidebar',
+      format: 'rectangle',
+      enabled: true,
+      live: true,
+      headline: 'Efora Şirketler Grubu — Geleceği Birlikte İnşa Ediyoruz',
+      body: 'İnsan kaynakları, lojistik, iş sağlığı, otomotiv ve eğitim.',
+      cta: 'Keşfet',
+      href: EFORA_AD_HREF,
+      image_url: EFORA_AD_IMAGE,
+      sponsor: 'Efora Şirketler Grubu',
+      size_label: AD_SLOT_META.sidebar.size_label,
+    },
     placeholderAd(
       'ad-content-after',
       'content_after',
