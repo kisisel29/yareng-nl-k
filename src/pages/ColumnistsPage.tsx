@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ColumnistAvatar } from '../components/columnists/ColumnistAvatar';
+import { ColumnNameLabel } from '../components/columnists/ColumnNameLabel';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { fetchColumnistArticle, fetchColumnistBySlug, fetchColumnists } from '../lib/api';
 import { COLUMNISTS_ADMIN_PATH, COLUMNISTS_PAGE_PATH } from '../lib/constants';
@@ -61,11 +62,7 @@ function IndexView() {
                   <ColumnistAvatar columnist={columnist} />
                   <span>
                     <span className="block font-serif text-2xl text-ink-900">{columnist.name}</span>
-                    {columnist.column_name ? (
-                      <span className="mt-1 block text-sm font-medium tracking-wide text-ink-700">
-                        {columnist.column_name}
-                      </span>
-                    ) : null}
+                    {columnist.column_name ? <ColumnNameLabel name={columnist.column_name} className="block" /> : null}
                     {columnist.title ? <span className="mt-1 block text-sm text-ink-500">{columnist.title}</span> : null}
                     {columnist.articles[0] ? (
                       <span className="mt-2 block text-sm text-ink-600">{columnist.articles[0].title}</span>
@@ -127,7 +124,7 @@ function ColumnistView({ slug }: { slug: string }) {
           <div>
             <h1 className="font-serif text-4xl text-ink-900">{columnist.name}</h1>
             {columnist.column_name ? (
-              <p className="mt-2 text-lg font-medium tracking-wide text-ink-700">{columnist.column_name}</p>
+              <ColumnNameLabel name={columnist.column_name} size="lg" className="mt-2 block" />
             ) : null}
             {columnist.title ? <p className="mt-1 text-ink-600">{columnist.title}</p> : null}
             {user ? (
@@ -210,7 +207,7 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
             <span>
               <span className="block text-sm font-medium text-ink-800">{columnist.name}</span>
               {columnist.column_name ? (
-                <span className="block text-xs tracking-wide text-ink-500">{columnist.column_name}</span>
+                <ColumnNameLabel name={columnist.column_name} size="sm" className="block" />
               ) : null}
             </span>
           </Link>

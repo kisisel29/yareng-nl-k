@@ -5,6 +5,7 @@ import { Seo } from '../../components/seo/Seo';
 import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 import { ImageField } from '../../components/admin/ImageField';
 import { ColumnistAvatar } from '../../components/columnists/ColumnistAvatar';
+import { ColumnNameLabel } from '../../components/columnists/ColumnNameLabel';
 import { RichTextEditor } from '../../components/ui/RichTextEditor';
 import { useToast } from '../../context/ToastContext';
 import { fetchColumnists } from '../../lib/api';
@@ -344,7 +345,7 @@ export function ColumnistsAdminPage() {
                   <div>
                     <h2 className="font-serif text-2xl text-ink-900">{selected.name}</h2>
                     {selected.column_name ? (
-                      <p className="mt-1 text-sm font-medium tracking-wide text-ink-700">{selected.column_name}</p>
+                      <ColumnNameLabel name={selected.column_name} className="mt-1 block" />
                     ) : null}
                     <p className="text-sm text-ink-500">{selected.title || 'Köşe yazarı'}</p>
                   </div>

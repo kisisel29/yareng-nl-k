@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchColumnists } from '../../lib/api';
 import { COLUMNISTS_PAGE_PATH } from '../../lib/constants';
 import { ColumnistAvatar } from './ColumnistAvatar';
+import { ColumnNameLabel } from './ColumnNameLabel';
 import type { Columnist } from '../../types';
 
 export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertical' | 'horizontal' }) {
@@ -32,9 +33,11 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
                 <ColumnistAvatar columnist={columnist} size="sm" />
                 <span className="line-clamp-2 text-center text-[11px] leading-tight text-ink-700">{columnist.name}</span>
                 {columnist.column_name ? (
-                  <span className="line-clamp-2 text-center text-[10px] leading-tight tracking-wide text-ink-500">
-                    {columnist.column_name}
-                  </span>
+                  <ColumnNameLabel
+                    name={columnist.column_name}
+                    size="sm"
+                    className="mt-0 justify-center text-center"
+                  />
                 ) : null}
               </Link>
             </li>
@@ -70,7 +73,7 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
                   <span className="min-w-0">
                     <span className="block text-sm font-medium text-ink-900">{columnist.name}</span>
                     {columnist.column_name ? (
-                      <span className="mt-0.5 block text-xs tracking-wide text-ink-600">{columnist.column_name}</span>
+                      <ColumnNameLabel name={columnist.column_name} size="sm" className="mt-0.5 block" />
                     ) : null}
                     {latest ? (
                       <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-ink-500">{latest.title}</span>
