@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
+import { AdSlot } from '../components/ads/AdSlot';
 import { fetchInterviewBySlug, fetchInterviews } from '../lib/api';
 import { INTERVIEWS_ADMIN_PATH, INTERVIEWS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
@@ -188,6 +189,9 @@ function InterviewDetailView({ slug }: { slug: string }) {
             dangerouslySetInnerHTML={{ __html: renderLinkedContent(item.body) }}
           />
         ) : null}
+        <div className="mt-10">
+          <AdSlot slot="content_after" />
+        </div>
         <ContentEngagement url={path} title={item.title} targetKey={`interview:${item.id}`} />
       </article>
     </>

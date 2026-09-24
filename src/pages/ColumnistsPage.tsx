@@ -5,6 +5,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { ColumnistAvatar } from '../components/columnists/ColumnistAvatar';
 import { ColumnNameLabel } from '../components/columnists/ColumnNameLabel';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
+import { AdSlot } from '../components/ads/AdSlot';
 import { fetchColumnistArticle, fetchColumnistBySlug, fetchColumnists } from '../lib/api';
 import { COLUMNISTS_ADMIN_PATH, COLUMNISTS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
@@ -224,6 +225,9 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body) }}
           />
         ) : null}
+        <div className="mt-10">
+          <AdSlot slot="content_after" />
+        </div>
         <ContentEngagement url={path} title={article.title} targetKey={`article:${article.id}`} />
       </article>
     </>

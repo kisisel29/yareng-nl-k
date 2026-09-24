@@ -97,8 +97,34 @@ export interface SiteSettingsMap {
   poems: string;
   news: string;
   interviews: string;
+  ads: string;
   content_reactions: string;
   content_comments: string;
+}
+
+export type AdSlotId =
+  | 'home_after_hero'
+  | 'home_mid'
+  | 'sidebar'
+  | 'content_after'
+  | 'footer';
+
+export type AdFormat = 'leaderboard' | 'rectangle' | 'inline';
+
+export interface AdPlacement {
+  id: string;
+  slot: AdSlotId;
+  format: AdFormat;
+  enabled: boolean;
+  /** true = gerçek reklam; false = satılık alan tanıtımı */
+  live: boolean;
+  headline: string;
+  body: string;
+  cta: string;
+  href: string | null;
+  image_url: string | null;
+  sponsor: string | null;
+  size_label: string;
 }
 
 export interface AuthorProfile {

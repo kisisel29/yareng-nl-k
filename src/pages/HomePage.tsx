@@ -28,6 +28,7 @@ import {
 import { formatDateTimeTr, formatLifeYears, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { useDebounce } from '../hooks/useDebounce';
 import { BookCard } from '../components/author/BookCard';
+import { AdBand } from '../components/ads/AdSlot';
 import type { AuthorBook, Category, NewsItem, Person } from '../types';
 
 export function HomePage() {
@@ -228,7 +229,12 @@ export function HomePage() {
             ) : null}
           </div>
         </div>
-        <div className="mx-auto max-w-6xl px-4 pb-10 pt-8 sm:px-6 sm:pb-14">
+
+        <div className="mx-auto max-w-6xl px-4 pb-4 pt-6 sm:px-6">
+          <AdBand slot="home_after_hero" className="!px-0" />
+        </div>
+
+        <div className="mx-auto max-w-6xl px-4 pb-10 pt-4 sm:px-6 sm:pb-14">
           <p className="mb-3 text-center text-xs uppercase tracking-[0.16em] text-ink-500">Harfe göre adlar</p>
           <AlphabetIndex />
         </div>
@@ -324,6 +330,10 @@ export function HomePage() {
           )}
         </div>
       </section>
+
+      <div className="bg-ink-900 py-3">
+        <AdBand slot="home_mid" tone="dark" />
+      </div>
 
       <section className="bg-black text-cream-50">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">

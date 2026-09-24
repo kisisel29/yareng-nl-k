@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
+import { AdSlot } from '../components/ads/AdSlot';
 import { fetchNews, fetchNewsBySlug } from '../lib/api';
 import { NEWS_ADMIN_PATH, NEWS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
@@ -171,6 +172,9 @@ function NewsDetailView({ slug }: { slug: string }) {
             dangerouslySetInnerHTML={{ __html: renderLinkedContent(item.body) }}
           />
         ) : null}
+        <div className="mt-10">
+          <AdSlot slot="content_after" />
+        </div>
         <ContentEngagement url={path} title={item.title} targetKey={`news:${item.id}`} />
       </article>
     </>

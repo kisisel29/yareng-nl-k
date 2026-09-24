@@ -54,6 +54,9 @@ const NewsAdminPage = lazy(() =>
 const InterviewsAdminPage = lazy(() =>
   import('./pages/admin/InterviewsAdminPage').then((module) => ({ default: module.InterviewsAdminPage }))
 );
+const AdsAdminPage = lazy(() =>
+  import('./pages/admin/AdsAdminPage').then((module) => ({ default: module.AdsAdminPage }))
+);
 const CommentsAdminPage = lazy(() =>
   import('./pages/admin/CommentsAdminPage').then((module) => ({ default: module.CommentsAdminPage }))
 );
@@ -125,6 +128,7 @@ export default function App() {
               <Route path="/admin/soylesiler" element={<InterviewsAdminPage />} />
               <Route path="/admin/yorumlar" element={<CommentsAdminPage />} />
               <Route path="/admin/kose-yazarlari" element={<ColumnistsAdminPage />} />
+              <Route path="/admin/reklamlar" element={<AdsAdminPage />} />
               <Route path="/admin/ismail-hayal" element={<Navigate to="/admin/kitaplarim" replace />} />
               <Route path="/admin/ayarlar" element={<SettingsPage />} />
               <Route path="/admin/*" element={<Navigate to="/admin" replace />} />

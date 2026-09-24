@@ -17,7 +17,10 @@ import type {
   SiteSettingsMap,
   Source,
   SubmissionStatus,
+  AdPlacement,
+  AdSlotId,
 } from '../types';
+import { AD_SLOT_META, defaultAdPlacements } from './ads';
 
 const PERSON_SELECT = `
   *,
@@ -850,6 +853,49 @@ export async function fetchNewsBySlug(
 ): Promise<NewsItem | null> {
   const list = await fetchNews(options);
   return list.find((item) => item.slug === slug) ?? null;
+}
+
+function normalizeAd(raw: Partial<AdPlacement>, fallback?: AdPlacement): AdPlacement | null {
+  const slot = (raw.slot || fallback?.slot) as AdSlotId | undefined;
+  if (!slot || !AD_SLOT_META[slot]) return null;
+  const meta = AD_SLOT_META[slot];
+  return {
+    id: raw.id || fallback?.id || `ad-${slot}`,
+    slot,
+    format: raw.format || meta.format,
+    enabled: raw.enabled !== false,
+    live: Boolean(raw.live),
+    headline: (raw.headline ?? fallback?.headline ?? '').trim() || meta.label,
+    body: (raw.body ?? fallback?.body ?? '').trim() || meta.description,
+    cta: (raw.cta ?? fallback?.cta ?? 'Reklam ver').trim() || 'Reklam ver',
+    href: raw.href?.trim() || fallback?.href || null,
+    image_url: raw.image_url?.trim() || null,
+    sponsor: raw.sponsor?.trim() || null,
+    size_label: raw.size_label?.trim() || meta.size_label,
+  };
+}
+
+export async function fetchAds(): Promise<AdPlacement[]> {
+  const defaults = defaultAdPlacements();
+  try {
+    const settings = await fetchSiteSettings();
+    const parsed = parseJson<Partial<AdPlacement>[]>(settings.ads, []);
+    if (!Array.isArray(parsed) || parsed.length === 0) return defaults;
+    const bySlot = new Map<AdSlotId, AdPlacement>();
+    for (const item of parsed) {
+      const normalized = normalizeAd(item);
+      if (normalized) bySlot.set(normalized.slot, normalized);
+    }
+    return defaults.map((item) => {
+      const stored = bySlot.get(item.slot);
+      // Canlı kayıtlı reklam varsa onu kullan; aksi halde güncel varsayılan (Santa Store).
+      if (stored?.live && stored.enabled) return stored;
+      if (stored && !stored.enabled) return { ...item, enabled: false };
+      return item;
+    });
+  } catch {
+    return defaults;
+  }
 }
 
 export async function fetchInterviews(options?: { includeUnpublished?: boolean }): Promise<InterviewItem[]> {

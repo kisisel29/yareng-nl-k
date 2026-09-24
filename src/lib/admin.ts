@@ -3,6 +3,7 @@ import { dataUrlToFile, optimizeImage } from './image';
 import { slugify } from './slug';
 import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchNews, fetchPoems } from './api';
 import type {
+  AdPlacement,
   AuthorBook,
   AuthorBookFormValues,
   AuthorProfile,
@@ -859,4 +860,8 @@ export async function deleteInterview(item: InterviewItem): Promise<void> {
   await removeStoragePath(item.image_path);
   const list = await fetchInterviews({ includeUnpublished: true });
   await writeInterviews(list.filter((entry) => entry.id !== item.id));
+}
+
+export async function saveAds(list: AdPlacement[]): Promise<void> {
+  await upsertSiteSettings({ ads: JSON.stringify(list) });
 }

@@ -18,9 +18,11 @@ import {
   BarChart3,
   MessageSquare,
   Mic,
+  Megaphone,
   X,
 } from 'lucide-react';
 import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, INTERVIEWS_ADMIN_PATH, NEWS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
+import { ADS_ADMIN_PATH } from '../../lib/ads';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
 import { SiteLogo } from '../brand/SiteLogo';
@@ -34,6 +36,7 @@ const LINKS = [
   { to: INTERVIEWS_ADMIN_PATH, label: 'Söyleşiler', icon: Mic, end: false },
   { to: '/admin/yorumlar', label: 'Yorumlar', icon: MessageSquare, end: false },
   { to: COLUMNISTS_ADMIN_PATH, label: 'Köşe Yazarları', icon: PenLine, end: false },
+  { to: ADS_ADMIN_PATH, label: 'Reklamlar', icon: Megaphone, end: false },
   { to: '/admin/simalar', label: 'Simalar', icon: Users, end: true },
   { to: '/admin/simalar/yeni', label: 'Yeni Kişi Ekle', icon: Plus, end: false },
   { to: '/admin/kategoriler', label: 'Kategoriler', icon: FolderOpen, end: false },

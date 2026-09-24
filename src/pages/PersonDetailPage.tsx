@@ -4,6 +4,7 @@ import { Seo } from '../components/seo/Seo';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
 import { PersonGrid } from '../components/people/PersonGrid';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
+import { AdSlot } from '../components/ads/AdSlot';
 import { DetailSkeleton } from '../components/ui/Skeleton';
 import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
 import { formatDateTr, formatLifeYears, hasText, personExtraNotes, personName, plainTextExcerpt, siteUrl } from '../lib/format';
@@ -240,7 +241,8 @@ export function PersonDetailPage() {
           </section>
         ) : null}
 
-        <div className="max-w-3xl">
+        <div className="max-w-3xl space-y-8">
+          <AdSlot slot="content_after" />
           <ContentEngagement url={sharePath} title={name} targetKey={`person:${person.id}`} />
         </div>
 
