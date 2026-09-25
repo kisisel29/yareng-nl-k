@@ -86,9 +86,9 @@ export function PoemsPage() {
           <nav className="mt-8 space-y-6" aria-label="Şiir listesi">
             {poetGroups.map((group) => (
               <div key={group.poet}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-ink-500">
+                <p className="mb-2 font-serif text-lg text-ink-900">
                   {group.poet}
-                  <span className="ml-2 font-normal normal-case tracking-normal text-ink-400">
+                  <span className="ml-2 font-sans text-sm font-normal text-ink-600">
                     {group.poems.length} şiir
                   </span>
                 </p>
@@ -136,7 +136,7 @@ export function PoemsPage() {
               {current ? (
                 <>
                   <h2 className="font-serif text-3xl text-ink-900">{current.title}</h2>
-                  <p className="mt-2 text-sm text-ink-500">{current.poet}</p>
+                  <p className="mt-2 text-base text-ink-700">{current.poet}</p>
                   <pre className="mt-8 whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800">
                     {current.body || 'Şiir metni henüz eklenmedi.'}
                   </pre>
