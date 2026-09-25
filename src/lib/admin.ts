@@ -2,6 +2,7 @@ import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { dataUrlToFile, optimizeImage } from './image';
 import { slugify } from './slug';
 import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchNews, fetchPoems } from './api';
+import { AUTHOR_NAME } from './constants';
 import type {
   AdPlacement,
   AuthorBook,
@@ -645,6 +646,7 @@ export async function createPoem(values: PoemFormValues, image?: File | null): P
     id: crypto.randomUUID(),
     title: values.title.trim(),
     slug: uniqueSlug(values.title, taken, 'siir'),
+    poet: values.poet.trim() || AUTHOR_NAME,
     body: values.body,
     image_url,
     image_path,
@@ -680,6 +682,7 @@ export async function updatePoem(
   const updated: Poem = {
     ...existing,
     title: values.title.trim(),
+    poet: values.poet.trim() || AUTHOR_NAME,
     body: values.body,
     image_url,
     image_path,

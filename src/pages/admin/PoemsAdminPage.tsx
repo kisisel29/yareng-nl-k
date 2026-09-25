@@ -7,12 +7,13 @@ import { ImageField } from '../../components/admin/ImageField';
 import { useToast } from '../../context/ToastContext';
 import { fetchPoems } from '../../lib/api';
 import { createPoem, deletePoem, updatePoem } from '../../lib/admin';
-import { POEMS_PAGE_PATH } from '../../lib/constants';
+import { AUTHOR_NAME, POEMS_PAGE_PATH } from '../../lib/constants';
 import { btnPrimary, btnSecondary, inputClass, labelClass } from '../../lib/cn';
 import type { Poem, PoemFormValues } from '../../types';
 
 const emptyForm = (): PoemFormValues => ({
   title: '',
+  poet: AUTHOR_NAME,
   body: '',
   published: true,
 });
@@ -51,7 +52,7 @@ export function PoemsAdminPage() {
 
   function openEdit(poem: Poem) {
     setEditing(poem);
-    setForm({ title: poem.title, body: poem.body, published: poem.published });
+    setForm({ title: poem.title, poet: poem.poet, body: poem.body, published: poem.published });
     setImageFile(null);
     setImagePreview(null);
     setClearImage(false);
@@ -103,7 +104,9 @@ export function PoemsAdminPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-serif text-3xl text-ink-900">Şiirler</h1>
-          <p className="mt-1 text-sm text-ink-500">Solda görsel, sağda şiir metni olacak şekilde ekleyin.</p>
+          <p className="mt-1 text-sm text-ink-500">
+            Solda görsel, sağda şiir metni. Şair adını ayrı alana yazın; başlığa eklemeniz gerekmez.
+          </p>
         </div>
         <Link to={POEMS_PAGE_PATH} className="text-sm text-burgundy-700 hover:underline">
           Sayfayı gör
@@ -153,6 +156,15 @@ export function PoemsAdminPage() {
               />
             </label>
             <label className="block">
+              <span className={labelClass}>Şair</span>
+              <input
+                className={inputClass}
+                value={form.poet}
+                onChange={(e) => setForm({ ...form, poet: e.target.value })}
+                placeholder={AUTHOR_NAME}
+              />
+            </label>
+            <label className="block">
               <span className={labelClass}>Şiir</span>
               <textarea
                 className={`${inputClass} min-h-[16rem] font-serif leading-loose`}
@@ -196,7 +208,11 @@ export function PoemsAdminPage() {
                 </div>
                 <div>
                   <p className="font-medium text-ink-900">{poem.title}</p>
-                  <p className="text-sm text-ink-500">{poem.published ? 'Yayında' : 'Taslak'}</p>
+                  <p className="text-sm text-ink-500">
+                    {poem.poet}
+                    {' · '}
+                    {poem.published ? 'Yayında' : 'Taslak'}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-2">

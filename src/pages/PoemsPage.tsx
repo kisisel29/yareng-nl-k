@@ -37,19 +37,22 @@ export function PoemsPage() {
   }, [slug]);
 
   const path = current ? `${POEMS_PAGE_PATH}/${current.slug}` : POEMS_PAGE_PATH;
+  const seoDescription = current
+    ? `${current.title} — ${current.poet}.`
+    : 'İsmail Hayal ve diğer şairlerden seçilmiş şiirler.';
 
   return (
     <>
       <Seo
         title={current ? current.title : 'Şiirler'}
-        description={current ? `${current.title} — İsmail Hayal şiiri.` : "İsmail Hayal'in şiirleri."}
+        description={seoDescription}
         path={path}
         image={current?.image_url}
       />
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-ink-500">İsmail Hayal</p>
+            <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Şiir</p>
             <h1 className="mt-2 font-serif text-4xl text-ink-900">Şiirler</h1>
           </div>
           {user ? (
@@ -100,6 +103,7 @@ export function PoemsPage() {
               {current ? (
                 <>
                   <h2 className="font-serif text-3xl text-ink-900">{current.title}</h2>
+                  <p className="mt-2 text-sm text-ink-500">{current.poet}</p>
                   <pre className="mt-8 whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800">
                     {current.body || 'Şiir metni henüz eklenmedi.'}
                   </pre>

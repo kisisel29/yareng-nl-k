@@ -206,6 +206,8 @@ export interface Poem {
   id: string;
   title: string;
   slug: string;
+  /** Şair adı; boşsa sitede İsmail Hayal gösterilir */
+  poet: string;
   body: string;
   image_url: string | null;
   image_path: string | null;
@@ -216,6 +218,7 @@ export interface Poem {
 
 export interface PoemFormValues {
   title: string;
+  poet: string;
   body: string;
   published: boolean;
 }
