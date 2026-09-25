@@ -3,7 +3,7 @@ import { btnGhost } from '../../lib/cn';
 
 export function ImageField({
   label,
-  hint = 'JPG, PNG veya WEBP. En fazla 5 MB.',
+  hint = 'Şeffaf arka plan için PNG veya WEBP. JPG opak kalır. En fazla 5 MB.',
   src,
   onSelect,
   onClear,
@@ -20,8 +20,10 @@ export function ImageField({
     <div>
       <p className="mb-2 text-sm font-medium text-ink-700">{label}</p>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className={`overflow-hidden rounded-md border border-cream-300 bg-cream-100 ${frameClassName}`}>
-          {src ? <img src={src} alt="" className="h-full w-full object-cover" /> : null}
+        <div
+          className={`overflow-hidden rounded-md border border-cream-300 bg-[length:16px_16px] bg-[linear-gradient(45deg,#e2ddd3_25%,transparent_25%,transparent_75%,#e2ddd3_75%,#e2ddd3),linear-gradient(45deg,#e2ddd3_25%,#f7f5f0_25%,#f7f5f0_75%,#e2ddd3_75%,#e2ddd3)] bg-[position:0_0,8px_8px] ${frameClassName}`}
+        >
+          {src ? <img src={src} alt="" className="h-full w-full object-contain object-bottom" /> : null}
         </div>
         <div className="space-y-2">
           <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-cream-300 bg-white px-3 py-2 text-sm">

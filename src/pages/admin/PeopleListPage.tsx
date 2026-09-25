@@ -158,7 +158,7 @@ export function PeopleListPage() {
                       <td className="px-4 py-3">
                         <div className="h-10 w-10 overflow-hidden rounded">
                           {person.profile_image_url ? (
-                            <img src={person.profile_image_url} alt="" className="h-full w-full object-cover" />
+                            <img src={person.profile_image_url} alt="" className="h-full w-full object-contain object-bottom" />
                           ) : (
                             <PersonPlaceholder person={person} className="h-full w-full text-[10px]" />
                           )}
@@ -191,7 +191,7 @@ export function PeopleListPage() {
                   <div className="flex gap-3">
                     <div className="h-14 w-14 shrink-0 overflow-hidden rounded">
                       {person.profile_image_url ? (
-                        <img src={person.profile_image_url} alt="" className="h-full w-full object-cover" />
+                        <img src={person.profile_image_url} alt="" className="h-full w-full object-contain object-bottom" />
                       ) : (
                         <PersonPlaceholder person={person} className="h-full w-full" />
                       )}

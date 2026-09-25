@@ -100,6 +100,7 @@ export interface SiteSettingsMap {
   ads: string;
   content_reactions: string;
   content_comments: string;
+  portraits_bg_fixed: string;
 }
 
 export type AdSlotId =
@@ -111,6 +112,9 @@ export type AdSlotId =
 
 export type AdFormat = 'leaderboard' | 'rectangle' | 'inline';
 
+/** image = tam görsel; brand = site tipografisiyle logo kartı */
+export type AdPresentation = 'image' | 'brand';
+
 export interface AdPlacement {
   id: string;
   slot: AdSlotId;
@@ -118,6 +122,7 @@ export interface AdPlacement {
   enabled: boolean;
   /** true = gerçek reklam; false = satılık alan tanıtımı */
   live: boolean;
+  presentation?: AdPresentation;
   headline: string;
   body: string;
   cta: string;

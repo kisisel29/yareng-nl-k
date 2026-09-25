@@ -373,9 +373,9 @@ export function HomePage() {
       {hero ? (
         <section className="border-b border-cream-200">
           <div className="mx-auto grid max-w-6xl items-stretch md:grid-cols-2">
-            <div className="min-h-[22rem] bg-cream-100">
+            <div className="min-h-[22rem] bg-transparent">
               {hero.profile_image_url ? (
-                <img src={hero.profile_image_url} alt={personName(hero)} className="h-full w-full object-cover" />
+                <img src={hero.profile_image_url} alt={personName(hero)} className="h-full w-full object-contain object-bottom" />
               ) : (
                 <PersonPlaceholder person={hero} className="h-full min-h-[22rem] w-full" />
               )}

@@ -188,15 +188,15 @@ export function PoemsPage() {
             <article ref={readerRef} className="min-w-0 scroll-mt-24">
               {current ? (
                 <div className="grid items-start gap-6 md:grid-cols-[minmax(10rem,14rem)_1fr] md:gap-8">
-                  <div className="aspect-[3/4] w-full max-w-[14rem] border border-cream-200/70 md:max-w-none">
+                  <div className="aspect-[3/4] w-full max-w-[14rem] bg-transparent md:max-w-none">
                     {current.image_url ? (
                       <img
                         src={current.image_url}
                         alt={current.title}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-contain object-bottom"
                       />
                     ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-center text-ink-500">
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-dashed border-cream-300/80 px-4 text-center text-ink-500">
                         <span className="text-sm">Fotoğraf / resim</span>
                       </div>
                     )}

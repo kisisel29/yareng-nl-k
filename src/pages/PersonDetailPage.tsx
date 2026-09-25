@@ -139,7 +139,7 @@ export function PersonDetailPage() {
           <div>
             <div>
               {activeImage ? (
-                <img src={activeImage} alt={name} className="aspect-[4/5] w-full object-cover" />
+                <img src={activeImage} alt={name} className="aspect-[4/5] w-full object-contain object-bottom" />
               ) : (
                 <PersonPlaceholder person={person} className="aspect-[4/5] w-full" />
               )}

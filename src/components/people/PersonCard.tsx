@@ -10,12 +10,12 @@ export function PersonCard({ person }: { person: Person }) {
   return (
     <Link to={`/simalar/${person.slug}`} className="group block">
       <article>
-        <div className="aspect-[4/5] overflow-hidden bg-cream-100">
+        <div className="aspect-[4/5] overflow-hidden bg-transparent">
           {person.profile_image_url ? (
             <img
               src={person.profile_image_url}
               alt={name}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain object-bottom"
               loading="lazy"
             />
           ) : (

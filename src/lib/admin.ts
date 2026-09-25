@@ -1,5 +1,5 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
-import { dataUrlToFile, optimizeImage } from './image';
+import { dataUrlToFile, optimizeImage, transparentizeRemoteImage } from './image';
 import { slugify } from './slug';
 import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchNews, fetchPoems } from './api';
 import { AUTHOR_NAME } from './constants';
@@ -868,3 +868,146 @@ export async function deleteInterview(item: InterviewItem): Promise<void> {
 export async function saveAds(list: AdPlacement[]): Promise<void> {
   await upsertSiteSettings({ ads: JSON.stringify(list) });
 }
+
+export type PortraitFixResult = {
+  fixed: number;
+  skipped: number;
+  failed: number;
+};
+
+async function replaceTransparentPortrait(input: {
+  url: string;
+  previousPath?: string | null;
+  folder: string;
+}): Promise<{ publicUrl: string; storagePath: string } | null> {
+  const processed = await transparentizeRemoteImage(input.url);
+  if (!processed) return null;
+
+  const storagePath = `${input.folder}/${crypto.randomUUID()}.${processed.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, processed.blob, {
+    contentType: processed.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+
+  if (input.previousPath) {
+    await removeStoragePath(input.previousPath);
+  }
+
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: `${data.publicUrl}?v=${Date.now()}`, storagePath };
+}
+
+/** Simalar, şiirler ve köşe yazarlarındaki beyaz zeminli portreleri şeffafa çevirir. */
+export async function reprocessPortraitBackgrounds(): Promise<PortraitFixResult> {
+  const result: PortraitFixResult = { fixed: 0, skipped: 0, failed: 0 };
+
+  const { data: people, error: peopleError } = await supabase
+    .from('people')
+    .select('id, profile_image_url, profile_image_path')
+    .not('profile_image_url', 'is', null);
+  if (peopleError) throw peopleError;
+
+  for (const person of people ?? []) {
+    const url = String(person.profile_image_url || '');
+    if (!url) {
+      result.skipped += 1;
+      continue;
+    }
+    try {
+      const uploaded = await replaceTransparentPortrait({
+        url,
+        previousPath: person.profile_image_path,
+        folder: `${person.id}/profile-fixed`,
+      });
+      if (!uploaded) {
+        result.skipped += 1;
+        continue;
+      }
+      const { error } = await supabase
+        .from('people')
+        .update({
+          profile_image_url: uploaded.publicUrl,
+          profile_image_path: uploaded.storagePath,
+        })
+        .eq('id', person.id);
+      if (error) throw error;
+      result.fixed += 1;
+    } catch {
+      result.failed += 1;
+    }
+  }
+
+  const poems = await fetchPoems({ includeUnpublished: true });
+  let poemsChanged = false;
+  const nextPoems = [];
+  for (const poem of poems) {
+    if (!poem.image_url) {
+      nextPoems.push(poem);
+      result.skipped += 1;
+      continue;
+    }
+    try {
+      const uploaded = await replaceTransparentPortrait({
+        url: poem.image_url,
+        previousPath: poem.image_path,
+        folder: 'poems',
+      });
+      if (!uploaded) {
+        nextPoems.push(poem);
+        result.skipped += 1;
+        continue;
+      }
+      nextPoems.push({
+        ...poem,
+        image_url: uploaded.publicUrl,
+        image_path: uploaded.storagePath,
+        updated_at: new Date().toISOString(),
+      });
+      poemsChanged = true;
+      result.fixed += 1;
+    } catch {
+      nextPoems.push(poem);
+      result.failed += 1;
+    }
+  }
+  if (poemsChanged) await writePoems(nextPoems);
+
+  const columnists = await fetchColumnists({ includeUnpublished: true });
+  let columnistsChanged = false;
+  const nextColumnists = [];
+  for (const columnist of columnists) {
+    if (!columnist.photo_url) {
+      nextColumnists.push(columnist);
+      result.skipped += 1;
+      continue;
+    }
+    try {
+      const uploaded = await replaceTransparentPortrait({
+        url: columnist.photo_url,
+        previousPath: columnist.photo_path,
+        folder: 'columnists',
+      });
+      if (!uploaded) {
+        nextColumnists.push(columnist);
+        result.skipped += 1;
+        continue;
+      }
+      nextColumnists.push({
+        ...columnist,
+        photo_url: uploaded.publicUrl,
+        photo_path: uploaded.storagePath,
+        updated_at: new Date().toISOString(),
+      });
+      columnistsChanged = true;
+      result.fixed += 1;
+    } catch {
+      nextColumnists.push(columnist);
+      result.failed += 1;
+    }
+  }
+  if (columnistsChanged) await writeColumnists(nextColumnists);
+
+  return result;
+}
+

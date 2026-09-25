@@ -44,12 +44,12 @@ export function PersonRail({
             <Link
               key={person.id}
               to={`/simalar/${person.slug}`}
-              className="w-[78%] shrink-0 snap-start border border-cream-200 bg-white sm:w-auto"
+              className="w-[78%] shrink-0 snap-start border border-cream-200/70 sm:w-auto"
             >
               <article className="flex gap-3 p-3">
-                <div className="h-20 w-16 shrink-0 overflow-hidden bg-cream-100">
+                <div className="h-20 w-16 shrink-0 overflow-hidden bg-transparent">
                   {person.profile_image_url ? (
-                    <img src={person.profile_image_url} alt={name} className="h-full w-full object-cover" />
+                    <img src={person.profile_image_url} alt={name} className="h-full w-full object-contain object-bottom" />
                   ) : (
                     <PersonPlaceholder person={person} className="h-full w-full text-[10px]" />
                   )}

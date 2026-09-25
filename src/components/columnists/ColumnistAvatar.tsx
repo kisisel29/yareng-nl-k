@@ -18,17 +18,19 @@ export function ColumnistAvatar({
   const sizeClass = size === 'lg' ? 'h-24 w-24 text-xl' : size === 'sm' ? 'h-10 w-10 text-xs' : 'h-12 w-12 text-sm';
   if (columnist.photo_url) {
     return (
-      <img
-        src={columnist.photo_url}
-        alt={columnist.name}
-        className={cn('shrink-0 rounded object-cover', sizeClass)}
-      />
+      <span className={cn('inline-flex shrink-0 items-end justify-center overflow-hidden bg-transparent', sizeClass)}>
+        <img
+          src={columnist.photo_url}
+          alt={columnist.name}
+          className="h-full w-full object-contain object-bottom"
+        />
+      </span>
     );
   }
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded bg-cream-200 font-semibold text-ink-700',
+        'inline-flex shrink-0 items-center justify-center rounded bg-cream-200/80 font-semibold text-ink-700',
         sizeClass
       )}
       aria-hidden

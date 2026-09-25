@@ -959,6 +959,7 @@ function normalizeAd(raw: Partial<AdPlacement>, fallback?: AdPlacement): AdPlace
     format: raw.format || meta.format,
     enabled: raw.enabled !== false,
     live: Boolean(raw.live),
+    presentation: raw.presentation || fallback?.presentation || 'image',
     headline: (raw.headline ?? fallback?.headline ?? '').trim() || meta.label,
     body: (raw.body ?? fallback?.body ?? '').trim() || meta.description,
     cta: (raw.cta ?? fallback?.cta ?? 'Reklam ver').trim() || 'Reklam ver',
@@ -990,6 +991,7 @@ export async function fetchAds(): Promise<AdPlacement[]> {
         const isBuiltin =
           storedImage.includes('santa-store') ||
           storedImage.includes('efora-grup') ||
+          storedImage.includes('efora-ik') ||
           storedImage.includes('canca-tur') ||
           !storedImage;
         if (stored?.live && stored.enabled && storedImage && !isBuiltin) return stored;

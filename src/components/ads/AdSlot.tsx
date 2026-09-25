@@ -56,8 +56,8 @@ export function AdSlot({
   const href = ad.href || adsContactHref();
   const isExternal = href.startsWith('http');
   const placeholder = !ad.live;
-
-  const liveImage = Boolean(ad.image_url && ad.live);
+  const brandCard = ad.live && ad.presentation === 'brand';
+  const liveImage = Boolean(ad.image_url && ad.live && !brandCard);
 
   const shell = cn(
     'group relative block overflow-hidden transition',
@@ -68,25 +68,31 @@ export function AdSlot({
             ? 'border-cream-300/50 bg-ink-800/70 hover:border-cream-200/70'
             : 'border-burgundy-700/45 bg-[linear-gradient(135deg,#F7F5F0_0%,#EFECE4_45%,#E2DDD3_100%)] hover:border-burgundy-700/70'
         )
-      : liveImage
+      : brandCard
         ? 'border-0 bg-transparent'
-        : cn(
-            'border',
-            dark
-              ? 'border-cream-100/15 bg-ink-900/40 hover:border-cream-100/30'
-              : 'border-cream-300/70 bg-white hover:border-cream-400'
-          ),
+        : liveImage
+          ? 'border-0 bg-transparent'
+          : cn(
+              'border',
+              dark
+                ? 'border-cream-100/15 bg-ink-900/40 hover:border-cream-100/30'
+                : 'border-cream-300/70 bg-white hover:border-cream-400'
+            ),
     liveImage
       ? 'leading-none'
-      : cn(
-          ad.format === 'rectangle' ? 'min-h-[15rem] w-full' : 'w-full',
-          ad.format === 'leaderboard' ? 'min-h-[6.75rem] sm:min-h-[7.5rem]' : null,
-          ad.format === 'inline' ? 'min-h-[7.5rem]' : null
-        ),
+      : brandCard
+        ? 'w-full'
+        : cn(
+            ad.format === 'rectangle' ? 'min-h-[15rem] w-full' : 'w-full',
+            ad.format === 'leaderboard' ? 'min-h-[6.75rem] sm:min-h-[7.5rem]' : null,
+            ad.format === 'inline' ? 'min-h-[7.5rem]' : null
+          ),
     className
   );
 
-  const inner = liveImage ? (
+  const inner = brandCard ? (
+    <BrandCardCreative ad={ad} />
+  ) : liveImage ? (
     <img
       src={ad.image_url!}
       alt={ad.headline}
@@ -118,6 +124,40 @@ export function AdSlot({
     <Link to={href} className={shell} aria-label={ad.headline} onClick={() => trackAdClick(ad)}>
       {inner}
     </Link>
+  );
+}
+
+/** Site diline uyumlu, dikkat çeken marka kartı (logo + metin + CTA) */
+function BrandCardCreative({ ad }: { ad: AdPlacement }) {
+  return (
+    <span className="relative flex w-full flex-col overflow-hidden border border-ink-900 bg-ink-900 text-cream-50 transition group-hover:border-burgundy-700">
+      <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[#E87020]" aria-hidden />
+      <span className="bg-white px-5 py-6">
+        {ad.image_url ? (
+          <img
+            src={ad.image_url}
+            alt={ad.sponsor || ad.headline}
+            className="mx-auto block h-auto w-full max-w-[15rem]"
+            loading="lazy"
+          />
+        ) : null}
+      </span>
+        <span className="flex flex-1 flex-col px-4 py-5 sm:px-5">
+          {ad.sponsor ? (
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cream-300">{ad.sponsor}</span>
+          ) : null}
+          <span className={cn('font-serif text-xl leading-snug text-cream-50 sm:text-2xl', ad.sponsor ? 'mt-2' : null)}>
+            {ad.headline}
+          </span>
+        <span className="mt-2 text-sm leading-relaxed text-cream-200">{ad.body}</span>
+        <span className="mt-5 inline-flex w-full items-center justify-center bg-burgundy-700 px-4 py-2.5 text-sm font-semibold text-cream-50 transition group-hover:bg-burgundy-600">
+          {ad.cta}
+          <span className="ml-2 transition group-hover:translate-x-0.5" aria-hidden>
+            →
+          </span>
+        </span>
+      </span>
+    </span>
   );
 }
 
@@ -197,7 +237,7 @@ function LiveTextCreative({ ad, dark }: { ad: AdPlacement; dark: boolean }) {
     <span className="flex h-full w-full flex-col justify-center gap-1.5 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6">
       <span className="min-w-0">
         <span className={cn('block text-[10px] uppercase tracking-[0.14em]', dark ? 'text-cream-300' : 'text-ink-500')}>
-          Sponsorlu{ad.sponsor ? ` · ${ad.sponsor}` : ''}
+          {ad.sponsor || 'Reklam'}
         </span>
         <span className={cn('mt-1 block font-serif text-lg leading-snug sm:text-xl', dark ? 'text-cream-50' : 'text-ink-900')}>
           {ad.headline}

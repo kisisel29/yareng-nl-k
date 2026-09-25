@@ -33,9 +33,9 @@ export function ImageUploader({
       <div>
         <p className="mb-2 text-sm font-medium text-ink-700">Profil fotoğrafı</p>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <div className="h-40 w-40 overflow-hidden rounded-md border border-cream-300 bg-cream-100">
+          <div className="h-40 w-40 overflow-hidden rounded-md border border-cream-300 bg-[length:16px_16px] bg-[linear-gradient(45deg,#e2ddd3_25%,transparent_25%,transparent_75%,#e2ddd3_75%,#e2ddd3),linear-gradient(45deg,#e2ddd3_25%,#f7f5f0_25%,#f7f5f0_75%,#e2ddd3_75%,#e2ddd3)] bg-[position:0_0,8px_8px]">
             {profileSrc ? (
-              <img src={profileSrc} alt="" className="h-full w-full object-cover" />
+              <img src={profileSrc} alt="" className="h-full w-full object-contain object-bottom" />
             ) : (
               <PersonPlaceholder person={person ?? undefined} className="h-full w-full" />
             )}

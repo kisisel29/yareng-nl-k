@@ -5,8 +5,8 @@ export const ADS_ADMIN_PATH = '/admin/reklamlar';
 
 export const SANTA_STORE_AD_HREF = 'https://www.shopier.com/santastore29';
 export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.jpg?v=3';
-export const EFORA_AD_HREF = 'https://eforagrup.com/';
-export const EFORA_AD_IMAGE = '/ads/efora-grup.jpg?v=1';
+export const EFORA_AD_HREF = 'https://eforaik.com/';
+export const EFORA_AD_IMAGE = '/ads/efora-ik.jpg?v=3';
 export const CANCA_TUR_AD_HREF = 'https://www.cancatur.com/';
 export const CANCA_TUR_AD_IMAGE = '/ads/canca-tur.jpg?v=1';
 
@@ -114,12 +114,13 @@ export function defaultAdPlacements(): AdPlacement[] {
       format: 'rectangle',
       enabled: true,
       live: true,
-      headline: 'Efora Şirketler Grubu — Geleceği Birlikte İnşa Ediyoruz',
-      body: 'İnsan kaynakları, lojistik, iş sağlığı, otomotiv ve eğitim.',
-      cta: 'Keşfet',
+      presentation: 'brand',
+      headline: 'İnsan kaynağında güvenilir çözüm ortağınız',
+      body: 'Bordrolama, esnek iş gücü, eğitim ve işe alım — Gebze merkezli Efora İnsan Kaynakları.',
+      cta: 'eforaik.com',
       href: EFORA_AD_HREF,
       image_url: EFORA_AD_IMAGE,
-      sponsor: 'Efora Şirketler Grubu',
+      sponsor: 'Efora İnsan Kaynakları',
       size_label: AD_SLOT_META.sidebar.size_label,
     },
     placeholderAd(
