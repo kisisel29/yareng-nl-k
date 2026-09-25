@@ -1,33 +1,47 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Seo } from '../../components/seo/Seo';
-import { fetchSiteTrafficSummary, type TrafficSummary } from '../../lib/api';
+import {
+  fetchAdClickSummary,
+  fetchSiteTrafficSummary,
+  type AdClickSummary,
+  type TrafficSummary,
+} from '../../lib/api';
+import { AD_SLOT_META } from '../../lib/ads';
 import { cn } from '../../lib/cn';
+import type { AdSlotId } from '../../types';
 
 function formatDayLabel(isoDay: string): string {
   const date = new Date(`${isoDay}T12:00:00+03:00`);
   return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
 }
 
+function slotLabel(slot: string): string {
+  return AD_SLOT_META[slot as AdSlotId]?.label ?? slot;
+}
+
 export function AnalyticsPage() {
   const [summary, setSummary] = useState<TrafficSummary | null>(null);
+  const [adClicks, setAdClicks] = useState<AdClickSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    fetchSiteTrafficSummary(30)
-      .then((result) => {
-        if (active) setSummary(result);
+    Promise.all([fetchSiteTrafficSummary(30), fetchAdClickSummary(30)])
+      .then(([traffic, ads]) => {
+        if (!active) return;
+        setSummary(traffic);
+        setAdClicks(ads);
       })
       .catch(() => {
-        if (active) {
-          setSummary({
-            today: { visits: 0, clicks: 0 },
-            week: { visits: 0, clicks: 0 },
-            month: { visits: 0, clicks: 0 },
-            series: [],
-            available: false,
-          });
-        }
+        if (!active) return;
+        setSummary({
+          today: { visits: 0, clicks: 0 },
+          week: { visits: 0, clicks: 0 },
+          month: { visits: 0, clicks: 0 },
+          series: [],
+          available: false,
+        });
+        setAdClicks({ rows: [], available: false });
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -49,6 +63,15 @@ export function AnalyticsPage() {
         { period: 'Son 30 gün', visits: summary.month.visits, clicks: summary.month.clicks },
       ]
     : [];
+
+  const adTotals = useMemo(() => {
+    const rows = adClicks?.rows ?? [];
+    return {
+      today: rows.reduce((sum, row) => sum + row.today, 0),
+      week: rows.reduce((sum, row) => sum + row.week, 0),
+      month: rows.reduce((sum, row) => sum + row.month, 0),
+    };
+  }, [adClicks]);
 
   return (
     <>
@@ -160,6 +183,70 @@ export function AnalyticsPage() {
             </div>
           </section>
         </>
+      ) : null}
+
+      {!loading ? (
+        <section className="mt-10 rounded-lg border border-cream-200 bg-white p-5 sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="font-serif text-2xl text-ink-900">Reklam tıklamaları</h2>
+              <p className="mt-1 text-sm text-ink-500">
+                Hangi reklamın ne kadar tıklandığı (Türkiye saati, son 30 gün).
+              </p>
+            </div>
+            {adClicks?.available ? (
+              <div className="flex flex-wrap gap-4 text-xs text-ink-500">
+                <span>
+                  Bugün: <span className="font-medium text-ink-800">{adTotals.today}</span>
+                </span>
+                <span>
+                  7 gün: <span className="font-medium text-ink-800">{adTotals.week}</span>
+                </span>
+                <span>
+                  30 gün: <span className="font-medium text-ink-800">{adTotals.month}</span>
+                </span>
+              </div>
+            ) : null}
+          </div>
+
+          {!adClicks?.available ? (
+            <div className="mt-5 rounded-lg border border-cream-200 bg-cream-50 p-4 text-sm leading-relaxed text-ink-700">
+              Reklam tıklama tablosu henüz hazır değil. Supabase SQL Editor’de{' '}
+              <code className="rounded bg-cream-100 px-1">supabase/migrations/010_ad_clicks.sql</code>{' '}
+              dosyasını bir kez çalıştırın; ardından her reklam tıklaması burada görünecek.
+            </div>
+          ) : adClicks.rows.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-600">
+              Henüz kayıtlı reklam tıklaması yok. Ziyaretçiler bir reklam bandına tıkladığında burada
+              listelenir.
+            </p>
+          ) : (
+            <div className="mt-6 overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead className="border-b border-cream-200 text-ink-500">
+                  <tr>
+                    <th className="px-2 py-2 font-medium">Reklam</th>
+                    <th className="px-2 py-2 font-medium">Alan</th>
+                    <th className="px-2 py-2 font-medium">Bugün</th>
+                    <th className="px-2 py-2 font-medium">7 gün</th>
+                    <th className="px-2 py-2 font-medium">30 gün</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adClicks.rows.map((row) => (
+                    <tr key={row.adId} className="border-b border-cream-100">
+                      <td className="px-2 py-2 text-ink-900">{row.label}</td>
+                      <td className="px-2 py-2 text-ink-600">{slotLabel(String(row.slot))}</td>
+                      <td className="px-2 py-2 text-ink-800">{row.today}</td>
+                      <td className="px-2 py-2 text-ink-800">{row.week}</td>
+                      <td className="px-2 py-2 font-medium text-ink-900">{row.month}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       ) : null}
     </>
   );

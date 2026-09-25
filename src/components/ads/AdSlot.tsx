@@ -1,9 +1,22 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchAds } from '../../lib/api';
-import { adsContactHref, defaultAdPlacements } from '../../lib/ads';
+import { fetchAds, recordAdClick } from '../../lib/api';
+import { AD_SLOT_META, adsContactHref, defaultAdPlacements } from '../../lib/ads';
 import { cn } from '../../lib/cn';
 import type { AdPlacement, AdSlotId } from '../../types';
+
+function adClickLabel(ad: AdPlacement): string {
+  if (ad.live) return ad.sponsor?.trim() || ad.headline;
+  return `Satılık · ${AD_SLOT_META[ad.slot].label}`;
+}
+
+function trackAdClick(ad: AdPlacement) {
+  void recordAdClick({
+    adId: ad.id,
+    slot: ad.slot,
+    label: adClickLabel(ad),
+  });
+}
 
 function defaultForSlot(slot: AdSlotId): AdPlacement | null {
   return defaultAdPlacements().find((item) => item.slot === slot && item.enabled) ?? null;
@@ -88,14 +101,21 @@ export function AdSlot({
 
   if (isExternal) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer sponsored" className={shell} aria-label={ad.headline}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        className={shell}
+        aria-label={ad.headline}
+        onClick={() => trackAdClick(ad)}
+      >
         {inner}
       </a>
     );
   }
 
   return (
-    <Link to={href} className={shell} aria-label={ad.headline}>
+    <Link to={href} className={shell} aria-label={ad.headline} onClick={() => trackAdClick(ad)}>
       {inner}
     </Link>
   );

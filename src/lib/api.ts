@@ -1,6 +1,6 @@
 import { PEOPLE_IMAGES_BUCKET, supabase } from './supabase';
 import { firstNameStartsWithLetter, sanitizeSearchTerm } from './slug';
-import { PAGE_SIZE } from './constants';
+import { PAGE_SIZE, AUTHOR_NAME } from './constants';
 import { blobToDataUrl, isAllowedImage, optimizeImage } from './image';
 import type {
   AuthorBook,
@@ -301,6 +301,99 @@ export async function fetchSiteTrafficSummary(days = 30): Promise<TrafficSummary
     series,
     available: true,
   };
+}
+
+export type AdClickRow = {
+  adId: string;
+  slot: AdSlotId | string;
+  label: string;
+  today: number;
+  week: number;
+  month: number;
+  total: number;
+};
+
+export type AdClickSummary = {
+  rows: AdClickRow[];
+  available: boolean;
+};
+
+export async function recordAdClick(input: {
+  adId: string;
+  slot: string;
+  label: string;
+}): Promise<void> {
+  try {
+    await supabase.rpc('record_ad_click', {
+      p_ad_id: input.adId,
+      p_slot: input.slot,
+      p_label: input.label,
+    });
+  } catch {
+    /* reklam tıklama tablosu yoksa sessizce geç */
+  }
+}
+
+export async function fetchAdClickSummary(days = 30): Promise<AdClickSummary> {
+  const today = istanbulTodayIso();
+  const from = shiftIsoDay(today, -(Math.max(1, days) - 1));
+  const weekFrom = shiftIsoDay(today, -6);
+
+  const { data, error } = await supabase
+    .from('ad_clicks_daily')
+    .select('day, ad_id, slot, label, clicks')
+    .gte('day', from)
+    .lte('day', today)
+    .order('day', { ascending: true });
+
+  if (error) {
+    return { rows: [], available: false };
+  }
+
+  type Acc = {
+    adId: string;
+    slot: string;
+    label: string;
+    today: number;
+    week: number;
+    month: number;
+  };
+
+  const byAd = new Map<string, Acc>();
+  for (const row of data ?? []) {
+    const adId = String(row.ad_id || '');
+    if (!adId) continue;
+    const day = String(row.day).slice(0, 10);
+    const clicks = Number(row.clicks) || 0;
+    const existing = byAd.get(adId) ?? {
+      adId,
+      slot: String(row.slot || ''),
+      label: String(row.label || ''),
+      today: 0,
+      week: 0,
+      month: 0,
+    };
+    existing.slot = String(row.slot || existing.slot);
+    if (row.label) existing.label = String(row.label);
+    existing.month += clicks;
+    if (day >= weekFrom) existing.week += clicks;
+    if (day === today) existing.today += clicks;
+    byAd.set(adId, existing);
+  }
+
+  const rows: AdClickRow[] = [...byAd.values()]
+    .map((item) => ({
+      adId: item.adId,
+      slot: item.slot,
+      label: item.label || item.adId,
+      today: item.today,
+      week: item.week,
+      month: item.month,
+      total: item.month,
+    }))
+    .sort((a, b) => b.month - a.month || a.label.localeCompare(b.label, 'tr'));
+
+  return { rows, available: true };
 }
 
 const PHOTO_URL_MARK = '[[VESIKALIK_URL]]';
@@ -808,6 +901,7 @@ export async function fetchPoems(options?: { includeUnpublished?: boolean }): Pr
       id: item.id,
       title: item.title,
       slug: item.slug,
+      poet: (item.poet ?? '').trim() || AUTHOR_NAME,
       body: item.body ?? '',
       image_url: item.image_url ?? null,
       image_path: item.image_path ?? null,
