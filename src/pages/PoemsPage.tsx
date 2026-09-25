@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { fetchPoemBySlug, fetchPoems } from '../lib/api';
 import { AUTHOR_NAME, POEMS_ADMIN_PATH, POEMS_PAGE_PATH } from '../lib/constants';
@@ -27,10 +27,13 @@ function groupPoemsByPoet(poems: Poem[]): { poet: string; poems: Poem[] }[] {
 
 export function PoemsPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [poems, setPoems] = useState<Poem[]>([]);
   const [current, setCurrent] = useState<Poem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activePoet, setActivePoet] = useState<string | null>(null);
+  const readerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -56,6 +59,36 @@ export function PoemsPage() {
 
   const poetGroups = useMemo(() => groupPoemsByPoet(poems), [poems]);
 
+  useEffect(() => {
+    if (current?.poet) {
+      setActivePoet(current.poet);
+      return;
+    }
+    if (!activePoet && poetGroups[0]) setActivePoet(poetGroups[0].poet);
+  }, [current, poetGroups, activePoet]);
+
+  useEffect(() => {
+    if (!slug || loading || !current) return;
+    const narrow = window.matchMedia('(max-width: 1023px)').matches;
+    if (!narrow || !readerRef.current) return;
+    readerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [slug, loading, current]);
+
+  const selectedPoet = activePoet || poetGroups[0]?.poet || AUTHOR_NAME;
+  const poemsForPoet = useMemo(
+    () => poetGroups.find((group) => group.poet === selectedPoet)?.poems ?? [],
+    [poetGroups, selectedPoet]
+  );
+
+  function selectPoet(poet: string) {
+    setActivePoet(poet);
+    const group = poetGroups.find((item) => item.poet === poet);
+    const first = group?.poems[0];
+    if (!first) return;
+    if (current?.poet === poet) return;
+    navigate(`${POEMS_PAGE_PATH}/${first.slug}`);
+  }
+
   const path = current ? `${POEMS_PAGE_PATH}/${current.slug}` : POEMS_PAGE_PATH;
   const seoDescription = current
     ? `${current.title} — ${current.poet}.`
@@ -69,11 +102,11 @@ export function PoemsPage() {
         path={path}
         image={current?.image_url}
       />
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Şiir</p>
-            <h1 className="mt-2 font-serif text-4xl text-ink-900">Şiirler</h1>
+            <h1 className="mt-1 font-serif text-3xl text-ink-900 sm:text-4xl">Şiirler</h1>
           </div>
           {user ? (
             <Link to={POEMS_ADMIN_PATH} className="text-sm text-burgundy-700 hover:underline">
@@ -82,28 +115,64 @@ export function PoemsPage() {
           ) : null}
         </div>
 
-        {poems.length > 1 ? (
-          <nav className="mt-8 space-y-6" aria-label="Şiir listesi">
-            {poetGroups.map((group) => (
-              <div key={group.poet}>
-                <p className="mb-2 font-serif text-lg text-ink-900">
-                  {group.poet}
-                  <span className="ml-2 font-sans text-sm font-normal text-ink-600">
-                    {group.poems.length} şiir
-                  </span>
-                </p>
-                <ul className="flex flex-wrap gap-2">
-                  {group.poems.map((poem) => {
+        {loading ? (
+          <div className="mt-8 text-sm text-ink-500">Yükleniyor…</div>
+        ) : poems.length === 0 ? (
+          <div className="mt-10 text-ink-500">
+            <p className="font-serif text-2xl text-ink-800">Şiir alanı</p>
+            <p className="mt-3 max-w-md text-sm leading-relaxed">
+              Şiirler yönetim panelinden eklendiğinde burada görünür.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)] lg:gap-10">
+            <aside className="lg:sticky lg:top-24">
+              {poetGroups.length > 1 ? (
+                <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Şairler">
+                  {poetGroups.map((group) => {
+                    const selected = group.poet === selectedPoet;
+                    return (
+                      <button
+                        key={group.poet}
+                        type="button"
+                        role="tab"
+                        aria-selected={selected}
+                        onClick={() => selectPoet(group.poet)}
+                        className={cn(
+                          'shrink-0 border px-3 py-1.5 text-sm transition',
+                          selected
+                            ? 'border-ink-900 bg-ink-900 text-white'
+                            : 'border-cream-300 text-ink-800 hover:border-ink-900'
+                        )}
+                      >
+                        {group.poet}
+                        <span className={cn('ml-1.5 text-xs', selected ? 'text-cream-200' : 'text-ink-500')}>
+                          {group.poems.length}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="mb-3 font-serif text-lg text-ink-900">{selectedPoet}</p>
+              )}
+
+              <nav
+                className="max-h-[40vh] overflow-y-auto border border-cream-200 bg-white/80 lg:max-h-[calc(100vh-10rem)]"
+                aria-label="Şiir listesi"
+              >
+                <ul className="divide-y divide-cream-100">
+                  {poemsForPoet.map((poem) => {
                     const active = current?.id === poem.id;
                     return (
                       <li key={poem.id}>
                         <Link
                           to={`${POEMS_PAGE_PATH}/${poem.slug}`}
                           className={cn(
-                            'inline-block border px-3 py-1.5 text-sm transition',
+                            'block px-3 py-2.5 text-sm leading-snug transition',
                             active
-                              ? 'border-ink-900 bg-ink-900 text-white'
-                              : 'border-cream-300 text-ink-700 hover:border-ink-900'
+                              ? 'bg-ink-900 text-white'
+                              : 'text-ink-800 hover:bg-cream-100'
                           )}
                           aria-current={active ? 'page' : undefined}
                         >
@@ -113,43 +182,37 @@ export function PoemsPage() {
                     );
                   })}
                 </ul>
-              </div>
-            ))}
-          </nav>
-        ) : null}
+              </nav>
+            </aside>
 
-        {loading ? (
-          <div className="mt-10 text-sm text-ink-500">Yükleniyor…</div>
-        ) : (
-          <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(16rem,20rem)_1fr]">
-            <div className="aspect-[3/4] border border-cream-200/70">
-              {current?.image_url ? (
-                <img src={current.image_url} alt={current.title} className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center text-ink-500">
-                  <span className="text-sm">Fotoğraf / resim</span>
-                  <span className="text-xs">Bu alana şiir görseli eklenebilir.</span>
-                </div>
-              )}
-            </div>
-            <div className="min-h-[24rem] px-1 py-2 sm:px-2">
+            <article ref={readerRef} className="min-w-0 scroll-mt-24">
               {current ? (
-                <>
-                  <h2 className="font-serif text-3xl text-ink-900">{current.title}</h2>
-                  <p className="mt-2 text-base text-ink-700">{current.poet}</p>
-                  <pre className="mt-8 whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800">
-                    {current.body || 'Şiir metni henüz eklenmedi.'}
-                  </pre>
-                </>
-              ) : (
-                <div className="flex h-full min-h-[20rem] flex-col justify-center text-ink-500">
-                  <p className="font-serif text-2xl text-ink-800">Şiir alanı</p>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed">
-                    Şiirler yönetim panelinden eklendiğinde metin burada görünür.
-                  </p>
+                <div className="grid items-start gap-6 sm:grid-cols-[minmax(10rem,14rem)_1fr] sm:gap-8">
+                  <div className="aspect-[3/4] max-w-[14rem] border border-cream-200/70 sm:max-w-none">
+                    {current.image_url ? (
+                      <img
+                        src={current.image_url}
+                        alt={current.title}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-center text-ink-500">
+                        <span className="text-sm">Fotoğraf / resim</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="font-serif text-3xl text-ink-900">{current.title}</h2>
+                    <p className="mt-2 text-base text-ink-700">{current.poet}</p>
+                    <pre className="mt-6 whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800">
+                      {current.body || 'Şiir metni henüz eklenmedi.'}
+                    </pre>
+                  </div>
                 </div>
+              ) : (
+                <p className="text-sm text-ink-500">Bir şiir seçin.</p>
               )}
-            </div>
+            </article>
           </div>
         )}
       </div>
