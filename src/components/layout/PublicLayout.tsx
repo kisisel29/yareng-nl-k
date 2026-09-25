@@ -16,17 +16,17 @@ export function PublicLayout() {
         <main className="min-w-0 flex-1">
           <div className="lg:hidden">
             <ColumnistsSidebar variant="horizontal" />
-            <div className="border-b border-cream-200 px-4 py-3">
-              <AdSlot slot="sidebar" />
+            <div className="border-b border-cream-200 px-3 py-3 sm:px-4">
+              <AdSlot slot="sidebar" className="mx-auto w-full max-w-md" />
             </div>
           </div>
           <Outlet />
         </main>
-        <aside className="hidden w-72 shrink-0 border-l border-cream-200 lg:block">
+        <aside className="hidden w-80 shrink-0 border-l border-cream-200 lg:block xl:w-96">
           <div className="sticky top-[3.6rem] max-h-[calc(100vh-3.6rem)] overflow-y-auto">
             <ColumnistsSidebar />
-            <div className="border-t border-cream-200 p-4">
-              <AdSlot slot="sidebar" />
+            <div className="border-t border-cream-200 px-2 py-3 xl:px-3">
+              <AdSlot slot="sidebar" className="w-full" />
             </div>
           </div>
         </aside>

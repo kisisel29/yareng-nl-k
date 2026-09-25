@@ -7,6 +7,8 @@ export const SANTA_STORE_AD_HREF = 'https://www.shopier.com/santastore29';
 export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.jpg?v=3';
 export const EFORA_AD_HREF = 'https://eforagrup.com/';
 export const EFORA_AD_IMAGE = '/ads/efora-grup.jpg?v=1';
+export const CANCA_TUR_AD_HREF = 'https://www.cancatur.com/';
+export const CANCA_TUR_AD_IMAGE = '/ads/canca-tur.jpg?v=1';
 
 export const AD_SLOT_META: Record<
   AdSlotId,
@@ -92,13 +94,20 @@ export function defaultAdPlacements(): AdPlacement[] {
       sponsor: 'Santa Store',
       size_label: AD_SLOT_META.home_after_hero.size_label,
     },
-    placeholderAd(
-      'ad-home-mid',
-      'home_mid',
-      'leaderboard',
-      'Haberler ile kitaplar arasında premium bant. Haftalık veya aylık rezervasyon.',
-      'Yer ayırt'
-    ),
+    {
+      id: 'ad-home-mid',
+      slot: 'home_mid',
+      format: 'leaderboard',
+      enabled: true,
+      live: true,
+      headline: 'Canca Tur — Yeni Rotalar, Yeni Hikâyeler',
+      body: 'Gümüşhane’den Türkiye’ye ve dünyaya. Konforlu ulaşım, seyahat sigortası ve profesyonel rehberlik.',
+      cta: 'Turları Keşfet',
+      href: CANCA_TUR_AD_HREF,
+      image_url: CANCA_TUR_AD_IMAGE,
+      sponsor: 'Canca Tur',
+      size_label: AD_SLOT_META.home_mid.size_label,
+    },
     {
       id: 'ad-sidebar',
       slot: 'sidebar',

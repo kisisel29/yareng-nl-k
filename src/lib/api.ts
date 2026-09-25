@@ -890,12 +890,13 @@ export async function fetchAds(): Promise<AdPlacement[]> {
       const stored = bySlot.get(item.slot);
       if (stored && !stored.enabled) return { ...item, enabled: false };
 
-      // Yerleşik canlı reklamlar (Santa / Efora): varsayılanı koru; admin başka canlı görsel koyduysa onu kullan
+      // Yerleşik canlı reklamlar (Santa / Efora / Canca): varsayılanı koru
       if (item.live) {
         const storedImage = String(stored?.image_url || '');
         const isBuiltin =
           storedImage.includes('santa-store') ||
           storedImage.includes('efora-grup') ||
+          storedImage.includes('canca-tur') ||
           !storedImage;
         if (stored?.live && stored.enabled && storedImage && !isBuiltin) return stored;
         return item;
