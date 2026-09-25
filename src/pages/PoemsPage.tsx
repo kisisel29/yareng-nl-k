@@ -128,7 +128,7 @@ export function PoemsPage() {
           <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)] lg:gap-10">
             <aside className="lg:sticky lg:top-24">
               {poetGroups.length > 1 ? (
-                <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Şairler">
+                <div className="mb-3 flex flex-col gap-1.5" role="tablist" aria-label="Şairler">
                   {poetGroups.map((group) => {
                     const selected = group.poet === selectedPoet;
                     return (
@@ -139,14 +139,14 @@ export function PoemsPage() {
                         aria-selected={selected}
                         onClick={() => selectPoet(group.poet)}
                         className={cn(
-                          'shrink-0 border px-3 py-1.5 text-sm transition',
+                          'flex w-full items-baseline justify-between gap-3 border px-3 py-2 text-left text-sm transition',
                           selected
                             ? 'border-ink-900 bg-ink-900 text-white'
-                            : 'border-cream-300 text-ink-800 hover:border-ink-900'
+                            : 'border-cream-300 bg-white/80 text-ink-800 hover:border-ink-900'
                         )}
                       >
-                        {group.poet}
-                        <span className={cn('ml-1.5 text-xs', selected ? 'text-cream-200' : 'text-ink-500')}>
+                        <span className="min-w-0 font-medium leading-snug">{group.poet}</span>
+                        <span className={cn('shrink-0 text-xs', selected ? 'text-cream-200' : 'text-ink-500')}>
                           {group.poems.length}
                         </span>
                       </button>
@@ -158,7 +158,7 @@ export function PoemsPage() {
               )}
 
               <nav
-                className="max-h-[40vh] overflow-y-auto border border-cream-200 bg-white/80 lg:max-h-[calc(100vh-10rem)]"
+                className="max-h-[min(50vh,22rem)] overflow-y-auto overflow-x-hidden border border-cream-200 bg-white/80 lg:max-h-[calc(100vh-10rem)]"
                 aria-label="Şiir listesi"
               >
                 <ul className="divide-y divide-cream-100">
@@ -187,8 +187,8 @@ export function PoemsPage() {
 
             <article ref={readerRef} className="min-w-0 scroll-mt-24">
               {current ? (
-                <div className="grid items-start gap-6 sm:grid-cols-[minmax(10rem,14rem)_1fr] sm:gap-8">
-                  <div className="aspect-[3/4] max-w-[14rem] border border-cream-200/70 sm:max-w-none">
+                <div className="grid items-start gap-6 md:grid-cols-[minmax(10rem,14rem)_1fr] md:gap-8">
+                  <div className="aspect-[3/4] w-full max-w-[14rem] border border-cream-200/70 md:max-w-none">
                     {current.image_url ? (
                       <img
                         src={current.image_url}
