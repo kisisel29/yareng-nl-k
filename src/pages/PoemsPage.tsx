@@ -1,11 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { fetchPoemBySlug, fetchPoems } from '../lib/api';
-import { POEMS_ADMIN_PATH, POEMS_PAGE_PATH } from '../lib/constants';
+import { AUTHOR_NAME, POEMS_ADMIN_PATH, POEMS_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/cn';
 import type { Poem } from '../types';
+
+function groupPoemsByPoet(poems: Poem[]): { poet: string; poems: Poem[] }[] {
+  const byPoet = new Map<string, Poem[]>();
+  for (const poem of poems) {
+    const poet = poem.poet.trim() || AUTHOR_NAME;
+    const list = byPoet.get(poet) ?? [];
+    list.push(poem);
+    byPoet.set(poet, list);
+  }
+
+  return [...byPoet.entries()]
+    .map(([poet, items]) => ({ poet, poems: items }))
+    .sort((a, b) => {
+      if (a.poet === AUTHOR_NAME && b.poet !== AUTHOR_NAME) return -1;
+      if (b.poet === AUTHOR_NAME && a.poet !== AUTHOR_NAME) return 1;
+      return a.poet.localeCompare(b.poet, 'tr');
+    });
+}
 
 export function PoemsPage() {
   const { slug } = useParams();
@@ -36,6 +54,8 @@ export function PoemsPage() {
     };
   }, [slug]);
 
+  const poetGroups = useMemo(() => groupPoemsByPoet(poems), [poems]);
+
   const path = current ? `${POEMS_PAGE_PATH}/${current.slug}` : POEMS_PAGE_PATH;
   const seoDescription = current
     ? `${current.title} — ${current.poet}.`
@@ -63,26 +83,39 @@ export function PoemsPage() {
         </div>
 
         {poems.length > 1 ? (
-          <ul className="mt-8 flex flex-wrap gap-2">
-            {poems.map((poem) => {
-              const active = current?.id === poem.id;
-              return (
-                <li key={poem.id}>
-                  <Link
-                    to={`${POEMS_PAGE_PATH}/${poem.slug}`}
-                    className={cn(
-                      'inline-block border px-3 py-1.5 text-sm',
-                      active
-                        ? 'border-ink-900 bg-ink-900 text-white'
-                        : 'border-cream-300 text-ink-700 hover:border-ink-900'
-                    )}
-                  >
-                    {poem.title}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <nav className="mt-8 space-y-6" aria-label="Şiir listesi">
+            {poetGroups.map((group) => (
+              <div key={group.poet}>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-ink-500">
+                  {group.poet}
+                  <span className="ml-2 font-normal normal-case tracking-normal text-ink-400">
+                    {group.poems.length} şiir
+                  </span>
+                </p>
+                <ul className="flex flex-wrap gap-2">
+                  {group.poems.map((poem) => {
+                    const active = current?.id === poem.id;
+                    return (
+                      <li key={poem.id}>
+                        <Link
+                          to={`${POEMS_PAGE_PATH}/${poem.slug}`}
+                          className={cn(
+                            'inline-block border px-3 py-1.5 text-sm transition',
+                            active
+                              ? 'border-ink-900 bg-ink-900 text-white'
+                              : 'border-cream-300 text-ink-700 hover:border-ink-900'
+                          )}
+                          aria-current={active ? 'page' : undefined}
+                        >
+                          {poem.title}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </nav>
         ) : null}
 
         {loading ? (
