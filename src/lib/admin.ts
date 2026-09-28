@@ -1,5 +1,5 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
-import { dataUrlToFile, optimizeImage, transparentizeRemoteImage } from './image';
+import { dataUrlToFile, optimizeImage, normalizePortraitRemoteImage } from './image';
 import { slugify } from './slug';
 import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchNews, fetchPoems } from './api';
 import { AUTHOR_NAME } from './constants';
@@ -150,7 +150,7 @@ export async function uploadPersonImage(
   file: File,
   kind: 'profile' | 'gallery'
 ): Promise<{ publicUrl: string; storagePath: string }> {
-  const optimized = await optimizeImage(file);
+  const optimized = await optimizeImage(file, { frame: 'portrait' });
   const storagePath = `${personId}/${kind}-${crypto.randomUUID()}.${optimized.ext}`;
 
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
@@ -462,7 +462,7 @@ async function writeColumnists(list: Columnist[]): Promise<void> {
 }
 
 async function uploadColumnistPhoto(file: File) {
-  const optimized = await optimizeImage(file);
+  const optimized = await optimizeImage(file, { frame: 'portrait' });
   const storagePath = `columnists/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
@@ -620,7 +620,7 @@ async function writePoems(list: Poem[]): Promise<void> {
 }
 
 async function uploadPoemImage(file: File) {
-  const optimized = await optimizeImage(file);
+  const optimized = await optimizeImage(file, { frame: 'portrait' });
   const storagePath = `poems/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
@@ -880,7 +880,7 @@ async function replaceTransparentPortrait(input: {
   previousPath?: string | null;
   folder: string;
 }): Promise<{ publicUrl: string; storagePath: string } | null> {
-  const processed = await transparentizeRemoteImage(input.url);
+  const processed = await normalizePortraitRemoteImage(input.url);
   if (!processed) return null;
 
   const storagePath = `${input.folder}/${crypto.randomUUID()}.${processed.ext}`;
@@ -898,7 +898,7 @@ async function replaceTransparentPortrait(input: {
   return { publicUrl: `${data.publicUrl}?v=${Date.now()}`, storagePath };
 }
 
-/** Simalar, şiirler ve köşe yazarlarındaki beyaz zeminli portreleri şeffafa çevirir. */
+/** Simalar, şiirler ve köşe yazarlarındaki portreleri şeffaf + aynı 4:5 ölçüye getirir. */
 export async function reprocessPortraitBackgrounds(): Promise<PortraitFixResult> {
   const result: PortraitFixResult = { fixed: 0, skipped: 0, failed: 0 };
 

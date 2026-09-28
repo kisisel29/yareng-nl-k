@@ -458,7 +458,7 @@ async function uploadSubmissionPhoto(file: File): Promise<{
   if (!isAllowedImage(file)) {
     throw new Error('Vesikalık yalnızca JPG, PNG veya WEBP olabilir.');
   }
-  const optimized = await optimizeImage(file, VESIKALIK_MAX_WIDTH);
+  const optimized = await optimizeImage(file, { maxWidth: VESIKALIK_MAX_WIDTH, frame: 'portrait' });
   const storagePath = `submissions/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,

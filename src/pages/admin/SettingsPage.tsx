@@ -47,9 +47,9 @@ export function SettingsPage() {
     setFixingPortraits(true);
     try {
       const result = await reprocessPortraitBackgrounds();
-      await upsertSiteSettings({ portraits_bg_fixed: '1' });
+      await upsertSiteSettings({ portraits_bg_fixed: '2' });
       notify(
-        `Arka plan düzeltildi: ${result.fixed} güncellendi, ${result.skipped} atlandı, ${result.failed} hata.`,
+        `Fotoğraflar güncellendi: ${result.fixed} ölçüye alındı, ${result.skipped} atlandı, ${result.failed} hata.`,
         result.failed ? 'error' : 'success'
       );
     } catch {
@@ -120,8 +120,8 @@ export function SettingsPage() {
       <section className="mt-8 max-w-2xl rounded-lg border border-cream-200 bg-white p-6">
         <h2 className="font-serif text-2xl text-ink-900">Fotoğraf bakımı</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-600">
-          Simalar, şiirler ve köşe yazarlarındaki beyaz zeminli portreleri otomatik şeffafa çevirir. Bir kez
-          çalıştırmanız yeterlidir; yeni yüklemeler zaten şeffaf kaydedilir.
+          Simalar, şiirler ve köşe yazarlarındaki portreleri şeffaf arka planla aynı 4:5 ölçüye getirir. Yeni
+          yüklemeler otomatik eşitlenir; eski kayıtlar için bu düğmeyi bir kez çalıştırın.
         </p>
         <button
           type="button"
@@ -129,7 +129,7 @@ export function SettingsPage() {
           disabled={fixingPortraits}
           onClick={() => void fixPortraits()}
         >
-          {fixingPortraits ? 'Düzeltiliyor…' : 'Beyaz arka planları düzelt'}
+          {fixingPortraits ? 'Düzeltiliyor…' : 'Fotoğrafları eşit ölçüye getir'}
         </button>
       </section>
       <PortraitBackgroundAutoFix />
@@ -149,12 +149,12 @@ function PortraitBackgroundAutoFix() {
     (async () => {
       try {
         const settings = await fetchSiteSettings();
-        if (settings.portraits_bg_fixed === '1') return;
+        if (settings.portraits_bg_fixed === '2') return;
         const result = await reprocessPortraitBackgrounds();
-        await upsertSiteSettings({ portraits_bg_fixed: '1' });
+        await upsertSiteSettings({ portraits_bg_fixed: '2' });
         if (!active) return;
         if (result.fixed > 0) {
-          notify(`Eski fotoğraflar güncellendi (${result.fixed} adet).`, 'success');
+          notify(`Fotoğraflar eşit ölçüye alındı (${result.fixed} adet).`, 'success');
         }
       } catch {
         /* CORS veya yetki yoksa sessiz; kullanıcı butondan tekrar deneyebilir */

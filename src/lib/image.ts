@@ -3,6 +3,16 @@ export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_IMAGE_WIDTH = 1600;
 export const IMAGE_QUALITY = 0.82;
 
+/** Sima / şiir / köşe yazarı portreleri — sabit 4:5 çerçeve */
+export const PORTRAIT_FRAME_WIDTH = 900;
+export const PORTRAIT_FRAME_HEIGHT = 1125;
+
+export type OptimizeImageOptions = {
+  maxWidth?: number;
+  /** portrait = tüm yüklemeleri aynı 4:5 ölçüye getirir */
+  frame?: 'portrait' | 'none';
+};
+
 export function isAllowedImage(file: File): boolean {
   const typeOk = ALLOWED_IMAGE_TYPES.includes(file.type);
   const extOk = /\.(jpe?g|png|webp)$/i.test(file.name);
@@ -102,9 +112,55 @@ async function encodeTransparent(canvas: HTMLCanvasElement): Promise<{ blob: Blo
   return { blob: png, ext: 'png', contentType: 'image/png' };
 }
 
+/**
+ * Kaynağı sabit 4:5 çerçeveye yerleştirir.
+ * Şeffaf / kesilmiş görseller: sığdır + alta hizala.
+ * Opak fotoğraflar: çerçeveyi dolduracak şekilde kırp.
+ */
+function drawIntoPortraitFrame(
+  source: CanvasImageSource,
+  srcW: number,
+  srcH: number,
+  mode: 'contain' | 'cover'
+): HTMLCanvasElement {
+  const outW = PORTRAIT_FRAME_WIDTH;
+  const outH = PORTRAIT_FRAME_HEIGHT;
+  const canvas = document.createElement('canvas');
+  canvas.width = outW;
+  canvas.height = outH;
+  const ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) return canvas;
+  ctx.clearRect(0, 0, outW, outH);
+
+  if (mode === 'cover') {
+    const scale = Math.max(outW / srcW, outH / srcH);
+    const dw = Math.round(srcW * scale);
+    const dh = Math.round(srcH * scale);
+    const dx = Math.round((outW - dw) / 2);
+    const dy = Math.round((outH - dh) / 2);
+    ctx.drawImage(source, 0, 0, srcW, srcH, dx, dy, dw, dh);
+  } else {
+    const scale = Math.min(outW / srcW, outH / srcH);
+    const dw = Math.round(srcW * scale);
+    const dh = Math.round(srcH * scale);
+    const dx = Math.round((outW - dw) / 2);
+    const dy = outH - dh;
+    ctx.drawImage(source, 0, 0, srcW, srcH, dx, dy, dw, dh);
+  }
+  return canvas;
+}
+
+function resolveOptions(maxWidthOrOptions?: number | OptimizeImageOptions): OptimizeImageOptions {
+  if (typeof maxWidthOrOptions === 'number') return { maxWidth: maxWidthOrOptions, frame: 'none' };
+  return {
+    maxWidth: maxWidthOrOptions?.maxWidth ?? MAX_IMAGE_WIDTH,
+    frame: maxWidthOrOptions?.frame ?? 'none',
+  };
+}
+
 export async function optimizeImage(
   file: File,
-  maxWidth = MAX_IMAGE_WIDTH
+  maxWidthOrOptions: number | OptimizeImageOptions = MAX_IMAGE_WIDTH
 ): Promise<{ blob: Blob; ext: string; contentType: string }> {
   if (!isAllowedImage(file)) {
     throw new Error('Yalnızca JPG, JPEG, PNG veya WEBP yükleyebilirsiniz.');
@@ -113,65 +169,84 @@ export async function optimizeImage(
     throw new Error('Dosya boyutu 5 MB sınırını aşıyor.');
   }
 
+  const options = resolveOptions(maxWidthOrOptions);
+  const maxWidth = options.maxWidth ?? MAX_IMAGE_WIDTH;
+  const usePortrait = options.frame === 'portrait';
+
   try {
     const bitmap = await createImageBitmap(file);
     const scale = Math.min(1, maxWidth / bitmap.width);
     const width = Math.round(bitmap.width * scale);
     const height = Math.round(bitmap.height * scale);
 
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) {
+    const work = document.createElement('canvas');
+    work.width = width;
+    work.height = height;
+    const workCtx = work.getContext('2d', { alpha: true });
+    if (!workCtx) {
       bitmap.close();
       return { blob: file, ext: extensionOf(file), contentType: file.type || 'image/jpeg' };
     }
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(bitmap, 0, 0, width, height);
+    workCtx.clearRect(0, 0, width, height);
+    workCtx.drawImage(bitmap, 0, 0, width, height);
     bitmap.close();
 
-    const hadAlpha = prefersAlpha(file) || canvasHasTransparency(ctx, width, height);
-    const whiteBg = likelyWhiteBackground(ctx, width, height);
-    if (whiteBg) removeNearWhiteBackground(ctx, width, height);
+    const hadAlpha = prefersAlpha(file) || canvasHasTransparency(workCtx, width, height);
+    const whiteBg = likelyWhiteBackground(workCtx, width, height);
+    if (whiteBg) removeNearWhiteBackground(workCtx, width, height);
+    const transparent = hadAlpha || whiteBg || canvasHasTransparency(workCtx, width, height);
 
-    if (hadAlpha || whiteBg || canvasHasTransparency(ctx, width, height)) {
-      return encodeTransparent(canvas);
+    if (usePortrait) {
+      const framed = drawIntoPortraitFrame(work, width, height, transparent ? 'contain' : 'cover');
+      if (transparent) return encodeTransparent(framed);
+      const jpeg = await encodeCanvas(framed, 'image/jpeg', IMAGE_QUALITY);
+      return { blob: jpeg, ext: 'jpg', contentType: 'image/jpeg' };
     }
 
-    const jpeg = await encodeCanvas(canvas, 'image/jpeg', IMAGE_QUALITY);
+    if (transparent) return encodeTransparent(work);
+
+    const jpeg = await encodeCanvas(work, 'image/jpeg', IMAGE_QUALITY);
     return { blob: jpeg, ext: 'jpg', contentType: 'image/jpeg' };
   } catch {
     return { blob: file, ext: extensionOf(file), contentType: file.type || 'image/jpeg' };
   }
 }
 
-/** Uzak görseli indirip beyaz zemini şeffafa çevirir. Değişiklik yoksa null döner. */
-export async function transparentizeRemoteImage(
-  url: string,
-  maxWidth = MAX_IMAGE_WIDTH
+/** Uzak portreyi indirir: beyaz zemini temizler ve sabit 4:5 ölçüye alır. */
+export async function normalizePortraitRemoteImage(
+  url: string
 ): Promise<{ blob: Blob; ext: string; contentType: string } | null> {
   const img = await loadCrossOriginImage(url);
-  const scale = Math.min(1, maxWidth / img.naturalWidth);
-  const width = Math.max(1, Math.round(img.naturalWidth * scale));
-  const height = Math.max(1, Math.round(img.naturalHeight * scale));
+  const srcW = img.naturalWidth;
+  const srcH = img.naturalHeight;
+  if (!srcW || !srcH) return null;
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return null;
+  const work = document.createElement('canvas');
+  work.width = srcW;
+  work.height = srcH;
+  const workCtx = work.getContext('2d', { alpha: true });
+  if (!workCtx) return null;
 
-  ctx.clearRect(0, 0, width, height);
-  ctx.drawImage(img, 0, 0, width, height);
+  workCtx.clearRect(0, 0, srcW, srcH);
+  workCtx.drawImage(img, 0, 0);
 
-  const alreadyAlpha = canvasHasTransparency(ctx, width, height);
-  const whiteBg = likelyWhiteBackground(ctx, width, height);
-  if (!whiteBg && alreadyAlpha) return null;
-  if (!whiteBg) return null;
+  const alreadyAlpha = canvasHasTransparency(workCtx, srcW, srcH);
+  const whiteBg = likelyWhiteBackground(workCtx, srcW, srcH);
+  if (whiteBg) removeNearWhiteBackground(workCtx, srcW, srcH);
+  const transparent = alreadyAlpha || whiteBg || canvasHasTransparency(workCtx, srcW, srcH);
 
-  removeNearWhiteBackground(ctx, width, height);
-  return encodeTransparent(canvas);
+  const framed = drawIntoPortraitFrame(work, srcW, srcH, transparent ? 'contain' : 'cover');
+  if (transparent) return encodeTransparent(framed);
+  const jpeg = await encodeCanvas(framed, 'image/jpeg', IMAGE_QUALITY);
+  return { blob: jpeg, ext: 'jpg', contentType: 'image/jpeg' };
+}
+
+/** @deprecated normalizePortraitRemoteImage kullanın */
+export async function transparentizeRemoteImage(
+  url: string,
+  _maxWidth = MAX_IMAGE_WIDTH
+): Promise<{ blob: Blob; ext: string; contentType: string } | null> {
+  return normalizePortraitRemoteImage(url);
 }
 
 function loadCrossOriginImage(url: string): Promise<HTMLImageElement> {
