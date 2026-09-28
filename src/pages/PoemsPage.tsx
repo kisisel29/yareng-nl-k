@@ -102,7 +102,7 @@ export function PoemsPage() {
         path={path}
         image={current?.image_url}
       />
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Şiir</p>
@@ -125,7 +125,7 @@ export function PoemsPage() {
             </p>
           </div>
         ) : (
-          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(15rem,18rem)_minmax(0,1fr)] lg:gap-10">
+          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(12rem,14rem)_minmax(0,1fr)] lg:gap-8">
             <aside className="lg:sticky lg:top-24">
               {poetGroups.length > 1 ? (
                 <div className="mb-3 flex flex-col gap-1.5" role="tablist" aria-label="Şairler">
@@ -187,28 +187,30 @@ export function PoemsPage() {
 
             <article ref={readerRef} className="min-w-0 scroll-mt-24">
               {current ? (
-                <div className="grid items-start gap-6 md:grid-cols-[minmax(10rem,14rem)_1fr] md:gap-8">
-                  <div className="aspect-[3/4] w-full max-w-[14rem] bg-transparent md:max-w-none">
-                    {current.image_url ? (
-                      <img
-                        src={current.image_url}
-                        alt={current.title}
-                        className="h-full w-full object-contain object-bottom"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-dashed border-cream-300/80 px-4 text-center text-ink-500">
-                        <span className="text-sm">Fotoğraf / resim</span>
-                      </div>
-                    )}
+                <>
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:gap-8">
+                    <div className="aspect-[3/4] w-full max-w-[11rem] shrink-0 bg-transparent">
+                      {current.image_url ? (
+                        <img
+                          src={current.image_url}
+                          alt={current.title}
+                          className="h-full w-full object-contain object-bottom"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-dashed border-cream-300/80 px-4 text-center text-ink-500">
+                          <span className="text-sm">Fotoğraf / resim</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 pb-1">
+                      <h2 className="font-serif text-3xl text-ink-900 sm:text-4xl">{current.title}</h2>
+                      <p className="mt-2 text-base text-ink-700">{current.poet}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <h2 className="font-serif text-3xl text-ink-900">{current.title}</h2>
-                    <p className="mt-2 text-base text-ink-700">{current.poet}</p>
-                    <pre className="mt-6 whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800">
-                      {current.body || 'Şiir metni henüz eklenmedi.'}
-                    </pre>
-                  </div>
-                </div>
+                  <pre className="mt-8 max-w-none whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800 sm:text-xl sm:leading-[2.05]">
+                    {current.body || 'Şiir metni henüz eklenmedi.'}
+                  </pre>
+                </>
               ) : (
                 <p className="text-sm text-ink-500">Bir şiir seçin.</p>
               )}
