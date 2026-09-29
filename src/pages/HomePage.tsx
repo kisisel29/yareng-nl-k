@@ -11,7 +11,7 @@ import { SiteBanner, SITE_BANNER_SRC } from '../components/brand/SiteBanner';
 import { SiteLogo } from '../components/brand/SiteLogo';
 import { SectionTitle } from '../components/brand/SectionTitle';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
-import { fetchAuthorBooks, fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchNews, fetchPublishedCount, fetchRandomPeople, searchPeople } from '../lib/api';
+import { fetchAuthorBooks, fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchNews, fetchPublishedCount, fetchQuoteOfDay, fetchRandomPeople, searchPeople } from '../lib/api';
 import {
   AUTHOR_NAME,
   AUTHOR_PAGE_PATH,
@@ -30,6 +30,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import { BookCard } from '../components/author/BookCard';
 import { AdBand } from '../components/ads/AdSlot';
 import type { AuthorBook, Category, NewsItem, Person } from '../types';
+import type { QuoteOfDay } from '../lib/api';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export function HomePage() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [count, setCount] = useState(0);
+  const [quote, setQuote] = useState<QuoteOfDay>({ text: '', attribution: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,8 +62,9 @@ export function HomePage() {
       fetchRandomPeople(8),
       fetchAuthorBooks(),
       fetchNews(),
+      fetchQuoteOfDay(),
     ])
-      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople, authorBooks, newsItems]) => {
+      .then(([featuredPeople, listed, total, cats, latestPeople, popularPeople, randomPeople, authorBooks, newsItems, quoteOfDay]) => {
         if (!active) return;
         setFeatured(featuredPeople);
         setPeople(listed.items);
@@ -72,6 +75,7 @@ export function HomePage() {
         setRandom(randomPeople);
         setBooks(authorBooks);
         setNews(newsItems);
+        setQuote(quoteOfDay);
       })
       .catch(() => {
         if (!active) return;
@@ -84,6 +88,7 @@ export function HomePage() {
         setRandom([]);
         setBooks([]);
         setNews([]);
+        setQuote({ text: '', attribution: '' });
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -188,6 +193,17 @@ export function HomePage() {
             decorative
           />
           <p className="mt-5 text-sm text-ink-500">İsmail Hayal&apos;in resmi sitesi</p>
+          {quote.text ? (
+            <blockquote className="mx-auto mt-5 max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Günün sözü</p>
+              <p className="mt-2 font-serif text-lg italic leading-relaxed text-ink-800 sm:text-xl">
+                “{quote.text}”
+              </p>
+              {quote.attribution ? (
+                <footer className="mt-2 text-sm text-ink-600">— {quote.attribution}</footer>
+              ) : null}
+            </blockquote>
+          ) : null}
           <h1 className="mt-4 font-calibri text-3xl font-bold leading-tight tracking-wide text-ink-900 sm:text-5xl">
             {SITE_NAME.toLocaleUpperCase('tr-TR')}
           </h1>

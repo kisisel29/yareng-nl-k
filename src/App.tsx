@@ -39,6 +39,9 @@ const NewsPage = lazy(() =>
 const InterviewsPage = lazy(() =>
   import('./pages/InterviewsPage').then((module) => ({ default: module.InterviewsPage }))
 );
+const JokesPage = lazy(() =>
+  import('./pages/JokesPage').then((module) => ({ default: module.JokesPage }))
+);
 const AuthorAdminPage = lazy(() =>
   import('./pages/admin/AuthorAdminPage').then((module) => ({ default: module.AuthorAdminPage }))
 );
@@ -53,6 +56,9 @@ const NewsAdminPage = lazy(() =>
 );
 const InterviewsAdminPage = lazy(() =>
   import('./pages/admin/InterviewsAdminPage').then((module) => ({ default: module.InterviewsAdminPage }))
+);
+const JokesAdminPage = lazy(() =>
+  import('./pages/admin/JokesAdminPage').then((module) => ({ default: module.JokesAdminPage }))
 );
 const AdsAdminPage = lazy(() =>
   import('./pages/admin/AdsAdminPage').then((module) => ({ default: module.AdsAdminPage }))
@@ -126,6 +132,7 @@ export default function App() {
               <Route path="/admin/siirler" element={<PoemsAdminPage />} />
               <Route path="/admin/haberler" element={<NewsAdminPage />} />
               <Route path="/admin/soylesiler" element={<InterviewsAdminPage />} />
+              <Route path="/admin/gumushane-fikralari" element={<JokesAdminPage />} />
               <Route path="/admin/yorumlar" element={<CommentsAdminPage />} />
               <Route path="/admin/kose-yazarlari" element={<ColumnistsAdminPage />} />
               <Route path="/admin/reklamlar" element={<AdsAdminPage />} />
@@ -146,6 +153,7 @@ export default function App() {
             <Route path="/haberler" element={<NewsPage />} />
             <Route path="/soylesiler/:slug" element={<InterviewsPage />} />
             <Route path="/soylesiler" element={<InterviewsPage />} />
+            <Route path="/gumushane-fikralari" element={<JokesPage />} />
             <Route path="/kose-yazarlari/:slug/:articleSlug" element={<ColumnistsPage />} />
             <Route path="/kose-yazarlari/:slug" element={<ColumnistsPage />} />
             <Route path="/kose-yazarlari" element={<ColumnistsPage />} />

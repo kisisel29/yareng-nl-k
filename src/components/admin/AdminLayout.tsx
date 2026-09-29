@@ -19,9 +19,10 @@ import {
   MessageSquare,
   Mic,
   Megaphone,
+  Smile,
   X,
 } from 'lucide-react';
-import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, INTERVIEWS_ADMIN_PATH, NEWS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
+import { AUTHOR_ADMIN_PATH, COLUMNISTS_ADMIN_PATH, INTERVIEWS_ADMIN_PATH, JOKES_ADMIN_PATH, NEWS_ADMIN_PATH, POEMS_ADMIN_PATH, SITE_NAME_CAPS } from '../../lib/constants';
 import { ADS_ADMIN_PATH } from '../../lib/ads';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
@@ -34,6 +35,7 @@ const LINKS = [
   { to: POEMS_ADMIN_PATH, label: 'Şiirler', icon: Feather, end: false },
   { to: NEWS_ADMIN_PATH, label: 'Haberler', icon: Newspaper, end: false },
   { to: INTERVIEWS_ADMIN_PATH, label: 'Söyleşiler', icon: Mic, end: false },
+  { to: JOKES_ADMIN_PATH, label: 'Gümüşhane Fıkraları', icon: Smile, end: false },
   { to: '/admin/yorumlar', label: 'Yorumlar', icon: MessageSquare, end: false },
   { to: COLUMNISTS_ADMIN_PATH, label: 'Köşe Yazarları', icon: PenLine, end: false },
   { to: ADS_ADMIN_PATH, label: 'Reklamlar', icon: Megaphone, end: false },

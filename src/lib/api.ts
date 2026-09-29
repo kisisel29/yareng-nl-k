@@ -13,6 +13,7 @@ import type {
   Person,
   PersonSearchParams,
   Poem,
+  Joke,
   InterviewItem,
   SiteSettingsMap,
   Source,
@@ -919,6 +920,45 @@ export async function fetchPoemBySlug(
 ): Promise<Poem | null> {
   const list = await fetchPoems(options);
   return list.find((item) => item.slug === slug) ?? null;
+}
+
+export async function fetchJokes(options?: { includeUnpublished?: boolean }): Promise<Joke[]> {
+  const settings = await fetchSiteSettings();
+  const parsed = parseJson<Partial<Joke>[]>(settings.jokes, []);
+  const list = (Array.isArray(parsed) ? parsed : [])
+    .filter((item): item is Joke => Boolean(item?.id && item?.title && item?.slug))
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      body: item.body ?? '',
+      published: item.published !== false,
+      created_at: item.created_at ?? '',
+      updated_at: item.updated_at ?? '',
+    }));
+  const visible = options?.includeUnpublished ? list : list.filter((item) => item.published);
+  return visible.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+}
+
+export async function fetchJokeBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<Joke | null> {
+  const list = await fetchJokes(options);
+  return list.find((item) => item.slug === slug) ?? null;
+}
+
+export type QuoteOfDay = {
+  text: string;
+  attribution: string;
+};
+
+export async function fetchQuoteOfDay(): Promise<QuoteOfDay> {
+  const settings = await fetchSiteSettings();
+  return {
+    text: (settings.quote_of_day ?? '').trim(),
+    attribution: (settings.quote_of_day_attribution ?? '').trim(),
+  };
 }
 
 export async function fetchNews(options?: { includeUnpublished?: boolean }): Promise<NewsItem[]> {

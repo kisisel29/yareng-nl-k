@@ -95,12 +95,15 @@ export interface SiteSettingsMap {
   author_books: string;
   columnists: string;
   poems: string;
+  jokes: string;
   news: string;
   interviews: string;
   ads: string;
   content_reactions: string;
   content_comments: string;
   portraits_bg_fixed: string;
+  quote_of_day: string;
+  quote_of_day_attribution: string;
 }
 
 export type AdSlotId =
@@ -224,6 +227,22 @@ export interface Poem {
 export interface PoemFormValues {
   title: string;
   poet: string;
+  body: string;
+  published: boolean;
+}
+
+export interface Joke {
+  id: string;
+  title: string;
+  slug: string;
+  body: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JokeFormValues {
+  title: string;
   body: string;
   published: boolean;
 }

@@ -13,6 +13,8 @@ export function SettingsPage() {
     default_source_author: '',
     default_source_book: '',
     default_source_year: '',
+    quote_of_day: '',
+    quote_of_day_attribution: '',
   });
   const [saving, setSaving] = useState(false);
   const [fixingPortraits, setFixingPortraits] = useState(false);
@@ -26,6 +28,8 @@ export function SettingsPage() {
           default_source_author: settings.default_source_author ?? '',
           default_source_book: settings.default_source_book ?? '',
           default_source_year: settings.default_source_year ?? '',
+          quote_of_day: settings.quote_of_day ?? '',
+          quote_of_day_attribution: settings.quote_of_day_attribution ?? '',
         })
       )
       .catch(() => notify('Ayarlar yüklenemedi.', 'error'));
@@ -86,6 +90,25 @@ export function SettingsPage() {
             rows={5}
             value={form.about_book}
             onChange={(e) => setForm({ ...form, about_book: e.target.value })}
+          />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Günün sözü</span>
+          <textarea
+            className={inputClass}
+            rows={3}
+            value={form.quote_of_day}
+            onChange={(e) => setForm({ ...form, quote_of_day: e.target.value })}
+            placeholder="Ana sayfada logo altında görünecek söz…"
+          />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Günün sözü — kaynak / kişi (isteğe bağlı)</span>
+          <input
+            className={inputClass}
+            value={form.quote_of_day_attribution}
+            onChange={(e) => setForm({ ...form, quote_of_day_attribution: e.target.value })}
+            placeholder="Örn. İsmail Hayal"
           />
         </label>
         <label className="block">

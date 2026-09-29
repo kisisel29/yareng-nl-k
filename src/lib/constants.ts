@@ -29,6 +29,8 @@ export const NEWS_PAGE_PATH = '/haberler';
 export const NEWS_ADMIN_PATH = '/admin/haberler';
 export const INTERVIEWS_PAGE_PATH = '/soylesiler';
 export const INTERVIEWS_ADMIN_PATH = '/admin/soylesiler';
+export const JOKES_PAGE_PATH = '/gumushane-fikralari';
+export const JOKES_ADMIN_PATH = '/admin/gumushane-fikralari';
 export const COPY_PROTECTION_MESSAGE =
   "Bu sitedeki yazılar, araştırmalar ve görseller İsmail Hayal'in emeğidir. Kopyalamak, çoğaltmak veya kullanmak için lütfen İsmail Hayal ile iletişime geçiniz.";
 export const DEFAULT_AUTHOR_TITLE = 'Eğitimci, şair ve yazar';

@@ -1,7 +1,7 @@
 import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
 import { dataUrlToFile, optimizeImage, normalizePortraitRemoteImage } from './image';
 import { slugify } from './slug';
-import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchNews, fetchPoems } from './api';
+import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchJokes, fetchNews, fetchPoems } from './api';
 import { AUTHOR_NAME } from './constants';
 import type {
   AdPlacement,
@@ -15,6 +15,8 @@ import type {
   ColumnistFormValues,
   InterviewFormValues,
   InterviewItem,
+  Joke,
+  JokeFormValues,
   NewsFormValues,
   NewsItem,
   Person,
@@ -617,6 +619,47 @@ export async function deleteColumnistArticle(columnistId: string, articleId: str
 
 async function writePoems(list: Poem[]): Promise<void> {
   await upsertSiteSettings({ poems: JSON.stringify(list) });
+}
+
+async function writeJokes(list: Joke[]): Promise<void> {
+  await upsertSiteSettings({ jokes: JSON.stringify(list) });
+}
+
+export async function createJoke(values: JokeFormValues): Promise<Joke> {
+  const list = await fetchJokes({ includeUnpublished: true });
+  const now = new Date().toISOString();
+  const taken = new Set(list.map((item) => item.slug));
+  const created: Joke = {
+    id: crypto.randomUUID(),
+    title: values.title.trim(),
+    slug: uniqueSlug(values.title, taken, 'fikra'),
+    body: values.body,
+    published: values.published,
+    created_at: now,
+    updated_at: now,
+  };
+  await writeJokes([created, ...list]);
+  return created;
+}
+
+export async function updateJoke(id: string, values: JokeFormValues): Promise<Joke> {
+  const list = await fetchJokes({ includeUnpublished: true });
+  const existing = list.find((item) => item.id === id);
+  if (!existing) throw new Error('Fıkra bulunamadı.');
+  const updated: Joke = {
+    ...existing,
+    title: values.title.trim(),
+    body: values.body,
+    published: values.published,
+    updated_at: new Date().toISOString(),
+  };
+  await writeJokes(list.map((item) => (item.id === id ? updated : item)));
+  return updated;
+}
+
+export async function deleteJoke(joke: Joke): Promise<void> {
+  const list = await fetchJokes({ includeUnpublished: true });
+  await writeJokes(list.filter((item) => item.id !== joke.id));
 }
 
 async function uploadPoemImage(file: File) {
