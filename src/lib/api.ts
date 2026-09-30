@@ -932,6 +932,8 @@ export async function fetchJokes(options?: { includeUnpublished?: boolean }): Pr
       title: item.title,
       slug: item.slug,
       body: item.body ?? '',
+      image_url: item.image_url ?? null,
+      image_path: item.image_path ?? null,
       published: item.published !== false,
       created_at: item.created_at ?? '',
       updated_at: item.updated_at ?? '',

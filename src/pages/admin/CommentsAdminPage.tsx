@@ -7,20 +7,26 @@ import {
   fetchAllContentComments,
   fetchColumnists,
   fetchInterviews,
+  fetchJokes,
   fetchNews,
   fetchPersonById,
   moderateContentComment,
   type ContentComment,
 } from '../../lib/api';
-import { COLUMNISTS_PAGE_PATH, INTERVIEWS_PAGE_PATH, NEWS_PAGE_PATH } from '../../lib/constants';
+import {
+  COLUMNISTS_PAGE_PATH,
+  INTERVIEWS_PAGE_PATH,
+  JOKES_PAGE_PATH,
+  NEWS_PAGE_PATH,
+} from '../../lib/constants';
 import { formatDateTimeTr, personName } from '../../lib/format';
 import { btnPrimary, btnSecondary } from '../../lib/cn';
-import type { Columnist, InterviewItem, NewsItem, Person } from '../../types';
+import type { Columnist, InterviewItem, Joke, NewsItem, Person } from '../../types';
 
 type Filter = 'pending' | 'approved' | 'rejected' | 'all';
 
 type TargetMeta = {
-  kind: 'news' | 'person' | 'article' | 'interview' | 'other';
+  kind: 'news' | 'person' | 'article' | 'interview' | 'joke' | 'other';
   label: string;
   href: string;
 };
@@ -31,22 +37,25 @@ export function CommentsAdminPage() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [interviews, setInterviews] = useState<InterviewItem[]>([]);
   const [columnists, setColumnists] = useState<Columnist[]>([]);
+  const [jokes, setJokes] = useState<Joke[]>([]);
   const [peopleById, setPeopleById] = useState<Record<string, Person>>({});
   const [filter, setFilter] = useState<Filter>('pending');
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function reload() {
-    const [nextComments, nextNews, nextInterviews, nextColumnists] = await Promise.all([
+    const [nextComments, nextNews, nextInterviews, nextColumnists, nextJokes] = await Promise.all([
       fetchAllContentComments(),
       fetchNews({ includeUnpublished: true }),
       fetchInterviews({ includeUnpublished: true }),
       fetchColumnists({ includeUnpublished: true }),
+      fetchJokes({ includeUnpublished: true }),
     ]);
     setComments(nextComments);
     setNews(nextNews);
     setInterviews(nextInterviews);
     setColumnists(nextColumnists);
+    setJokes(nextJokes);
 
     const personIds = [
       ...new Set(
@@ -128,6 +137,15 @@ export function CommentsAdminPage() {
         kind: 'interview',
         label: item?.title || 'Söyleşi',
         href: item ? `${INTERVIEWS_PAGE_PATH}/${item.slug}` : INTERVIEWS_PAGE_PATH,
+      };
+    }
+    if (targetKey.startsWith('joke:')) {
+      const id = targetKey.slice(5);
+      const item = jokes.find((row) => row.id === id);
+      return {
+        kind: 'joke',
+        label: item?.title || 'Fıkra',
+        href: item ? `${JOKES_PAGE_PATH}#${item.slug}` : JOKES_PAGE_PATH,
       };
     }
     return { kind: 'other', label: targetKey, href: '/' };

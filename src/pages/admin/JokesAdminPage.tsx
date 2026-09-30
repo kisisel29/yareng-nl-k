@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { Seo } from '../../components/seo/Seo';
 import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
+import { ImageField } from '../../components/admin/ImageField';
 import { useToast } from '../../context/ToastContext';
 import { fetchJokes } from '../../lib/api';
 import { createJoke, deleteJoke, updateJoke } from '../../lib/admin';
@@ -22,9 +23,14 @@ export function JokesAdminPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Joke | null>(null);
   const [form, setForm] = useState<JokeFormValues>(emptyForm);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [clearImage, setClearImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState<Joke | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const imageSrc = clearImage ? null : imagePreview || editing?.image_url || null;
 
   async function reload() {
     setJokes(await fetchJokes({ includeUnpublished: true }));
@@ -37,12 +43,18 @@ export function JokesAdminPage() {
   function openNew() {
     setEditing(null);
     setForm(emptyForm());
+    setImageFile(null);
+    setImagePreview(null);
+    setClearImage(false);
     setFormOpen(true);
   }
 
   function openEdit(joke: Joke) {
     setEditing(joke);
     setForm({ title: joke.title, body: joke.body, published: joke.published });
+    setImageFile(null);
+    setImagePreview(null);
+    setClearImage(false);
     setFormOpen(true);
   }
 
@@ -57,8 +69,8 @@ export function JokesAdminPage() {
     }
     setSaving(true);
     try {
-      if (editing) await updateJoke(editing.id, form);
-      else await createJoke(form);
+      if (editing) await updateJoke(editing.id, form, imageFile, clearImage);
+      else await createJoke(form, imageFile);
       setFormOpen(false);
       setEditing(null);
       await reload();
@@ -117,6 +129,22 @@ export function JokesAdminPage() {
             }}
           >
             <h3 className="font-serif text-xl">{editing ? 'Fıkrayı düzenle' : 'Yeni fıkra'}</h3>
+            <ImageField
+              label="Fıkra görseli"
+              hint="İsteğe bağlı. JPG, PNG veya WEBP. En fazla 5 MB."
+              src={imageSrc}
+              frameClassName="h-40 w-full max-w-md"
+              onSelect={(file) => {
+                setClearImage(false);
+                setImageFile(file);
+                setImagePreview(file ? URL.createObjectURL(file) : null);
+              }}
+              onClear={() => {
+                setImageFile(null);
+                setImagePreview(null);
+                setClearImage(true);
+              }}
+            />
             <label className="block">
               <span className={labelClass}>Başlık</span>
               <input
@@ -165,9 +193,16 @@ export function JokesAdminPage() {
         <ul className="mt-6 divide-y divide-cream-200 border-t border-cream-200">
           {jokes.map((joke) => (
             <li key={joke.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium text-ink-900">{joke.title}</p>
-                <p className="text-sm text-ink-500">{joke.published ? 'Yayında' : 'Taslak'}</p>
+              <div className="flex items-center gap-3">
+                <div className="h-16 w-24 shrink-0 overflow-hidden bg-cream-100">
+                  {joke.image_url ? (
+                    <img src={joke.image_url} alt="" className="h-full w-full object-cover" />
+                  ) : null}
+                </div>
+                <div>
+                  <p className="font-medium text-ink-900">{joke.title}</p>
+                  <p className="text-sm text-ink-500">{joke.published ? 'Yayında' : 'Taslak'}</p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <button type="button" className={btnSecondary} onClick={() => openEdit(joke)}>

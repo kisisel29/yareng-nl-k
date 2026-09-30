@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
+import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { fetchJokes } from '../lib/api';
 import { JOKES_ADMIN_PATH, JOKES_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
@@ -62,16 +63,35 @@ export function JokesPage() {
             />
           </div>
         ) : (
-          <ul className="mt-10 space-y-8">
-            {jokes.map((joke, index) => (
-              <li key={joke.id} className="border-t border-cream-200 pt-6">
-                <p className="text-xs uppercase tracking-[0.14em] text-ink-500">Fıkra {jokes.length - index}</p>
-                <h2 className="mt-2 font-serif text-2xl text-ink-900">{joke.title}</h2>
-                <pre className="mt-4 whitespace-pre-wrap font-serif text-lg leading-[1.9] text-ink-800">
-                  {joke.body}
-                </pre>
-              </li>
-            ))}
+          <ul className="mt-10 space-y-12">
+            {jokes.map((joke, index) => {
+              const sharePath = `${JOKES_PAGE_PATH}#${joke.slug}`;
+              return (
+                <li key={joke.id} id={joke.slug} className="scroll-mt-24 border-t border-cream-200 pt-8">
+                  <p className="text-xs uppercase tracking-[0.14em] text-ink-500">
+                    Fıkra {jokes.length - index}
+                  </p>
+                  <h2 className="mt-2 font-serif text-2xl text-ink-900">{joke.title}</h2>
+                  {joke.image_url ? (
+                    <div className="mt-5 overflow-hidden border border-cream-200/70">
+                      <img
+                        src={joke.image_url}
+                        alt=""
+                        className="h-auto max-h-[28rem] w-full object-contain object-center"
+                      />
+                    </div>
+                  ) : null}
+                  <pre className="mt-4 whitespace-pre-wrap font-serif text-lg leading-[1.9] text-ink-800">
+                    {joke.body}
+                  </pre>
+                  <ContentEngagement
+                    url={sharePath}
+                    title={joke.title}
+                    targetKey={`joke:${joke.id}`}
+                  />
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

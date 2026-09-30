@@ -625,15 +625,36 @@ async function writeJokes(list: Joke[]): Promise<void> {
   await upsertSiteSettings({ jokes: JSON.stringify(list) });
 }
 
-export async function createJoke(values: JokeFormValues): Promise<Joke> {
+async function uploadJokeImage(file: File) {
+  const optimized = await optimizeImage(file);
+  const storagePath = `jokes/${crypto.randomUUID()}.${optimized.ext}`;
+  const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
+    contentType: optimized.contentType,
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PEOPLE_IMAGES_BUCKET).getPublicUrl(storagePath);
+  return { publicUrl: data.publicUrl, storagePath };
+}
+
+export async function createJoke(values: JokeFormValues, image?: File | null): Promise<Joke> {
   const list = await fetchJokes({ includeUnpublished: true });
   const now = new Date().toISOString();
   const taken = new Set(list.map((item) => item.slug));
+  let image_url: string | null = null;
+  let image_path: string | null = null;
+  if (image) {
+    const uploaded = await uploadJokeImage(image);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
   const created: Joke = {
     id: crypto.randomUUID(),
     title: values.title.trim(),
     slug: uniqueSlug(values.title, taken, 'fikra'),
     body: values.body,
+    image_url,
+    image_path,
     published: values.published,
     created_at: now,
     updated_at: now,
@@ -642,14 +663,33 @@ export async function createJoke(values: JokeFormValues): Promise<Joke> {
   return created;
 }
 
-export async function updateJoke(id: string, values: JokeFormValues): Promise<Joke> {
+export async function updateJoke(
+  id: string,
+  values: JokeFormValues,
+  image?: File | null,
+  clearImage = false
+): Promise<Joke> {
   const list = await fetchJokes({ includeUnpublished: true });
   const existing = list.find((item) => item.id === id);
   if (!existing) throw new Error('Fıkra bulunamadı.');
+  let image_url = existing.image_url;
+  let image_path = existing.image_path;
+  if (clearImage) {
+    await removeStoragePath(image_path);
+    image_url = null;
+    image_path = null;
+  } else if (image) {
+    const uploaded = await uploadJokeImage(image);
+    await removeStoragePath(image_path);
+    image_url = uploaded.publicUrl;
+    image_path = uploaded.storagePath;
+  }
   const updated: Joke = {
     ...existing,
     title: values.title.trim(),
     body: values.body,
+    image_url,
+    image_path,
     published: values.published,
     updated_at: new Date().toISOString(),
   };
@@ -658,6 +698,7 @@ export async function updateJoke(id: string, values: JokeFormValues): Promise<Jo
 }
 
 export async function deleteJoke(joke: Joke): Promise<void> {
+  await removeStoragePath(joke.image_path);
   const list = await fetchJokes({ includeUnpublished: true });
   await writeJokes(list.filter((item) => item.id !== joke.id));
 }

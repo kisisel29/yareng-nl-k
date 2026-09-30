@@ -9,6 +9,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { Seo } from '../components/seo/Seo';
 import { SiteBanner, SITE_BANNER_SRC } from '../components/brand/SiteBanner';
 import { SiteLogo } from '../components/brand/SiteLogo';
+import { QuoteOfDayFrame } from '../components/brand/QuoteOfDayFrame';
 import { SectionTitle } from '../components/brand/SectionTitle';
 import { PersonPlaceholder } from '../components/people/PersonPlaceholder';
 import { fetchAuthorBooks, fetchCategories, fetchFeaturedPeople, fetchLatestPeople, fetchMostViewedPeople, fetchNews, fetchPublishedCount, fetchQuoteOfDay, fetchRandomPeople, searchPeople } from '../lib/api';
@@ -194,15 +195,7 @@ export function HomePage() {
           />
           <p className="mt-5 text-sm text-ink-500">İsmail Hayal&apos;in resmi sitesi</p>
           {quote.text ? (
-            <blockquote className="mx-auto mt-5 max-w-2xl">
-              <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Günün sözü</p>
-              <p className="mt-3 font-hand text-[1.65rem] font-semibold leading-snug text-ink-900 sm:text-[2rem] sm:leading-snug">
-                “{quote.text}”
-              </p>
-              {quote.attribution ? (
-                <footer className="mt-3 font-hand text-lg text-ink-600 sm:text-xl">— {quote.attribution}</footer>
-              ) : null}
-            </blockquote>
+            <QuoteOfDayFrame text={quote.text} attribution={quote.attribution || undefined} />
           ) : null}
           <h1 className="mt-4 font-calibri text-3xl font-bold leading-tight tracking-wide text-ink-900 sm:text-5xl">
             {SITE_NAME.toLocaleUpperCase('tr-TR')}
