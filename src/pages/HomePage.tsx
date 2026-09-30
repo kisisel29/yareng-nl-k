@@ -196,11 +196,11 @@ export function HomePage() {
           {quote.text ? (
             <blockquote className="mx-auto mt-5 max-w-2xl">
               <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Günün sözü</p>
-              <p className="mt-2 font-serif text-lg italic leading-relaxed text-ink-800 sm:text-xl">
+              <p className="mt-3 font-hand text-[1.65rem] font-semibold leading-snug text-ink-900 sm:text-[2rem] sm:leading-snug">
                 “{quote.text}”
               </p>
               {quote.attribution ? (
-                <footer className="mt-2 text-sm text-ink-600">— {quote.attribution}</footer>
+                <footer className="mt-3 font-hand text-lg text-ink-600 sm:text-xl">— {quote.attribution}</footer>
               ) : null}
             </blockquote>
           ) : null}

@@ -39,6 +39,7 @@ export default {
         serif: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
         sans: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
         calibri: ['Calibri', 'Carlito', 'Segoe UI', 'sans-serif'],
+        hand: ['Caveat', 'Segoe Script', 'Comic Sans MS', 'cursive'],
       },
       boxShadow: {
         card: 'none',
