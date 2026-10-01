@@ -957,10 +957,14 @@ export type QuoteOfDay = {
 
 export async function fetchQuoteOfDay(): Promise<QuoteOfDay> {
   const settings = await fetchSiteSettings();
-  return {
-    text: (settings.quote_of_day ?? '').trim(),
-    attribution: (settings.quote_of_day_attribution ?? '').trim(),
-  };
+  let text = (settings.quote_of_day ?? '').trim();
+  let attribution = (settings.quote_of_day_attribution ?? '').trim();
+  // Söz yanlışlıkla yalnızca kaynak alanına yazıldıysa ana metin olarak göster
+  if (!text && attribution) {
+    text = attribution;
+    attribution = '';
+  }
+  return { text, attribution };
 }
 
 export async function fetchNews(options?: { includeUnpublished?: boolean }): Promise<NewsItem[]> {

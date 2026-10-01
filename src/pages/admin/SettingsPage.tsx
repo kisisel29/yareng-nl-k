@@ -93,22 +93,25 @@ export function SettingsPage() {
           />
         </label>
         <label className="block">
-          <span className={labelClass}>Günün sözü</span>
+          <span className={labelClass}>Günün sözü (söz metni)</span>
           <textarea
             className={inputClass}
             rows={3}
             value={form.quote_of_day}
             onChange={(e) => setForm({ ...form, quote_of_day: e.target.value })}
-            placeholder="Ana sayfada logo altında görünecek söz…"
+            placeholder="Örn. İyilik eden mükafat bekliyorsa tefecidir."
           />
+          <span className="mt-1 block text-xs text-ink-500">
+            Ana sayfada görünecek söz. Kişi adını bir alt alana yazın.
+          </span>
         </label>
         <label className="block">
-          <span className={labelClass}>Günün sözü — kaynak / kişi (isteğe bağlı)</span>
+          <span className={labelClass}>Günün sözü — kim söyledi? (isteğe bağlı)</span>
           <input
             className={inputClass}
             value={form.quote_of_day_attribution}
             onChange={(e) => setForm({ ...form, quote_of_day_attribution: e.target.value })}
-            placeholder="Örn. İsmail Hayal"
+            placeholder="Örn. Cemil Meriç"
           />
         </label>
         <label className="block">
