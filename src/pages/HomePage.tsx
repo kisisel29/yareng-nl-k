@@ -194,9 +194,13 @@ export function HomePage() {
             decorative
           />
           <p className="mt-5 text-sm text-ink-500">İsmail Hayal&apos;in resmi sitesi</p>
-          {quote.text ? (
+        </div>
+        {quote.text ? (
+          <div className="mx-auto mt-5 w-full px-3 sm:px-4">
             <QuoteOfDayFrame text={quote.text} attribution={quote.attribution || undefined} />
-          ) : null}
+          </div>
+        ) : null}
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
           <h1 className="mt-4 font-calibri text-3xl font-bold leading-tight tracking-wide text-ink-900 sm:text-5xl">
             {SITE_NAME.toLocaleUpperCase('tr-TR')}
           </h1>
