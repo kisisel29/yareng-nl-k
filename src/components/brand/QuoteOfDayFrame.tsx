@@ -13,7 +13,7 @@ export function QuoteOfDayFrame({
       aria-label="Günün sözü"
     >
       <div
-        className="relative rounded-2xl bg-white/70 px-4 pb-8 pt-10 sm:px-10 sm:pb-10 sm:pt-12"
+        className="relative rounded-2xl bg-white/70 px-4 pb-10 pt-10 sm:px-10 sm:pb-12 sm:pt-12"
         style={{
           border: `1.5px solid ${FRAME_GREEN}`,
         }}
@@ -48,21 +48,21 @@ export function QuoteOfDayFrame({
         <span
           className="absolute bottom-2 right-4 select-none bg-white px-1 font-serif text-3xl font-bold leading-none text-ink-900 sm:bottom-3 sm:right-6 sm:text-4xl"
           aria-hidden
-          style={{ color: '#111110' }}
         >
           »
         </span>
 
-        <blockquote className="relative mx-auto max-w-xl pl-10 pr-4 text-center sm:pl-14 sm:pr-8">
+        <blockquote className="relative mx-auto max-w-xl pl-10 pr-6 text-center sm:pl-14 sm:pr-10">
           <p className="font-hand text-[1.55rem] font-semibold leading-snug text-ink-900 sm:text-[1.9rem] sm:leading-snug">
             {text}
-            {attribution ? (
-              <>
-                {' '}
-                <cite className="not-italic text-ink-700">— {attribution}</cite>
-              </>
-            ) : null}
           </p>
+          {attribution ? (
+            <footer className="mt-4 text-right sm:mt-5">
+              <cite className="font-hand text-lg not-italic text-ink-600 sm:text-xl">
+                — {attribution}
+              </cite>
+            </footer>
+          ) : null}
         </blockquote>
       </div>
     </figure>

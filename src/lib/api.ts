@@ -955,16 +955,40 @@ export type QuoteOfDay = {
   attribution: string;
 };
 
-export async function fetchQuoteOfDay(): Promise<QuoteOfDay> {
-  const settings = await fetchSiteSettings();
-  let text = (settings.quote_of_day ?? '').trim();
-  let attribution = (settings.quote_of_day_attribution ?? '').trim();
-  // Söz yanlışlıkla yalnızca kaynak alanına yazıldıysa ana metin olarak göster
+/** Söz metninin sonundaki ithafı (isim) ayırır; yoksa attribution alanını kullanır. */
+export function resolveQuoteParts(rawText: string, rawAttribution: string): QuoteOfDay {
+  let text = rawText.trim();
+  let attribution = rawAttribution.trim();
+
   if (!text && attribution) {
     text = attribution;
     attribution = '';
   }
-  return { text, attribution };
+
+  if (attribution) {
+    return { text, attribution };
+  }
+
+  const byDash = text.match(/^(.+?)\s+[—–]\s+(.+)$/);
+  if (byDash) {
+    return { text: byDash[1].trim(), attribution: byDash[2].trim() };
+  }
+
+  const byPeriod = text.match(/^(.+[.!?])\s+((?:[\p{Lu}][\p{L}'’.-]*(?:\s+|$)){1,4})$/u);
+  if (byPeriod) {
+    const name = byPeriod[2].trim();
+    const words = name.split(/\s+/).filter(Boolean);
+    if (words.length >= 1 && words.length <= 4 && words.every((word) => /^\p{Lu}/u.test(word))) {
+      return { text: byPeriod[1].trim(), attribution: name };
+    }
+  }
+
+  return { text, attribution: '' };
+}
+
+export async function fetchQuoteOfDay(): Promise<QuoteOfDay> {
+  const settings = await fetchSiteSettings();
+  return resolveQuoteParts(settings.quote_of_day ?? '', settings.quote_of_day_attribution ?? '');
 }
 
 export async function fetchNews(options?: { includeUnpublished?: boolean }): Promise<NewsItem[]> {
