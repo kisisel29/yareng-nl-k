@@ -4,11 +4,13 @@ import type { AdPlacement, AdSlotId } from '../types';
 export const ADS_ADMIN_PATH = '/admin/reklamlar';
 
 export const SANTA_STORE_AD_HREF = 'https://www.shopier.com/santastore29';
-export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.jpg?v=3';
+export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.gif?v=1';
 export const EFORA_AD_HREF = 'https://eforaik.com/';
 export const EFORA_AD_IMAGE = '/ads/efora-ik.jpg?v=3';
 export const CANCA_TUR_AD_HREF = 'https://www.cancatur.com/';
 export const CANCA_TUR_AD_IMAGE = '/ads/canca-tur.jpg?v=1';
+export const RAMADA_AD_HREF = 'http://www.ramadagumushane.com.tr/tr/anasayfa.html';
+export const RAMADA_AD_IMAGE = '/ads/ramada-gumushane.jpg?v=1';
 
 export const AD_SLOT_META: Record<
   AdSlotId,
@@ -123,13 +125,20 @@ export function defaultAdPlacements(): AdPlacement[] {
       sponsor: 'Efora İnsan Kaynakları',
       size_label: AD_SLOT_META.sidebar.size_label,
     },
-    placeholderAd(
-      'ad-content-after',
-      'content_after',
-      'inline',
-      'Haber ve biyografi yazılarının altında. İçerikle uyumlu, sakin tanıtım alanı.',
-      'İletişime geç'
-    ),
+    {
+      id: 'ad-content-after',
+      slot: 'content_after',
+      format: 'inline',
+      enabled: true,
+      live: true,
+      headline: 'Ramada by Wyndham Gümüşhane',
+      body: 'Konforlu konaklama, restaurant, spa ve toplantı salonları. Gümüşhane’de rezervasyon için tıklayın.',
+      cta: 'Rezervasyon',
+      href: RAMADA_AD_HREF,
+      image_url: RAMADA_AD_IMAGE,
+      sponsor: 'Ramada Gümüşhane',
+      size_label: AD_SLOT_META.content_after.size_label,
+    },
     placeholderAd(
       'ad-footer',
       'footer',
