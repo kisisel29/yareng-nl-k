@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
+import { AdSlot } from '../components/ads/AdSlot';
 import { fetchPoemBySlug, fetchPoems } from '../lib/api';
 import { AUTHOR_NAME, POEMS_ADMIN_PATH, POEMS_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
@@ -210,6 +211,9 @@ export function PoemsPage() {
                   <pre className="mt-8 max-w-none whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800 sm:text-xl sm:leading-[2.05]">
                     {current.body || 'Şiir metni henüz eklenmedi.'}
                   </pre>
+                  <div className="mt-10">
+                    <AdSlot slot="content_after" />
+                  </div>
                 </>
               ) : (
                 <p className="text-sm text-ink-500">Bir şiir seçin.</p>

@@ -36,7 +36,7 @@ export const AD_SLOT_META: Record<
   },
   content_after: {
     label: 'İçerik sonu',
-    description: 'Haber, biyografi ve köşe yazısı metninin altında.',
+    description: 'Ana sayfa, fıkra, şiir, haber, biyografi ve köşe yazısı içeriklerinin altında.',
     format: 'inline',
     size_label: '680 × 120',
   },

@@ -4,6 +4,7 @@ import { Shuffle } from 'lucide-react';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
+import { AdSlot } from '../components/ads/AdSlot';
 import { fetchJokes } from '../lib/api';
 import { JOKES_ADMIN_PATH, JOKES_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
@@ -102,7 +103,7 @@ export function JokesPage() {
         description={seoDescription}
         path={sharePath}
       />
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.16em] text-ink-500">Güldürü</p>
@@ -136,7 +137,7 @@ export function JokesPage() {
             />
           </div>
         ) : (
-          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(13rem,16rem)_minmax(0,1fr)] lg:gap-8">
+          <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(12rem,14rem)_minmax(0,1fr)] lg:gap-8">
             <aside className="lg:sticky lg:top-24">
               <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-ink-500">
                 Fıkralar ({jokes.length})
@@ -224,6 +225,9 @@ export function JokesPage() {
                         Rastgele
                       </button>
                     ) : null}
+                  </div>
+                  <div className="mt-8">
+                    <AdSlot slot="content_after" />
                   </div>
                   <ContentEngagement
                     url={sharePath}

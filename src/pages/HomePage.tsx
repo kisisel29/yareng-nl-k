@@ -29,7 +29,7 @@ import {
 import { formatDateTimeTr, formatLifeYears, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { useDebounce } from '../hooks/useDebounce';
 import { BookCard } from '../components/author/BookCard';
-import { AdBand } from '../components/ads/AdSlot';
+import { AdBand, AdSlot } from '../components/ads/AdSlot';
 import type { AuthorBook, Category, NewsItem, Person } from '../types';
 import type { QuoteOfDay } from '../lib/api';
 
@@ -382,6 +382,10 @@ export function HomePage() {
       <PersonRail eyebrow="Güncel" title="Son eklenen / güncellenen" people={latest} actionHref="/simalar" />
       <PersonRail eyebrow="Keşif" title="En çok okunan" people={popular} showViews actionHref="/simalar" />
       <PersonRail eyebrow="Keşif" title="Rastgele simalar" people={random} />
+
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <AdBand slot="content_after" className="!px-0" />
+      </div>
 
       {hero ? (
         <section className="border-b border-cream-200">
