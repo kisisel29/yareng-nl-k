@@ -898,7 +898,7 @@ export async function fetchPoems(options?: { includeUnpublished?: boolean }): Pr
   const parsed = parseJson<Partial<Poem>[]>(settings.poems, []);
   const list = (Array.isArray(parsed) ? parsed : [])
     .filter((item): item is Poem => Boolean(item?.id && item?.title && item?.slug))
-    .map((item) => ({
+    .map((item, index) => ({
       id: item.id,
       title: item.title,
       slug: item.slug,
@@ -907,10 +907,20 @@ export async function fetchPoems(options?: { includeUnpublished?: boolean }): Pr
       image_url: item.image_url ?? null,
       image_path: item.image_path ?? null,
       published: item.published !== false,
+      sort_order: typeof item.sort_order === 'number' ? item.sort_order : index,
       created_at: item.created_at ?? '',
       updated_at: item.updated_at ?? '',
     }));
   const visible = options?.includeUnpublished ? list : list.filter((item) => item.published);
+  const hasExplicitOrder = (Array.isArray(parsed) ? parsed : []).some(
+    (item) => typeof item?.sort_order === 'number'
+  );
+  if (hasExplicitOrder) {
+    return visible.sort(
+      (a, b) => a.sort_order - b.sort_order || (a.created_at || '').localeCompare(b.created_at || '')
+    );
+  }
+  // Eski kayıtlar: önce en yeni
   return visible.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
 }
 

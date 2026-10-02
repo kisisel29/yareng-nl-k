@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Seo } from '../../components/seo/Seo';
 import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 import { ImageField } from '../../components/admin/ImageField';
 import { useToast } from '../../context/ToastContext';
 import { fetchPoems } from '../../lib/api';
-import { createPoem, deletePoem, updatePoem } from '../../lib/admin';
+import { createPoem, deletePoem, movePoem, updatePoem } from '../../lib/admin';
 import { AUTHOR_NAME, POEMS_PAGE_PATH } from '../../lib/constants';
-import { btnPrimary, btnSecondary, inputClass, labelClass } from '../../lib/cn';
+import { btnGhost, btnPrimary, btnSecondary, inputClass, labelClass } from '../../lib/cn';
 import type { Poem, PoemFormValues } from '../../types';
 
 const emptyForm = (): PoemFormValues => ({
@@ -30,6 +30,7 @@ export function PoemsAdminPage() {
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState<Poem | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [movingId, setMovingId] = useState<string | null>(null);
 
   const imageSrc = clearImage ? null : imagePreview || editing?.image_url || null;
 
@@ -98,6 +99,18 @@ export function PoemsAdminPage() {
     }
   }
 
+  async function shiftPoem(poem: Poem, direction: 'up' | 'down') {
+    setMovingId(poem.id);
+    try {
+      const next = await movePoem(poem.id, direction);
+      setPoems(next);
+    } catch {
+      notify('Sıra değiştirilemedi.', 'error');
+    } finally {
+      setMovingId(null);
+    }
+  }
+
   return (
     <>
       <Seo title="Şiirler" noindex />
@@ -105,7 +118,7 @@ export function PoemsAdminPage() {
         <div>
           <h1 className="font-serif text-3xl text-ink-900">Şiirler</h1>
           <p className="mt-1 text-sm text-ink-500">
-            Solda görsel, sağda şiir metni. Şair adını ayrı alana yazın; başlığa eklemeniz gerekmez.
+            Solda görsel, sağda şiir metni. Yukarı/aşağı oklarıyla sitedeki sırayı değiştirebilirsiniz.
           </p>
         </div>
         <Link to={POEMS_PAGE_PATH} className="text-sm text-burgundy-700 hover:underline">
@@ -200,9 +213,34 @@ export function PoemsAdminPage() {
         ) : null}
 
         <ul className="mt-6 divide-y divide-cream-200 border-t border-cream-200">
-          {poems.map((poem) => (
+          {poems.map((poem, index) => (
             <li key={poem.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-1">
+                  <button
+                    type="button"
+                    className={btnGhost}
+                    disabled={index === 0 || movingId === poem.id}
+                    onClick={() => void shiftPoem(poem, 'up')}
+                    aria-label="Yukarı taşı"
+                    title="Yukarı taşı"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className={btnGhost}
+                    disabled={index === poems.length - 1 || movingId === poem.id}
+                    onClick={() => void shiftPoem(poem, 'down')}
+                    aria-label="Aşağı taşı"
+                    title="Aşağı taşı"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </div>
+                <span className="w-6 shrink-0 text-center text-xs tabular-nums text-ink-500">
+                  {index + 1}
+                </span>
                 <div className="h-16 w-12 overflow-hidden bg-cream-100">
                   {poem.image_url ? <img src={poem.image_url} alt="" className="h-full w-full object-cover" /> : null}
                 </div>

@@ -618,7 +618,8 @@ export async function deleteColumnistArticle(columnistId: string, articleId: str
 }
 
 async function writePoems(list: Poem[]): Promise<void> {
-  await upsertSiteSettings({ poems: JSON.stringify(list) });
+  const ordered = list.map((item, index) => ({ ...item, sort_order: index }));
+  await upsertSiteSettings({ poems: JSON.stringify(ordered) });
 }
 
 async function writeJokes(list: Joke[]): Promise<void> {
@@ -735,6 +736,7 @@ export async function createPoem(values: PoemFormValues, image?: File | null): P
     image_url,
     image_path,
     published: values.published,
+    sort_order: 0,
     created_at: now,
     updated_at: now,
   };
@@ -775,6 +777,20 @@ export async function updatePoem(
   };
   await writePoems(list.map((item) => (item.id === id ? updated : item)));
   return updated;
+}
+
+export async function movePoem(id: string, direction: 'up' | 'down'): Promise<Poem[]> {
+  const list = await fetchPoems({ includeUnpublished: true });
+  const index = list.findIndex((item) => item.id === id);
+  if (index < 0) throw new Error('Şiir bulunamadı.');
+  const target = direction === 'up' ? index - 1 : index + 1;
+  if (target < 0 || target >= list.length) return list;
+  const next = [...list];
+  const temp = next[index];
+  next[index] = next[target];
+  next[target] = temp;
+  await writePoems(next);
+  return fetchPoems({ includeUnpublished: true });
 }
 
 export async function deletePoem(poem: Poem): Promise<void> {

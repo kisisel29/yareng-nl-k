@@ -220,6 +220,8 @@ export interface Poem {
   image_url: string | null;
   image_path: string | null;
   published: boolean;
+  /** Küçük sayı önce; admin sıralaması */
+  sort_order: number;
   created_at: string;
   updated_at: string;
 }
