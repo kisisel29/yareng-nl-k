@@ -29,7 +29,7 @@ import {
 import { formatDateTimeTr, formatLifeYears, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { useDebounce } from '../hooks/useDebounce';
 import { BookCard } from '../components/author/BookCard';
-import { AdBand, AdSlot } from '../components/ads/AdSlot';
+import { AdBand } from '../components/ads/AdSlot';
 import type { AuthorBook, Category, NewsItem, Person } from '../types';
 import type { QuoteOfDay } from '../lib/api';
 
