@@ -9,8 +9,8 @@ export const EFORA_AD_HREF = 'https://eforaik.com/';
 export const EFORA_AD_IMAGE = '/ads/efora-ik.jpg?v=3';
 export const CANCA_TUR_AD_HREF = 'https://www.cancatur.com/';
 export const CANCA_TUR_AD_IMAGE = '/ads/canca-tur.jpg?v=1';
-export const RAMADA_AD_HREF = 'http://www.ramadagumushane.com.tr/tr/anasayfa.html';
-export const RAMADA_AD_IMAGE = '/ads/ramada-gumushane.jpg?v=1';
+export const GUYAD_AD_HREF = 'https://guyad.org.tr/';
+export const GUYAD_AD_IMAGE = '/ads/guyad.jpg?v=1';
 
 export const AD_SLOT_META: Record<
   AdSlotId,
@@ -131,12 +131,12 @@ export function defaultAdPlacements(): AdPlacement[] {
       format: 'inline',
       enabled: true,
       live: true,
-      headline: 'Ramada by Wyndham Gümüşhane',
-      body: 'Konforlu konaklama, restaurant, spa ve toplantı salonları. Gümüşhane’de rezervasyon için tıklayın.',
-      cta: 'Rezervasyon',
-      href: RAMADA_AD_HREF,
-      image_url: RAMADA_AD_IMAGE,
-      sponsor: 'Ramada Gümüşhane',
+      headline: 'GÜYAD — Gümüşhaneliler Derneği',
+      body: 'Gümüşhane İli ve İlçeleri Yardımlaşma ve Kalkındırma Derneği. Haberler, faaliyetler ve hemşehri buluşmaları.',
+      cta: 'guyad.org.tr',
+      href: GUYAD_AD_HREF,
+      image_url: GUYAD_AD_IMAGE,
+      sponsor: 'GÜYAD',
       size_label: AD_SLOT_META.content_after.size_label,
     },
     placeholderAd(
