@@ -4,7 +4,7 @@ import type { AdPlacement, AdSlotId } from '../types';
 export const ADS_ADMIN_PATH = '/admin/reklamlar';
 
 export const SANTA_STORE_AD_HREF = 'https://www.shopier.com/santastore29';
-export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.gif?v=1';
+export const SANTA_STORE_AD_IMAGE = '/ads/santa-store.gif?v=2';
 export const EFORA_AD_HREF = 'https://eforaik.com/';
 export const EFORA_AD_IMAGE = '/ads/efora-ik.jpg?v=3';
 export const CANCA_TUR_AD_HREF = 'https://www.cancatur.com/';
