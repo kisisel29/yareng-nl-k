@@ -1065,7 +1065,7 @@ export async function fetchAds(): Promise<AdPlacement[]> {
       const stored = bySlot.get(item.slot);
       if (stored && !stored.enabled) return { ...item, enabled: false };
 
-      // Yerleşik canlı reklamlar (Santa / Efora / Canca / GÜYAD): varsayılanı koru
+      // Yerleşik canlı reklamlar: varsayılanı koru
       if (item.live) {
         const storedImage = String(stored?.image_url || '');
         const isBuiltin =
@@ -1074,6 +1074,7 @@ export async function fetchAds(): Promise<AdPlacement[]> {
           storedImage.includes('efora-ik') ||
           storedImage.includes('canca-tur') ||
           storedImage.includes('guyad') ||
+          storedImage.includes('kral-pestil') ||
           !storedImage;
         if (stored?.live && stored.enabled && storedImage && !isBuiltin) return stored;
         return item;

@@ -10,7 +10,9 @@ export const EFORA_AD_IMAGE = '/ads/efora-ik.jpg?v=3';
 export const CANCA_TUR_AD_HREF = 'https://www.cancatur.com/';
 export const CANCA_TUR_AD_IMAGE = '/ads/canca-tur.jpg?v=1';
 export const GUYAD_AD_HREF = 'https://guyad.org.tr/';
-export const GUYAD_AD_IMAGE = '/ads/guyad.jpg?v=1';
+export const GUYAD_AD_IMAGE = '/ads/guyad.jpg?v=2';
+export const KRAL_PESTIL_AD_HREF = 'https://kralpestil.com/';
+export const KRAL_PESTIL_AD_IMAGE = '/ads/kral-pestil.jpg?v=1';
 
 export const AD_SLOT_META: Record<
   AdSlotId,
@@ -131,20 +133,27 @@ export function defaultAdPlacements(): AdPlacement[] {
       format: 'inline',
       enabled: true,
       live: true,
+      headline: 'Kral Pestil — 1974\'ten beri Gümüşhane',
+      body: 'Geleneksel pestil, köme ve Gümüşhane lezzetleri. Yarım asırlık ustalık, modern üretim.',
+      cta: 'kralpestil.com',
+      href: KRAL_PESTIL_AD_HREF,
+      image_url: KRAL_PESTIL_AD_IMAGE,
+      sponsor: 'Kral Pestil',
+      size_label: AD_SLOT_META.content_after.size_label,
+    },
+    {
+      id: 'ad-footer',
+      slot: 'footer',
+      format: 'leaderboard',
+      enabled: true,
+      live: true,
       headline: 'GÜYAD — Gümüşhaneliler Derneği',
       body: 'Gümüşhane İli ve İlçeleri Yardımlaşma ve Kalkındırma Derneği. Haberler, faaliyetler ve hemşehri buluşmaları.',
       cta: 'guyad.org.tr',
       href: GUYAD_AD_HREF,
       image_url: GUYAD_AD_IMAGE,
       sponsor: 'GÜYAD',
-      size_label: AD_SLOT_META.content_after.size_label,
+      size_label: AD_SLOT_META.footer.size_label,
     },
-    placeholderAd(
-      'ad-footer',
-      'footer',
-      'leaderboard',
-      'Tüm genel sayfalarda alt bant. Kurumsal duyuru ve etkinlikler için ideal.',
-      'Reklam ver'
-    ),
   ];
 }
