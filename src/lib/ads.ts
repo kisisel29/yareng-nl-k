@@ -59,29 +59,6 @@ export function adsContactHref(): string {
   return `${AUTHOR_WHATSAPP_URL}?phone=${phone}&text=${text}`;
 }
 
-function placeholderAd(
-  id: string,
-  slot: AdSlotId,
-  format: AdPlacement['format'],
-  body: string,
-  cta: string
-): AdPlacement {
-  return {
-    id,
-    slot,
-    format,
-    enabled: true,
-    live: false,
-    headline: 'Buraya reklam verebilirsiniz',
-    body,
-    cta,
-    href: adsContactHref(),
-    image_url: null,
-    sponsor: null,
-    size_label: AD_SLOT_META[slot].size_label,
-  };
-}
-
 export function defaultAdPlacements(): AdPlacement[] {
   return [
     {
