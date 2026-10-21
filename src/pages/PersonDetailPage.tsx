@@ -6,6 +6,7 @@ import { PersonGrid } from '../components/people/PersonGrid';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { AdSlot } from '../components/ads/AdSlot';
 import { DetailSkeleton } from '../components/ui/Skeleton';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
 import { formatDateTr, formatLifeYears, hasText, personExtraNotes, personName, plainTextExcerpt, siteUrl } from '../lib/format';
 import { sanitizeHtml } from '../lib/sanitize';
@@ -139,7 +140,15 @@ export function PersonDetailPage() {
           <div>
             <div>
               {activeImage ? (
-                <img src={activeImage} alt={name} className="aspect-[4/5] w-full object-contain object-bottom" />
+                <OptimizedImage
+                  src={activeImage}
+                  alt={name}
+                  width={512}
+                  srcSetWidths={[512, 900]}
+                  sizes="(max-width: 1024px) 100vw, 256px"
+                  className="aspect-[4/5] w-full object-contain object-bottom"
+                  eager
+                />
               ) : (
                 <PersonPlaceholder person={person} className="aspect-[4/5] w-full" />
               )}
@@ -148,7 +157,7 @@ export function PersonDetailPage() {
               <div className="mt-3 flex gap-2 overflow-x-auto">
                 {person.profile_image_url ? (
                   <button type="button" onClick={() => setActiveImage(person.profile_image_url)} className="h-16 w-16 shrink-0 overflow-hidden border border-cream-300">
-                    <img src={person.profile_image_url} alt="" className="h-full w-full object-cover" />
+                    <OptimizedImage src={person.profile_image_url} alt="" width={128} srcSetWidths={[128, 256]} sizes="64px" className="h-full w-full object-cover" />
                   </button>
                 ) : null}
                 {gallery.map((image) => (
@@ -158,7 +167,7 @@ export function PersonDetailPage() {
                     onClick={() => setActiveImage(image.image_url)}
                     className="h-16 w-16 shrink-0 overflow-hidden border border-cream-300"
                   >
-                    <img src={image.image_url} alt="" className="h-full w-full object-cover" />
+                    <OptimizedImage src={image.image_url} alt="" width={128} srcSetWidths={[128, 256]} sizes="64px" className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>

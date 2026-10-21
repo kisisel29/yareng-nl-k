@@ -1,4 +1,5 @@
 import { cn } from '../../lib/cn';
+import { OptimizedImage } from '../ui/OptimizedImage';
 import type { AuthorBook } from '../../types';
 
 export function BookCover({
@@ -9,7 +10,16 @@ export function BookCover({
   className?: string;
 }) {
   if (book.cover_url) {
-    return <img src={book.cover_url} alt={book.title} className={cn('h-full w-full object-cover', className)} />;
+    return (
+      <OptimizedImage
+        src={book.cover_url}
+        alt={book.title}
+        width={400}
+        srcSetWidths={[240, 400, 640]}
+        sizes="(max-width: 640px) 45vw, 260px"
+        className={cn('h-full w-full object-cover', className)}
+      />
+    );
   }
 
   return (

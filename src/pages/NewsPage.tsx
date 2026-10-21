@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { AdSlot } from '../components/ads/AdSlot';
 import { fetchNews, fetchNewsBySlug } from '../lib/api';
@@ -66,11 +67,13 @@ function NewsIndexView() {
                 <Link to={`${NEWS_PAGE_PATH}/${item.slug}`} className="group grid gap-5 sm:grid-cols-[12rem_1fr]">
                   <div className="aspect-[4/3] overflow-hidden border border-cream-200/70">
                     {item.image_url ? (
-                      <img
+                      <OptimizedImage
                         src={item.image_url}
                         alt=""
+                        width={384}
+                        srcSetWidths={[384, 768]}
+                        sizes="(max-width: 640px) 100vw, 192px"
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                        loading="lazy"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-xs text-ink-500">Fotoğraf</div>
@@ -163,7 +166,15 @@ function NewsDetailView({ slug }: { slug: string }) {
         </div>
         {item.image_url ? (
           <div className="mt-8 overflow-hidden border border-cream-200/70">
-            <img src={item.image_url} alt={item.title} className="h-auto w-full object-cover" />
+            <OptimizedImage
+              src={item.image_url}
+              alt={item.title}
+              width={768}
+              srcSetWidths={[512, 768, 1024]}
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="h-auto w-full object-cover"
+              eager
+            />
           </div>
         ) : null}
         {hasText(item.body) ? (

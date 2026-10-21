@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { OptimizedImage } from '../ui/OptimizedImage';
 import type { Person } from '../../types';
 import { formatLifeYears, personName } from '../../lib/format';
 import { PersonPlaceholder } from './PersonPlaceholder';
@@ -49,7 +50,14 @@ export function PersonRail({
               <article className="flex gap-3 p-3">
                 <div className="h-20 w-16 shrink-0 overflow-hidden bg-transparent">
                   {person.profile_image_url ? (
-                    <img src={person.profile_image_url} alt={name} className="h-full w-full object-contain object-bottom" />
+                    <OptimizedImage
+                      src={person.profile_image_url}
+                      alt={name}
+                      width={128}
+                      srcSetWidths={[128, 256]}
+                      sizes="64px"
+                      className="h-full w-full object-contain object-bottom"
+                    />
                   ) : (
                     <PersonPlaceholder person={person} className="h-full w-full text-[10px]" />
                   )}

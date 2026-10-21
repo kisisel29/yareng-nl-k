@@ -1,4 +1,4 @@
-import { supabase, PEOPLE_IMAGES_BUCKET } from './supabase';
+import { supabase, PEOPLE_IMAGES_BUCKET, IMAGE_CACHE_CONTROL } from './supabase';
 import { dataUrlToFile, optimizeImage, normalizePortraitRemoteImage } from './image';
 import { slugify } from './slug';
 import { fetchAuthorBooks, fetchAuthorProfile, fetchColumnists, fetchInterviews, fetchJokes, fetchNews, fetchPoems } from './api';
@@ -157,6 +157,7 @@ export async function uploadPersonImage(
 
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -279,6 +280,7 @@ async function uploadAuthorFile(file: File, kind: 'profile' | 'book') {
   const storagePath = `${AUTHOR_STORAGE_PREFIX}/${kind}-${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -468,6 +470,7 @@ async function uploadColumnistPhoto(file: File) {
   const storagePath = `columnists/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -631,6 +634,7 @@ async function uploadJokeImage(file: File) {
   const storagePath = `jokes/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -709,6 +713,7 @@ async function uploadPoemImage(file: File) {
   const storagePath = `poems/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -808,6 +813,7 @@ async function uploadNewsImage(file: File) {
   const storagePath = `news/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -890,6 +896,7 @@ async function uploadInterviewImage(file: File) {
   const storagePath = `interviews/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;
@@ -986,6 +993,7 @@ async function replaceTransparentPortrait(input: {
   const storagePath = `${input.folder}/${crypto.randomUUID()}.${processed.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, processed.blob, {
     contentType: processed.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (error) throw error;

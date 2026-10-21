@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { SocialLinks } from '../components/layout/SocialLinks';
 import { SiteLogo } from '../components/brand/SiteLogo';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { fetchAuthorProfile, fetchSiteSettings } from '../lib/api';
 import {
   AUTHOR_ADMIN_PATH,
@@ -87,9 +88,12 @@ export function AboutPage() {
         <section className="mt-12 grid items-start gap-8 sm:grid-cols-[11rem_1fr]">
           <div>
             {profile.photo_url ? (
-              <img
+              <OptimizedImage
                 src={profile.photo_url}
                 alt={profile.full_name}
+                width={352}
+                srcSetWidths={[352, 704]}
+                sizes="176px"
                 className="aspect-[4/5] w-full object-cover"
               />
             ) : (

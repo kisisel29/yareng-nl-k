@@ -6,6 +6,7 @@ import { ChapterIndex } from '../components/people/ChapterIndex';
 import { AlphabetIndex } from '../components/people/AlphabetIndex';
 import { PersonRail } from '../components/people/PersonRail';
 import { EmptyState } from '../components/ui/EmptyState';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { Seo } from '../components/seo/Seo';
 import { SiteBanner, SITE_BANNER_SRC } from '../components/brand/SiteBanner';
 import { SiteLogo } from '../components/brand/SiteLogo';
@@ -276,11 +277,13 @@ export function HomePage() {
               <Link to={`${NEWS_PAGE_PATH}/${news[0].slug}`} className="group block">
                 <div className="aspect-[16/10] overflow-hidden bg-ink-800 sm:aspect-[2/1]">
                   {news[0].image_url ? (
-                    <img
+                    <OptimizedImage
                       src={news[0].image_url}
                       alt=""
+                      width={900}
+                      srcSetWidths={[600, 900, 1280]}
+                      sizes="(max-width: 1024px) 100vw, 700px"
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                      loading="lazy"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-sm text-cream-300">Fotoğraf</div>
@@ -307,11 +310,13 @@ export function HomePage() {
                     <Link to={`${NEWS_PAGE_PATH}/${item.slug}`} className="group grid grid-cols-[6.5rem_1fr] gap-4">
                       <div className="aspect-[4/3] overflow-hidden bg-ink-800">
                         {item.image_url ? (
-                          <img
+                          <OptimizedImage
                             src={item.image_url}
                             alt=""
+                            width={208}
+                            srcSetWidths={[208, 416]}
+                            sizes="104px"
                             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-                            loading="lazy"
                           />
                         ) : null}
                       </div>
@@ -392,7 +397,14 @@ export function HomePage() {
           <div className="mx-auto grid max-w-6xl items-stretch md:grid-cols-2">
             <div className="min-h-[22rem] bg-transparent">
               {hero.profile_image_url ? (
-                <img src={hero.profile_image_url} alt={personName(hero)} className="h-full w-full object-contain object-bottom" />
+                <OptimizedImage
+                  src={hero.profile_image_url}
+                  alt={personName(hero)}
+                  width={640}
+                  srcSetWidths={[480, 640, 900]}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="h-full w-full object-contain object-bottom"
+                />
               ) : (
                 <PersonPlaceholder person={hero} className="h-full min-h-[22rem] w-full" />
               )}

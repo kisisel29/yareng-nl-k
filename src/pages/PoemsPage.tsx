@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../components/seo/Seo';
 import { AdSlot } from '../components/ads/AdSlot';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { fetchPoemBySlug, fetchPoems } from '../lib/api';
 import { AUTHOR_NAME, POEMS_ADMIN_PATH, POEMS_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
@@ -192,9 +193,12 @@ export function PoemsPage() {
                   <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:gap-8">
                     <div className="aspect-[3/4] w-full max-w-[11rem] shrink-0 bg-transparent">
                       {current.image_url ? (
-                        <img
+                        <OptimizedImage
                           src={current.image_url}
                           alt={current.title}
+                          width={352}
+                          srcSetWidths={[352, 704]}
+                          sizes="176px"
                           className="h-full w-full object-contain object-bottom"
                         />
                       ) : (

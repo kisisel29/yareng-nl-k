@@ -1,4 +1,5 @@
 import { cn } from '../../lib/cn';
+import { OptimizedImage } from '../ui/OptimizedImage';
 import type { Columnist } from '../../types';
 
 export function columnistInitials(name: string): string {
@@ -19,9 +20,12 @@ export function ColumnistAvatar({
   if (columnist.photo_url) {
     return (
       <span className={cn('inline-flex shrink-0 items-end justify-center overflow-hidden bg-transparent', sizeClass)}>
-        <img
+        <OptimizedImage
           src={columnist.photo_url}
           alt={columnist.name}
+          width={size === 'lg' ? 192 : size === 'sm' ? 80 : 96}
+          srcSetWidths={[96, 192]}
+          sizes={size === 'lg' ? '96px' : '48px'}
           className="h-full w-full object-contain object-bottom"
         />
       </span>

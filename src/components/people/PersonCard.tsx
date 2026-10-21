@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { OptimizedImage } from '../ui/OptimizedImage';
 import type { Person } from '../../types';
 import { formatLifeYears, personName } from '../../lib/format';
 import { PersonPlaceholder } from './PersonPlaceholder';
@@ -12,11 +13,13 @@ export function PersonCard({ person }: { person: Person }) {
       <article>
         <div className="aspect-[4/5] overflow-hidden bg-transparent">
           {person.profile_image_url ? (
-            <img
+            <OptimizedImage
               src={person.profile_image_url}
               alt={name}
+              width={360}
+              srcSetWidths={[240, 360, 540, 720]}
+              sizes="(max-width: 640px) 45vw, 280px"
               className="h-full w-full object-contain object-bottom"
-              loading="lazy"
             />
           ) : (
             <PersonPlaceholder person={person} className="h-full w-full" />

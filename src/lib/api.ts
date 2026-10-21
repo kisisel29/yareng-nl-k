@@ -1,4 +1,4 @@
-import { PEOPLE_IMAGES_BUCKET, supabase } from './supabase';
+import { IMAGE_CACHE_CONTROL, PEOPLE_IMAGES_BUCKET, supabase } from './supabase';
 import { firstNameStartsWithLetter, sanitizeSearchTerm } from './slug';
 import { PAGE_SIZE, AUTHOR_NAME } from './constants';
 import { blobToDataUrl, isAllowedImage, optimizeImage } from './image';
@@ -463,6 +463,7 @@ async function uploadSubmissionPhoto(file: File): Promise<{
   const storagePath = `submissions/${crypto.randomUUID()}.${optimized.ext}`;
   const { error } = await supabase.storage.from(PEOPLE_IMAGES_BUCKET).upload(storagePath, optimized.blob, {
     contentType: optimized.contentType,
+    cacheControl: IMAGE_CACHE_CONTROL,
     upsert: false,
   });
   if (!error) {

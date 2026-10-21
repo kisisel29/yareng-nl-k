@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Shuffle } from 'lucide-react';
 import { Seo } from '../components/seo/Seo';
 import { EmptyState } from '../components/ui/EmptyState';
+import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { ContentEngagement } from '../components/engagement/ContentEngagement';
 import { AdSlot } from '../components/ads/AdSlot';
 import { fetchJokes } from '../lib/api';
@@ -186,9 +187,12 @@ export function JokesPage() {
                   <h2 className="mt-2 font-serif text-3xl text-ink-900 sm:text-4xl">{current.title}</h2>
                   {current.image_url ? (
                     <div className="mt-5 overflow-hidden border border-cream-200/70">
-                      <img
+                      <OptimizedImage
                         src={current.image_url}
                         alt=""
+                        width={768}
+                        srcSetWidths={[512, 768, 1024]}
+                        sizes="(max-width: 768px) 100vw, 768px"
                         className="mx-auto h-auto max-h-[22rem] w-full object-contain object-center"
                       />
                     </div>
