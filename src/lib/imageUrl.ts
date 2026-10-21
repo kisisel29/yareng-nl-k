@@ -33,9 +33,14 @@ export function optimizedImageUrl(
   try {
     const parsed = new URL(url);
     parsed.pathname = parsed.pathname.replace(OBJECT_PUBLIC, RENDER_PUBLIC);
-    parsed.searchParams.set('width', String(Math.max(16, Math.round(width))));
-    if (options.height) parsed.searchParams.set('height', String(Math.max(16, Math.round(options.height))));
-    if (options.resize) parsed.searchParams.set('resize', options.resize);
+    const w = Math.max(16, Math.round(width));
+    // ÖNEMLİ: Supabase yalnızca genişlik verilirse yüksekliği orijinal
+    // bırakıp görüntüyü sıkıştırıyor. Bu yüzden her zaman yükseklik de
+    // gönderilir; resize=contain en-boy oranını korur, görüntü bozulmaz.
+    const h = Math.max(16, Math.round(options.height ?? w));
+    parsed.searchParams.set('width', String(w));
+    parsed.searchParams.set('height', String(h));
+    parsed.searchParams.set('resize', options.resize ?? 'contain');
     parsed.searchParams.set('quality', String(options.quality ?? DEFAULT_QUALITY));
     parsed.searchParams.set('format', 'webp');
     return parsed.toString();
@@ -47,10 +52,16 @@ export function optimizedImageUrl(
 export function imageSrcSet(
   url: string | null | undefined,
   widths: number[],
-  options: OptimizedImageOptions = {}
+  options: OptimizedImageOptions & { baseWidth?: number } = {}
 ): string | undefined {
   if (!url || !isSupabaseStorageUrl(url)) return undefined;
   const unique = [...new Set(widths.map((w) => Math.max(16, Math.round(w))))].sort((a, b) => a - b);
   if (unique.length === 0) return undefined;
-  return unique.map((w) => `${optimizedImageUrl(url, w, options)} ${w}w`).join(', ');
+  const baseWidth = options.baseWidth ?? unique[0];
+  return unique
+    .map((w) => {
+      const height = options.height ? Math.round((options.height * w) / baseWidth) : w;
+      return `${optimizedImageUrl(url, w, { ...options, height })} ${w}w`;
+    })
+    .join(', ');
 }

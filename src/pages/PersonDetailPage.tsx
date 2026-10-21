@@ -144,6 +144,7 @@ export function PersonDetailPage() {
                   src={activeImage}
                   alt={name}
                   width={512}
+                  height={640}
                   srcSetWidths={[512, 900]}
                   sizes="(max-width: 1024px) 100vw, 256px"
                   className="aspect-[4/5] w-full object-contain object-bottom"

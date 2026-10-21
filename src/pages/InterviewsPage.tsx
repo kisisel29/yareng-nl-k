@@ -77,6 +77,7 @@ function InterviewIndexView() {
                         src={item.image_url}
                         alt=""
                         width={384}
+                        height={288}
                         srcSetWidths={[384, 768]}
                         sizes="(max-width: 640px) 100vw, 192px"
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"

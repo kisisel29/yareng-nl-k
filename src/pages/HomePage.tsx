@@ -281,6 +281,7 @@ export function HomePage() {
                       src={news[0].image_url}
                       alt=""
                       width={900}
+                      height={675}
                       srcSetWidths={[600, 900, 1280]}
                       sizes="(max-width: 1024px) 100vw, 700px"
                       className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
@@ -314,6 +315,7 @@ export function HomePage() {
                             src={item.image_url}
                             alt=""
                             width={208}
+                            height={156}
                             srcSetWidths={[208, 416]}
                             sizes="104px"
                             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
@@ -401,6 +403,7 @@ export function HomePage() {
                   src={hero.profile_image_url}
                   alt={personName(hero)}
                   width={640}
+                  height={800}
                   srcSetWidths={[480, 640, 900]}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="h-full w-full object-contain object-bottom"

@@ -92,6 +92,7 @@ export function AboutPage() {
                 src={profile.photo_url}
                 alt={profile.full_name}
                 width={352}
+                height={440}
                 srcSetWidths={[352, 704]}
                 sizes="176px"
                 className="aspect-[4/5] w-full object-cover"

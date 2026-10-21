@@ -15,6 +15,7 @@ export function BookCover({
         src={book.cover_url}
         alt={book.title}
         width={400}
+        height={600}
         srcSetWidths={[240, 400, 640]}
         sizes="(max-width: 640px) 45vw, 260px"
         className={cn('h-full w-full object-cover', className)}

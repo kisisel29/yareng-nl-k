@@ -17,6 +17,7 @@ export function PersonCard({ person }: { person: Person }) {
               src={person.profile_image_url}
               alt={name}
               width={360}
+              height={450}
               srcSetWidths={[240, 360, 540, 720]}
               sizes="(max-width: 640px) 45vw, 280px"
               className="h-full w-full object-contain object-bottom"

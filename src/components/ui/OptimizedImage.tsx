@@ -43,7 +43,9 @@ export function OptimizedImage({
 
   const displaySrc = failed || !canOptimize ? original : optimizedImageUrl(original, width, { height });
   const srcSet =
-    failed || !canOptimize ? undefined : imageSrcSet(original, srcSetWidths ?? [width, width * 2], { height });
+    failed || !canOptimize
+      ? undefined
+      : imageSrcSet(original, srcSetWidths ?? [width, width * 2], { height, baseWidth: width });
 
   return (
     <img

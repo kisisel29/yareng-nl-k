@@ -197,6 +197,7 @@ export function PoemsPage() {
                           src={current.image_url}
                           alt={current.title}
                           width={352}
+                          height={469}
                           srcSetWidths={[352, 704]}
                           sizes="176px"
                           className="h-full w-full object-contain object-bottom"

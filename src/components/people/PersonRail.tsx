@@ -54,6 +54,7 @@ export function PersonRail({
                       src={person.profile_image_url}
                       alt={name}
                       width={128}
+                      height={160}
                       srcSetWidths={[128, 256]}
                       sizes="64px"
                       className="h-full w-full object-contain object-bottom"

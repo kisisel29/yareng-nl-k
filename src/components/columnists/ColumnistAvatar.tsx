@@ -24,6 +24,7 @@ export function ColumnistAvatar({
           src={columnist.photo_url}
           alt={columnist.name}
           width={size === 'lg' ? 192 : size === 'sm' ? 80 : 96}
+          height={size === 'lg' ? 240 : size === 'sm' ? 100 : 120}
           srcSetWidths={[96, 192]}
           sizes={size === 'lg' ? '96px' : '48px'}
           className="h-full w-full object-contain object-bottom"
