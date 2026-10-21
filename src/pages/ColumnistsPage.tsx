@@ -59,17 +59,37 @@ function IndexView() {
           <ul className="mt-10 space-y-8">
             {columnists.map((columnist) => (
               <li key={columnist.id} className="border-t border-cream-200 pt-6">
-                <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex gap-4">
+                <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="flex gap-4 hover:opacity-80">
                   <ColumnistAvatar columnist={columnist} />
                   <span>
                     <span className="block font-serif text-2xl text-ink-900">{columnist.name}</span>
                     {columnist.column_name ? <ColumnNameLabel name={columnist.column_name} className="block" /> : null}
                     {columnist.title ? <span className="mt-1 block text-sm text-ink-500">{columnist.title}</span> : null}
-                    {columnist.articles[0] ? (
-                      <span className="mt-2 block text-sm text-ink-600">{columnist.articles[0].title}</span>
-                    ) : null}
                   </span>
                 </Link>
+                {columnist.articles.length > 0 ? (
+                  <div className="mt-4">
+                    <ul className="space-y-2">
+                      {columnist.articles.slice(0, 3).map((article) => (
+                        <li key={article.id}>
+                          <Link
+                            to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${article.slug}`}
+                            className="block text-sm text-ink-600 hover:text-ink-900 hover:underline"
+                          >
+                            {article.title}
+                            <span className="ml-2 text-xs text-ink-500">{formatDateTimeTr(article.created_at)}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`}
+                      className="mt-3 inline-block text-sm font-medium text-burgundy-700 hover:underline"
+                    >
+                      Tüm yazıları ({columnist.articles.length}) →
+                    </Link>
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>
@@ -138,7 +158,9 @@ function ColumnistView({ slug }: { slug: string }) {
         {columnist.articles.length === 0 ? (
           <p className="mt-10 text-ink-500">Henüz yazı eklenmedi.</p>
         ) : (
-          <ul className="mt-10 space-y-5">
+          <>
+          <h2 className="mt-10 font-serif text-2xl text-ink-900">Yazıları ({columnist.articles.length})</h2>
+          <ul className="mt-5 space-y-5">
             {columnist.articles.map((article) => (
               <li key={article.id} className="border-t border-cream-200 pt-5">
                 <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${article.slug}`} className="block hover:opacity-80">
@@ -151,6 +173,7 @@ function ColumnistView({ slug }: { slug: string }) {
               </li>
             ))}
           </ul>
+          </>
         )}
       </article>
     </>
@@ -182,6 +205,7 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
 
   const { columnist, article } = data;
   const path = `${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${article.slug}`;
+  const otherArticles = columnist.articles.filter((item) => item.id !== article.id);
 
   return (
     <>
@@ -225,6 +249,43 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body) }}
           />
         ) : null}
+        {otherArticles.length > 0 ? (
+          <section className="mt-12 border-t border-cream-200 pt-8" aria-label="Yazarın diğer yazıları">
+            <div className="flex items-end justify-between gap-4">
+              <h2 className="font-serif text-2xl text-ink-900">{columnist.name} — Diğer Yazıları</h2>
+              <Link
+                to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`}
+                className="shrink-0 text-sm font-medium text-burgundy-700 hover:underline"
+              >
+                Tüm yazıları ({columnist.articles.length}) →
+              </Link>
+            </div>
+            <ul className="mt-5 space-y-4">
+              {otherArticles.map((other) => (
+                <li key={other.id} className="border-t border-cream-200 pt-4">
+                  <Link
+                    to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${other.slug}`}
+                    className="block hover:opacity-80"
+                  >
+                    <span className="block font-serif text-xl text-ink-900">{other.title}</span>
+                    <span className="mt-1 block text-sm text-ink-500">{formatDateTimeTr(other.created_at)}</span>
+                    {hasText(other.body) ? (
+                      <span className="mt-1 block text-sm leading-relaxed text-ink-600">
+                        {plainTextExcerpt(other.body, 140)}
+                      </span>
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <p className="mt-12 border-t border-cream-200 pt-6 text-sm">
+            <Link to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}`} className="font-medium text-burgundy-700 hover:underline">
+              {columnist.name} — Tüm yazıları →
+            </Link>
+          </p>
+        )}
         <div className="mt-10">
           <AdSlot slot="content_after" />
         </div>

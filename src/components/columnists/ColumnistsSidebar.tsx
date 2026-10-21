@@ -93,20 +93,37 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
             const latest = columnist.articles[0];
             return (
               <li key={columnist.id}>
-                <Link to={columnistHref(columnist)} className="flex gap-3 hover:opacity-80">
-                  <ColumnistAvatar columnist={columnist} size="sm" />
+                <div className="flex gap-3">
+                  <Link to={columnistHref(columnist)} className="shrink-0 hover:opacity-80" aria-label={`${columnist.name} — tüm yazıları`}>
+                    <ColumnistAvatar columnist={columnist} size="sm" />
+                  </Link>
                   <span className="min-w-0">
-                    <span className="block text-sm font-medium text-ink-900">{columnist.name}</span>
+                    <Link to={columnistHref(columnist)} className="block text-sm font-medium text-ink-900 hover:underline">
+                      {columnist.name}
+                    </Link>
                     {columnist.column_name ? (
                       <ColumnNameLabel name={columnist.column_name} size="sm" className="mt-0.5 block" />
                     ) : null}
                     {latest ? (
-                      <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-ink-500">{latest.title}</span>
+                      <Link
+                        to={`${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${latest.slug}`}
+                        className="mt-0.5 line-clamp-2 block text-xs leading-snug text-ink-500 hover:text-ink-900 hover:underline"
+                      >
+                        {latest.title}
+                      </Link>
                     ) : columnist.title ? (
                       <span className="mt-0.5 block text-xs text-ink-500">{columnist.title}</span>
                     ) : null}
+                    {columnist.articles.length > 1 ? (
+                      <Link
+                        to={columnistHref(columnist)}
+                        className="mt-1 block text-[11px] font-medium text-burgundy-700 hover:underline"
+                      >
+                        Tüm yazıları ({columnist.articles.length}) →
+                      </Link>
+                    ) : null}
                   </span>
-                </Link>
+                </div>
               </li>
             );
           })
@@ -136,7 +153,6 @@ export function ColumnistsSidebar({ variant = 'vertical' }: { variant?: 'vertica
 }
 
 function columnistHref(columnist: Columnist): string {
-  const latest = columnist.articles[0];
-  if (latest) return `${COLUMNISTS_PAGE_PATH}/${columnist.slug}/${latest.slug}`;
+  // Yazar adı/fotoğrafı her zaman yazar sayfasına gider: orada eski yazılar da listelenir.
   return `${COLUMNISTS_PAGE_PATH}/${columnist.slug}`;
 }
