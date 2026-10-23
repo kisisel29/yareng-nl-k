@@ -6,6 +6,7 @@ import {
 } from '../../lib/api';
 import { formatDateTimeTr } from '../../lib/format';
 import { btnPrimary, inputClass, labelClass } from '../../lib/cn';
+import { renderLinkedContent } from '../../lib/sanitize';
 
 function newCaptcha() {
   return {
@@ -173,7 +174,10 @@ export function CommentSection({ targetKey }: { targetKey: string }) {
                 <p className="text-xs text-ink-500">{formatDateTimeTr(comment.created_at)}</p>
               ) : null}
             </div>
-            <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink-700">{comment.body}</p>
+            <p
+              className="comment-body mt-2 text-sm leading-relaxed text-ink-700"
+              dangerouslySetInnerHTML={{ __html: renderLinkedContent(comment.body) }}
+            />
           </article>
         ))}
       </div>

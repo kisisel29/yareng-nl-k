@@ -39,13 +39,17 @@ export function renderLinkedContent(input: string | null | undefined): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-  const linked = escaped.replace(/(https?:\/\/[^\s<]+)/gi, (match) => {
-    const trailing = match.match(/[.,;:!?)\]»”']+$/);
-    const url = trailing ? match.slice(0, -trailing[0].length) : match;
-    const suffix = trailing ? trailing[0] : '';
-    if (!url) return match;
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>${suffix}`;
-  });
+  const linked = escaped.replace(
+    /((?:https?:\/\/|www\.)[^\s<]+)/gi,
+    (match) => {
+      const trailing = match.match(/[.,;:!?)\]»”']+$/);
+      const rawUrl = trailing ? match.slice(0, -trailing[0].length) : match;
+      const suffix = trailing ? trailing[0] : '';
+      if (!rawUrl) return match;
+      const href = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${rawUrl}</a>${suffix}`;
+    }
+  );
 
   return linked.replace(/\n/g, '<br>');
 }

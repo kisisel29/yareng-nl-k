@@ -103,8 +103,13 @@ svg {
   @apply mt-1;
 }
 
-.prose-archive a {
+.prose-archive a,
+.comment-body a {
   @apply text-burgundy-700 underline underline-offset-2;
+}
+
+.comment-body a {
+  word-break: break-word;
 }
 
 .tiptap p.is-editor-empty:first-child::before {

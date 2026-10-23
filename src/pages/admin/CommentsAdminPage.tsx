@@ -21,6 +21,7 @@ import {
 } from '../../lib/constants';
 import { formatDateTimeTr, personName } from '../../lib/format';
 import { btnPrimary, btnSecondary } from '../../lib/cn';
+import { renderLinkedContent } from '../../lib/sanitize';
 import type { Columnist, InterviewItem, Joke, NewsItem, Person } from '../../types';
 
 type Filter = 'pending' | 'approved' | 'rejected' | 'all';
@@ -273,7 +274,10 @@ export function CommentsAdminPage() {
                     </button>
                   </div>
                 </div>
-                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-ink-700">{comment.body}</p>
+                <p
+                  className="comment-body mt-3 text-sm leading-relaxed text-ink-700"
+                  dangerouslySetInnerHTML={{ __html: renderLinkedContent(comment.body) }}
+                />
               </li>
             );
           })}
