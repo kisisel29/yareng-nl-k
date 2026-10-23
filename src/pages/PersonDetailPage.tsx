@@ -9,7 +9,7 @@ import { DetailSkeleton } from '../components/ui/Skeleton';
 import { OptimizedImage } from '../components/ui/OptimizedImage';
 import { fetchPersonBySlug, fetchRelatedPeople, incrementPersonViews } from '../lib/api';
 import { formatDateTr, formatLifeYears, hasText, personExtraNotes, personName, plainTextExcerpt, siteUrl } from '../lib/format';
-import { sanitizeHtml } from '../lib/sanitize';
+import { renderLinkedContent } from '../lib/sanitize';
 import type { Person } from '../types';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -212,7 +212,7 @@ export function PersonDetailPage() {
             <h2 className="font-serif text-3xl text-ink-900">Hayatı</h2>
             <div
               className="prose-archive mt-6"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(person.biography) }}
+              dangerouslySetInnerHTML={{ __html: renderLinkedContent(person.biography) }}
             />
             {extraNotes ? (
               <p className="mt-6 whitespace-pre-line text-justify text-[1.125rem] leading-[1.8] text-ink-700">

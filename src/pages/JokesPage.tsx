@@ -10,6 +10,7 @@ import { fetchJokes } from '../lib/api';
 import { JOKES_ADMIN_PATH, JOKES_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
 import { btnSecondary, cn } from '../lib/cn';
+import { renderLinkedContent } from '../lib/sanitize';
 import type { Joke } from '../types';
 
 function pickRandomJoke(list: Joke[], exceptId?: string): Joke | null {
@@ -197,9 +198,10 @@ export function JokesPage() {
                       />
                     </div>
                   ) : null}
-                  <pre className="mt-5 whitespace-pre-wrap font-serif text-lg leading-[1.9] text-ink-800 sm:text-xl sm:leading-[1.95]">
-                    {current.body}
-                  </pre>
+                  <div
+                    className="comment-body mt-5 whitespace-pre-wrap font-serif text-lg leading-[1.9] text-ink-800 sm:text-xl sm:leading-[1.95]"
+                    dangerouslySetInnerHTML={{ __html: renderLinkedContent(current.body) }}
+                  />
                   <div className="mt-6 flex flex-wrap gap-2 border-t border-cream-200 pt-4">
                     <button
                       type="button"

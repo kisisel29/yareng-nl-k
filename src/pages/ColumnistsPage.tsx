@@ -9,7 +9,7 @@ import { AdSlot } from '../components/ads/AdSlot';
 import { fetchColumnistArticle, fetchColumnistBySlug, fetchColumnists } from '../lib/api';
 import { COLUMNISTS_ADMIN_PATH, COLUMNISTS_PAGE_PATH } from '../lib/constants';
 import { formatDateTimeTr, hasText, plainTextExcerpt } from '../lib/format';
-import { sanitizeHtml } from '../lib/sanitize';
+import { renderLinkedContent } from '../lib/sanitize';
 import { useAuth } from '../context/AuthContext';
 import type { Columnist, ColumnistArticle } from '../types';
 
@@ -246,7 +246,7 @@ function ArticleView({ columnistSlug, articleSlug }: { columnistSlug: string; ar
         {hasText(article.body) ? (
           <div
             className="prose-archive mt-10"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body) }}
+            dangerouslySetInnerHTML={{ __html: renderLinkedContent(article.body) }}
           />
         ) : null}
         {otherArticles.length > 0 ? (

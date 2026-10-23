@@ -18,7 +18,7 @@ import {
   SOCIAL_LINKS,
 } from '../lib/constants';
 import { formatDateTr, hasText, siteUrl } from '../lib/format';
-import { sanitizeHtml } from '../lib/sanitize';
+import { renderLinkedContent } from '../lib/sanitize';
 import { useAuth } from '../context/AuthContext';
 import type { AuthorProfile } from '../types';
 
@@ -131,7 +131,7 @@ export function AboutPage() {
             <h2 className="font-serif text-3xl text-ink-900">Özgeçmiş</h2>
             <div
               className="prose-archive mt-6"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(biography) }}
+              dangerouslySetInnerHTML={{ __html: renderLinkedContent(biography) }}
             />
           </section>
         ) : null}

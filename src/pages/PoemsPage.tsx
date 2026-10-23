@@ -7,6 +7,7 @@ import { fetchPoemBySlug, fetchPoems } from '../lib/api';
 import { AUTHOR_NAME, POEMS_ADMIN_PATH, POEMS_PAGE_PATH } from '../lib/constants';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/cn';
+import { renderLinkedContent } from '../lib/sanitize';
 import type { Poem } from '../types';
 
 function groupPoemsByPoet(poems: Poem[]): { poet: string; poems: Poem[] }[] {
@@ -213,9 +214,12 @@ export function PoemsPage() {
                       <p className="mt-2 text-base text-ink-700">{current.poet}</p>
                     </div>
                   </div>
-                  <pre className="mt-8 max-w-none whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800 sm:text-xl sm:leading-[2.05]">
-                    {current.body || 'Şiir metni henüz eklenmedi.'}
-                  </pre>
+                  <div
+                    className="comment-body mt-8 max-w-none whitespace-pre-wrap font-serif text-lg leading-[2] text-ink-800 sm:text-xl sm:leading-[2.05]"
+                    dangerouslySetInnerHTML={{
+                      __html: renderLinkedContent(current.body || 'Şiir metni henüz eklenmedi.'),
+                    }}
+                  />
                   <div className="mt-10">
                     <AdSlot slot="content_after" />
                   </div>

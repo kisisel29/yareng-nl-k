@@ -8,6 +8,7 @@ import { ShareMenu } from '../components/people/ShareMenu';
 import { fetchAuthorBookBySlug, fetchAuthorBooks } from '../lib/api';
 import { AUTHOR_ADMIN_PATH, AUTHOR_NAME, AUTHOR_PAGE_PATH } from '../lib/constants';
 import { hasText, siteUrl } from '../lib/format';
+import { renderLinkedContent } from '../lib/sanitize';
 import { useAuth } from '../context/AuthContext';
 import type { AuthorBook } from '../types';
 import { NotFoundPage } from './NotFoundPage';
@@ -124,7 +125,10 @@ export function BookDetailPage() {
             </div>
 
             {hasText(book.description) ? (
-              <p className="prose-archive mt-8 whitespace-pre-line">{book.description}</p>
+              <div
+                className="prose-archive mt-8"
+                dangerouslySetInnerHTML={{ __html: renderLinkedContent(book.description) }}
+              />
             ) : (
               <p className="mt-8 text-ink-600">Bu kitabın tanıtım metni henüz eklenmedi.</p>
             )}
